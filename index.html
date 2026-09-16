@@ -104,8 +104,6 @@
       margin-top: -10px;
     }
     .list-header div:first-child, .list-header div:last-child { text-align: left; }
-    
-    /* 讓 HR 標題也靠右對齊，並保留安全邊距 */
     .list-header div:nth-child(4) { text-align: right; padding-right: 8px; }
 
     .record-row {
@@ -117,8 +115,6 @@
       font-variant-numeric: tabular-nums; 
     }
     .record-row div:first-child, .record-row div:last-child { text-align: left; }
-    
-    /* 讓 HR 數據靠右對齊，完美對齊個位數 */
     .record-row div:nth-child(4) { text-align: right; padding-right: 8px; }
     
     .bp-col-align {
@@ -136,7 +132,7 @@
     .high-bp { color: var(--danger-color); font-weight: bold; }
     
     .day-divider { border-top: 2px solid var(--primary-color); margin: 3px 0; }
-    .item-divider { border-top: 1px dashed #E2E8F0; }
+    .item-divider { border-top: 1px dashed #E2E8F0; margin: 3px 0; }
 
   </style>
 </head>
@@ -252,6 +248,9 @@
           let sysNum = parseInt(item.systolic, 10);
           let sysHtml = (sysNum >= 130) ? `<span class="high-bp">${item.systolic}</span>` : item.systolic;
 
+          // 判斷是否為同一天，決定要顯示完整日期還是留白
+          let displayDateText = (lastDate !== formattedDate) ? formattedDate : '';
+
           if (lastDate !== null && lastDate !== formattedDate) {
             html += `<div class="day-divider"></div>`;
           } else if (lastDate !== null) {
@@ -261,7 +260,7 @@
 
           html += `
             <div class="record-row">
-              <div>${formattedDate}</div>
+              <div>${displayDateText}</div>
               <div>${formattedTime}</div>
               <div class="bp-col-align">
                 <span class="bp-sys">${sysHtml}</span>
