@@ -35,18 +35,26 @@
       border: none; padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: bold;
     }
 
+    /* 重整按鈕樣式 */
+    .refresh-btn {
+      background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center;
+    }
+
     .container {
       width: 100%; max-width: 500px; margin: 0 auto; padding: 15px 20px; box-sizing: border-box;
     }
 
     .form-group { margin-bottom: 12px; }
     
-    /* 絕對分開的日期時間排版 */
-    .date-time-row {
-      display: flex; justify-content: space-between; width: 100%;
+    /* 終極解決 Date/Time 重疊的排版語法 */
+    .date-time-fix {
+      display: flex; width: 100%;
     }
-    .date-time-row > div {
-      width: 48%; /* 強制左右各佔 48%，中間留 4% 空白，絕對不會重疊 */
+    .date-time-fix > div:first-child {
+      flex: 1; min-width: 0; margin-right: 12px; /* 強制留出 12px 空白 */
+    }
+    .date-time-fix > div:last-child {
+      flex: 1; min-width: 0;
     }
     
     input[type="number"], input[type="text"], input[type="date"], input[type="time"] {
@@ -81,29 +89,35 @@
     }
     .list-header div:first-child, .list-header div:last-child { text-align: left; }
 
+    /* 列高縮減，畫面更緊密 */
     .record-row {
       display: grid; grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr;
       gap: 4px; align-items: center; 
-      padding: 6px 0; /* 列高改緊密 */
-      font-size: 14px; /* 字體微調放大 */
+      padding: 3px 0; /* 大幅縮小上下間距 */
+      font-size: 13px; /* 字體稍微縮小以配合緊湊度 */
       color: var(--text-main); text-align: center;
     }
     .record-row div:first-child, .record-row div:last-child { text-align: left; }
     
     .note-col { font-size: 12px; color: #666; word-break: break-word; line-height: 1.2; }
     
-    .day-divider { border-top: 2px solid var(--primary-color); margin: 4px 0; }
+    .day-divider { border-top: 2px solid var(--primary-color); margin: 3px 0; }
     .item-divider { border-top: 1px dashed #E2E8F0; }
 
   </style>
 </head>
 <body>
 
-  <!-- 輸入區 -->
-  <div class="banner">BP Tracker</div>
+  <!-- 輸入區橫幅 (加入重整按鈕) -->
+  <div class="banner">
+    <span>BP Tracker</span>
+    <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
+  </div>
+  
   <div class="container">
     <form id="bpForm">
-      <div class="form-group date-time-row">
+      <!-- 修正重疊問題的 Date & Time -->
+      <div class="form-group date-time-fix">
         <div><input type="date" id="date" required></div>
         <div><input type="time" id="time" required></div>
       </div>
@@ -121,17 +135,17 @@
         <input type="text" id="notes" placeholder="Notes (e.g., dizzy, felt unwell...)">
       </div>
       
-      <!-- 移除下方的 status div，避免畫面跳動 -->
       <button type="submit" id="submitBtn" class="primary-btn">Save Record</button>
     </form>
   </div>
 
-  <!-- 列表區 -->
+  <!-- 列表區橫幅與選單 -->
   <div class="banner" style="margin-top: 5px;">
     <span>Recent Records</span>
     <select id="limitSelect">
-      <option value="7days" selected>Last 7 Days</option>
-      <option value="30days">Last 30 Days</option>
+      <option value="7days">Last 7 Days</option>
+      <!-- 預設改為 30 天 -->
+      <option value="30days" selected>Last 30 Days</option>
       <option value="all">All</option>
     </select>
   </div>
@@ -141,7 +155,6 @@
   </div>
 
   <script>
-    // ⚠️ 記得綁定您的 API
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
     let allRecords = [];
 
@@ -163,7 +176,6 @@
         displayData = allRecords;
       }
 
-      // 將資料反轉，變成「舊的在上方，新的在下方」
       displayData = displayData.reverse();
 
       let html = `
@@ -218,13 +230,11 @@
       }
     }
 
-    // 0 秒體驗：Optimistic UI 提交機制
     document.getElementById('bpForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
       btn.disabled = true;
 
-      // 1. 整理輸入資料
       const payload = {
         date: document.getElementById('date').value,
         time: document.getElementById('time').value,
@@ -234,20 +244,17 @@
         notes: document.getElementById('notes').value
       };
 
-      // 2. 瞬間加到本地紀錄中並重繪列表 (使用者完全不需等待)
       allRecords.unshift(payload); 
       renderList();
 
-      // 3. 瞬間清空表單並恢復當前時間
       document.getElementById('bpForm').reset();
       let curr = new Date();
       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
 
-      // 4. 按鈕變色提示成功
       const originalColor = btn.style.backgroundColor;
       btn.innerText = '✅ Saved!';
-      btn.style.backgroundColor = '#4CAF50'; // 綠色
+      btn.style.backgroundColor = '#4CAF50';
       
       setTimeout(() => { 
         btn.innerText = 'Save Record';
@@ -255,7 +262,6 @@
         btn.disabled = false;
       }, 2000);
 
-      // 5. 在背景默默發送給 Google API (不卡住畫面)
       fetch(API_URL, {
         method: 'POST',
         redirect: 'follow',
