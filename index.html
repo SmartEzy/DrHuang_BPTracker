@@ -146,6 +146,12 @@
       try {
         await fetch(API_URL, {
           method: 'POST',
+          // 加入 redirect: 'follow' 處理 Google 的轉址
+          redirect: 'follow', 
+          // 指定 Content-Type 為 text/plain 來避開 CORS 預檢
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8',
+          },
           body: JSON.stringify(payload)
         });
         status.innerText = '✅ 紀錄成功！';
