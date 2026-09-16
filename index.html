@@ -67,18 +67,15 @@
     .symbol { font-size: 18px; color: #333; font-weight: bold; margin: 0 4px; }
     .unit { font-size: 13px; color: #333; font-weight: bold; margin: 0 4px; }
 
-    /* Notes 與 Save 按鈕同行排版 */
     .notes-save-row {
       display: flex; gap: 8px; width: 100%; align-items: center;
     }
     .notes-save-row input {
-      flex: 1; min-width: 0; /* 讓輸入框自動填滿剩餘空間 */
+      flex: 1; min-width: 0; 
     }
     .notes-save-row button.primary-btn {
-      width: 105px; /* 固定按鈕寬度，避免變成 Saved! 時跳動 */
-      margin-top: 0;
-      padding: 12px 0;
-      background-color: var(--primary-color); color: white;
+      width: 105px; 
+      margin-top: 0; padding: 12px 0; background-color: var(--primary-color); color: white;
       border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer;
       transition: background-color 0.2s;
     }
@@ -96,14 +93,16 @@
       background-color: #FFFFFF; color: var(--primary-dark);
     }
 
-    /* 真正的置頂凍結區塊 (包含深灰標題 + 欄位表頭) */
-    .sticky-zone {
-      position: -webkit-sticky;
+    /* ---------------------------------------------------
+       【全區凍結模組】把上半部全部包起來固定在最上方
+       --------------------------------------------------- */
+    .sticky-top-panel {
+      position: -webkit-sticky; /* 支援 iOS */
       position: sticky;
       top: 0;
       z-index: 100;
-      background-color: var(--bg-color);
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* 增加一點點陰影讓滑動區隔更明顯 */
+      background-color: var(--bg-color); /* 填滿底色，避免滑動時字體重疊 */
+      box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); /* 在凍結區塊下方加一點點陰影，增加立體感 */
     }
 
     .list-header {
@@ -146,39 +145,45 @@
 </head>
 <body>
 
-  <!-- 輸入區 -->
-  <div class="banner">
-    <span>BP Tracker</span>
-    <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
-  </div>
-  
-  <div class="container">
-    <form id="bpForm">
-      <div class="form-group date-time-layout">
-        <div class="date-box"><input type="date" id="date" required></div>
-        <div class="time-box"><input type="time" id="time" required></div>
-      </div>
-      
-      <div class="form-group bp-hr-row">
-        <input type="number" id="systolic" placeholder="SBP" inputmode="numeric" pattern="[0-9]*" required>
-        <span class="symbol">/</span>
-        <input type="number" id="diastolic" placeholder="DBP" inputmode="numeric" pattern="[0-9]*" required>
-        <span class="unit">mmHg</span>
-        <input type="number" id="heartRate" placeholder="HR" inputmode="numeric" pattern="[0-9]*" required>
-        <span class="unit" style="margin-right:0;">bpm</span>
-      </div>
-      
-      <!-- Notes 與 Save 放在同一行 -->
-      <div class="form-group notes-save-row">
-        <input type="text" id="notes" placeholder="Notes (e.g., dizzy...)">
-        <button type="submit" id="submitBtn" class="primary-btn">Save</button>
-      </div>
-    </form>
-  </div>
-
-  <!-- 真正能成功凍結的區塊：包含標題列與表頭 -->
-  <div class="sticky-zone">
+  <!-- ==========================================
+       上半部：全區凍結模組 (Sticky Top Panel)
+       包含：主橫幅 + 輸入表單 + 紀錄橫幅 + 列表標題
+       ========================================== -->
+  <div class="sticky-top-panel">
+    
+    <!-- 主橫幅 -->
     <div class="banner">
+      <span>BP Tracker</span>
+      <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
+    </div>
+    
+    <!-- 輸入區 -->
+    <div class="container" style="padding-bottom: 5px;">
+      <form id="bpForm">
+        <div class="form-group date-time-layout">
+          <div class="date-box"><input type="date" id="date" required></div>
+          <div class="time-box"><input type="time" id="time" required></div>
+        </div>
+        
+        <div class="form-group bp-hr-row">
+          <input type="number" id="systolic" placeholder="SBP" inputmode="numeric" pattern="[0-9]*" required>
+          <span class="symbol">/</span>
+          <input type="number" id="diastolic" placeholder="DBP" inputmode="numeric" pattern="[0-9]*" required>
+          <span class="unit">mmHg</span>
+          <input type="number" id="heartRate" placeholder="HR" inputmode="numeric" pattern="[0-9]*" required>
+          <span class="unit" style="margin-right:0;">bpm</span>
+        </div>
+        
+        <!-- Notes 與 Save 放在同一行 -->
+        <div class="form-group notes-save-row" style="margin-bottom: 0;">
+          <input type="text" id="notes" placeholder="Notes (e.g., dizzy...)">
+          <button type="submit" id="submitBtn" class="primary-btn">Save</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- 紀錄橫幅 -->
+    <div class="banner" style="margin-top: 10px;">
       <span>Records</span>
       <div class="capsule-group">
         <button class="capsule-btn" data-val="7days">7 days</button>
@@ -187,16 +192,21 @@
       </div>
     </div>
     
+    <!-- 列表標題 (表頭) -->
     <div class="container" style="padding-top: 15px; padding-bottom: 0;">
-      <!-- 表頭獨立出來，不再用 JS 生成 -->
       <div class="list-header">
         <div>Date</div><div>Time</div><div>BP</div><div>HR</div><div>Notes</div>
       </div>
     </div>
-  </div>
-  
-  <!-- 列表資料區塊 -->
-  <div class="container" style="padding-top: 5px;">
+
+  </div> 
+  <!-- 全區凍結模組 結束 -->
+
+
+  <!-- ==========================================
+       下半部：純資料列表 (滑動區)
+       ========================================== -->
+  <div class="container" style="padding-top: 5px; padding-bottom: 40px;">
     <div id="recordsList">Loading...</div>
   </div>
 
