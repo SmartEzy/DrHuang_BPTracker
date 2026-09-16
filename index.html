@@ -8,54 +8,68 @@
   <style>
     :root {
       --primary-color: #8FA3B8;
-      --primary-dark: #768B9E;
+      --primary-dark: #495057; /* 改為深灰色 */
       --bg-color: #F4F6F8;
-      --card-bg: #FFFFFF;
-      --text-main: #495057;
+      --text-main: #333333;
       --border-color: #CED4DA;
       --special-color: #A39193;
     }
     body {
       font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-color); color: var(--text-main);
-      margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center;
+      margin: 0; padding: 15px; 
     }
-    .container {
-      width: 100%; max-width: 400px; background: var(--card-bg);
-      padding: 24px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px;
-      box-sizing: border-box;
-    }
-    h2 { margin-top: 0; color: var(--primary-dark); text-align: center; font-size: 20px; margin-bottom: 20px; }
     
+    /* 移除卡片，改用單純的 wrapper 限制最大寬度，並讓寬度更飽滿 */
+    .wrapper {
+      width: 100%; max-width: 500px; margin: 0 auto 30px auto;
+    }
+    
+    /* 深灰底標題樣式 */
+    .section-header {
+      background-color: var(--primary-dark);
+      color: white;
+      padding: 10px 15px;
+      font-size: 16px;
+      font-weight: bold;
+      border-radius: 6px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .section-header select {
+      background: #FFFFFF; color: var(--primary-dark);
+      border: none; padding: 2px 6px; border-radius: 4px; font-size: 13px;
+    }
+
     .form-group { margin-bottom: 15px; }
     #notesGroup { display: none; }
     
-    label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; color: var(--text-main); }
+    label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; color: var(--primary-dark); }
     
-    input[type="number"], input[type="text"] {
-      width: 100%; padding: 10px 8px; border: 1px solid var(--border-color); border-radius: 6px;
-      box-sizing: border-box; font-size: 16px; color: var(--text-main); background: #FAFAFA;
-    }
-    
-    /* 特別針對日期與時間縮減內距與字體，避免在手機上重疊 */
-    input[type="date"], input[type="time"] {
-      width: 100%; padding: 8px 4px; border: 1px solid var(--border-color); border-radius: 6px;
-      box-sizing: border-box; font-size: 13px; color: var(--text-main); background: #FAFAFA;
+    input[type="number"], input[type="text"], input[type="date"], input[type="time"] {
+      width: 100%; padding: 10px 6px; border: 1px solid var(--border-color); border-radius: 6px;
+      box-sizing: border-box; font-size: 15px; color: var(--text-main); background: #FFFFFF;
     }
 
-    .radio-group { display: flex; gap: 15px; margin-top: 5px; }
-    .radio-group label { font-weight: normal; font-size: 15px; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+    /* Type Radio Buttons 的新排版 */
+    .type-radios {
+      display: flex; flex-direction: column; justify-content: center; gap: 8px;
+      margin-top: 22px; /* 對齊輸入框 */
+    }
+    .type-radios label { font-weight: normal; font-size: 14px; display: flex; align-items: center; gap: 4px; margin:0; }
     
     button {
       width: 100%; padding: 12px; background-color: var(--primary-color); color: white;
       border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;
     }
-    button:hover { background-color: var(--primary-dark); }
+    button:hover { background-color: #768B9E; }
     
-    /* 列表分欄樣式 (CSS Grid) */
+    /* 列表分欄樣式 */
     .list-header {
       display: grid;
-      grid-template-columns: 2fr 1.5fr 1fr 1.5fr; /* 重新調整欄位寬度比例 */
+      grid-template-columns: 2fr 1.5fr 1fr 1.5fr; 
       gap: 5px;
       padding-bottom: 10px;
       border-bottom: 2px solid var(--border-color);
@@ -65,10 +79,8 @@
     .list-header div:first-child { text-align: left; }
 
     .record-item {
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border-color);
+      padding: 12px 0; border-bottom: 1px solid var(--border-color);
     }
-    .record-item:last-child { border-bottom: none; }
     
     .record-row {
       display: grid;
@@ -79,22 +91,16 @@
       text-align: center;
     }
     
-    /* 日期時間欄位分行，縮小字體 */
-    .record-row .dt-col {
-      text-align: left; font-size: 12px; line-height: 1.3;
-    }
-    .dt-col span { color: #888; }
+    .record-row .dt-col { text-align: left; font-size: 13px; line-height: 1.4; }
+    .dt-col span { color: #666; }
     
-    /* Type 與 Notes 整合欄位 */
     .record-row .type-col {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
     }
     .type-col .note-text {
-      font-size: 11px; color: #888; margin-top: 4px; text-align: center;
-      line-height: 1.1; word-break: break-word;
+      font-size: 11px; color: #888; margin-top: 4px; text-align: center; line-height: 1.1; word-break: break-word;
     }
 
-    /* 圓底標記樣式 */
     .circle-badge {
       display: inline-flex; justify-content: center; align-items: center;
       width: 20px; height: 20px; border-radius: 50%;
@@ -102,39 +108,34 @@
     }
     .badge-regular { background-color: var(--primary-color); }
     .badge-special { background-color: var(--special-color); }
-    
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h2>BP Tracker</h2>
+  <div class="wrapper">
+    <div class="section-header">BP Tracker</div>
     <form id="bpForm">
-      <!-- Row 1: Date & Time -->
+      <!-- Date, Time, 還有 Type 放同一列 -->
       <div class="form-group" style="display:flex; gap:8px;">
-        <div style="flex:1;">
-          <label>Date</label><input type="date" id="date" required>
+        <div style="flex: 1.8;">
+          <label>Date</label>
+          <input type="date" id="date" required>
         </div>
-        <div style="flex:1;">
-          <label>Time</label><input type="time" id="time" required>
+        <div style="flex: 1.5;">
+          <label>Time</label>
+          <input type="time" id="time" required>
         </div>
-      </div>
-      
-      <!-- Row 2: Type -->
-      <div class="form-group">
-        <label>Type</label>
-        <div class="radio-group">
-          <label><input type="radio" name="type" value="Regular" checked> Regular</label>
-          <label><input type="radio" name="type" value="Special"> Special</label>
+        <!-- 上下排列的 Radio Buttons -->
+        <div class="type-radios" style="flex: 1;">
+          <label><input type="radio" name="type" value="Regular" checked> Reg</label>
+          <label><input type="radio" name="type" value="Special"> Spec</label>
         </div>
       </div>
       
-      <!-- Row 3: Notes (預設隱藏) -->
       <div class="form-group" id="notesGroup">
-        <label>Notes</label><input type="text" id="notes" placeholder="e.g., after exercise, feeling dizzy...">
+        <label>Notes</label><input type="text" id="notes" placeholder="e.g., dizzy, after exercise...">
       </div>
       
-      <!-- Row 4: SBP / DBP / HR 一列呈現 -->
       <div class="form-group" style="display:flex; gap:8px;">
         <div style="flex:1;">
           <label>SBP</label><input type="number" id="systolic" inputmode="numeric" pattern="[0-9]*" required>
@@ -152,21 +153,32 @@
     </form>
   </div>
 
-  <div class="container">
-    <h2>Recent Records</h2>
+  <div class="wrapper">
+    <div class="section-header">
+      <span>Recent Records</span>
+      <!-- 新增：筆數切換選單 -->
+      <select id="limitSelect">
+        <option value="5">Last 5</option>
+        <option value="10">Last 10</option>
+        <option value="20" selected>Last 20</option>
+        <option value="all">All</option>
+      </select>
+    </div>
     <div id="recordsList">Loading...</div>
   </div>
 
   <script>
-    // 使用您專屬的 API 網址
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
+    
+    // 儲存從後端抓下來的所有資料
+    let allRecords = [];
 
-    // 預設當下時間
+    // 初始化時間 (轉換為 YYYY-MM-DD 與 24H 格式以供 input 使用)
     const now = new Date();
-    document.getElementById('date').value = now.toLocaleDateString('en-CA');
-    document.getElementById('time').value = now.toLocaleTimeString('en-GB', { hour: "2-digit", minute: "2-digit" });
+    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-    // 監聽 Radio Button 切換 Notes 顯示狀態
+    // 監聽 Radio Button
     const typeRadios = document.querySelectorAll('input[name="type"]');
     const notesGroup = document.getElementById('notesGroup');
     const notesInput = document.getElementById('notes');
@@ -182,52 +194,66 @@
       });
     });
 
+    // 渲染列表的函式 (負責處理日期格式轉換與筆數過濾)
+    function renderList() {
+      const limitVal = document.getElementById('limitSelect').value;
+      const displayData = limitVal === 'all' ? allRecords : allRecords.slice(0, parseInt(limitVal));
+
+      let html = `
+        <div class="list-header">
+          <div>Date Time</div><div>BP</div><div>HR</div><div>Type</div>
+        </div>
+      `;
+
+      if (displayData.length === 0) {
+        html += `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
+      } else {
+        displayData.forEach(item => {
+          let isRegular = (item.type === 'Regular' || item.type === '規律測量');
+          let badgeClass = isRegular ? 'badge-regular' : 'badge-special';
+          let badgeLetter = isRegular ? 'R' : 'S';
+
+          // 強制轉換日期格式為 YYYY/M/D (不補零)
+          let dateObj = new Date(item.date);
+          let formattedDate = isNaN(dateObj) ? item.date.replace(/-/g, '/') : `${dateObj.getFullYear()}/${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+          
+          // 強制擷取時間為 HH:MM (去掉秒數與 AM/PM，統一 24H)
+          let timeParts = item.time.match(/(\d+):(\d+)/);
+          let formattedTime = timeParts ? `${timeParts[1]}:${timeParts[2]}` : item.time;
+
+          html += `
+            <div class="record-item">
+              <div class="record-row">
+                <div class="dt-col">${formattedDate}<br><span>${formattedTime}</span></div>
+                <div>${item.systolic}/${item.diastolic}</div>
+                <div>${item.heartRate}</div>
+                <div class="type-col">
+                  <span class="circle-badge ${badgeClass}">${badgeLetter}</span>
+                  ${item.notes ? `<span class="note-text">${item.notes}</span>` : ''}
+                </div>
+              </div>
+            </div>
+          `;
+        });
+      }
+      document.getElementById('recordsList').innerHTML = html;
+    }
+
+    // 監聽下拉選單變更，即時重新渲染
+    document.getElementById('limitSelect').addEventListener('change', renderList);
+
+    // 從 API 獲取資料
     async function loadData() {
       try {
         let response = await fetch(API_URL);
-        let data = await response.json();
-        
-        let html = `
-          <div class="list-header">
-            <div>Date Time</div>
-            <div>BP</div>
-            <div>HR</div>
-            <div>Type</div>
-          </div>
-        `;
-
-        if (data.length === 0) {
-          html += `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
-        } else {
-          data.forEach(item => {
-            let isRegular = (item.type === 'Regular' || item.type === '規律測量');
-            let badgeClass = isRegular ? 'badge-regular' : 'badge-special';
-            let badgeLetter = isRegular ? 'R' : 'S';
-
-            let formattedDate = item.date.replace(/-/g, '/');
-            
-            // 列表格式：日期時間分兩行，Notes顯示於Type欄位下方
-            html += `
-              <div class="record-item">
-                <div class="record-row">
-                  <div class="dt-col">${formattedDate}<br><span>${item.time}</span></div>
-                  <div>${item.systolic}/${item.diastolic}</div>
-                  <div>${item.heartRate}</div>
-                  <div class="type-col">
-                    <span class="circle-badge ${badgeClass}">${badgeLetter}</span>
-                    ${item.notes ? `<span class="note-text">${item.notes}</span>` : ''}
-                  </div>
-                </div>
-              </div>
-            `;
-          });
-        }
-        document.getElementById('recordsList').innerHTML = html;
+        allRecords = await response.json();
+        renderList();
       } catch (err) {
-        document.getElementById('recordsList').innerHTML = 'Failed to load data. Please check API settings.';
+        document.getElementById('recordsList').innerHTML = 'Failed to load data.';
       }
     }
 
+    // 提交表單
     document.getElementById('bpForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
@@ -251,17 +277,20 @@
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
-        status.innerText = '✅ Saved Successfully!';
+        status.innerText = '✅ Saved!';
         status.style.color = 'green';
         setTimeout(() => { status.innerText = ''; }, 3000);
         
         document.getElementById('bpForm').reset();
-        document.getElementById('date').value = new Date().toLocaleDateString('en-CA');
-        document.getElementById('time').value = new Date().toLocaleTimeString('en-GB', { hour: "2-digit", minute: "2-digit" });
+        let curr = new Date();
+        document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
+        document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
         notesGroup.style.display = 'none'; 
+        
+        // 重新讀取並刷新列表
         loadData();
       } catch (error) {
-        status.innerText = '❌ Failed to save. Please try again.';
+        status.innerText = '❌ Failed.';
         status.style.color = 'red';
       } finally {
         btn.disabled = false; btn.innerText = 'Save Record';
