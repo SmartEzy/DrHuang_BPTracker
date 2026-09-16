@@ -47,13 +47,9 @@
     .date-time-layout .date-box { width: 56%; }
     .date-time-layout .time-box { width: 41%; }
     .date-time-layout input {
-      width: 100%;
-      padding: 12px 2px;
-      font-size: 16px; 
-      text-align: center;
-      box-sizing: border-box;
-      border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); background: #FFFFFF;
-      -webkit-appearance: none;
+      width: 100%; padding: 12px 2px; font-size: 16px; text-align: center;
+      box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 6px; 
+      color: var(--text-main); background: #FFFFFF; -webkit-appearance: none;
     }
     
     input[type="number"], input[type="text"] {
@@ -71,12 +67,22 @@
     .symbol { font-size: 18px; color: #333; font-weight: bold; margin: 0 4px; }
     .unit { font-size: 13px; color: #333; font-weight: bold; margin: 0 4px; }
 
-    button.primary-btn {
-      width: 100%; padding: 14px; background-color: var(--primary-color); color: white;
-      border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 5px;
+    /* Notes 與 Save 按鈕同行排版 */
+    .notes-save-row {
+      display: flex; gap: 8px; width: 100%; align-items: center;
+    }
+    .notes-save-row input {
+      flex: 1; min-width: 0; /* 讓輸入框自動填滿剩餘空間 */
+    }
+    .notes-save-row button.primary-btn {
+      width: 105px; /* 固定按鈕寬度，避免變成 Saved! 時跳動 */
+      margin-top: 0;
+      padding: 12px 0;
+      background-color: var(--primary-color); color: white;
+      border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer;
       transition: background-color 0.2s;
     }
-    button.primary-btn:hover { background-color: #768B9E; }
+    .notes-save-row button.primary-btn:hover { background-color: #768B9E; }
     
     .capsule-group {
       display: flex; background-color: #343A40; border-radius: 20px; padding: 3px;
@@ -90,22 +96,23 @@
       background-color: #FFFFFF; color: var(--primary-dark);
     }
 
-    /* 標題列凍結 (Sticky) 修復：加入 iOS 專屬語法 */
+    /* 真正的置頂凍結區塊 (包含深灰標題 + 欄位表頭) */
+    .sticky-zone {
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: var(--bg-color);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* 增加一點點陰影讓滑動區隔更明顯 */
+    }
+
     .list-header {
       display: grid;
       grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr; 
       gap: 4px; 
-      padding: 10px 0 8px 0;
+      padding-bottom: 8px;
       border-bottom: 2px solid var(--primary-dark);
       font-weight: bold; font-size: 13px; color: var(--primary-dark); text-align: center;
-      
-      /* 關鍵修復：必須同時包含這兩行，蘋果手機才會生效 */
-      position: -webkit-sticky; 
-      position: sticky;
-      
-      top: 0;
-      background-color: var(--bg-color); 
-      z-index: 10;
     }
     .list-header div:first-child, .list-header div:last-child { text-align: left; }
     .list-header div:nth-child(4) { text-align: right; padding-right: 8px; }
@@ -122,10 +129,7 @@
     .record-row div:nth-child(4) { text-align: right; padding-right: 8px; }
     
     .bp-col-align {
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      gap: 2px;
-      align-items: center;
+      display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center;
     }
     .bp-sys { text-align: right; }
     .bp-slash { color: #888; font-weight: normal; } 
@@ -142,6 +146,7 @@
 </head>
 <body>
 
+  <!-- 輸入區 -->
   <div class="banner">
     <span>BP Tracker</span>
     <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
@@ -163,24 +168,35 @@
         <span class="unit" style="margin-right:0;">bpm</span>
       </div>
       
-      <div class="form-group">
-        <input type="text" id="notes" placeholder="Notes (e.g., dizzy, felt unwell...)">
+      <!-- Notes 與 Save 放在同一行 -->
+      <div class="form-group notes-save-row">
+        <input type="text" id="notes" placeholder="Notes (e.g., dizzy...)">
+        <button type="submit" id="submitBtn" class="primary-btn">Save</button>
       </div>
-      
-      <button type="submit" id="submitBtn" class="primary-btn">Save Record</button>
     </form>
   </div>
 
-  <div class="banner" style="margin-top: 5px;">
-    <span>Records</span>
-    <div class="capsule-group">
-      <button class="capsule-btn" data-val="7days">7 days</button>
-      <button class="capsule-btn active" data-val="30days">30 days</button>
-      <button class="capsule-btn" data-val="all">All</button>
+  <!-- 真正能成功凍結的區塊：包含標題列與表頭 -->
+  <div class="sticky-zone">
+    <div class="banner">
+      <span>Records</span>
+      <div class="capsule-group">
+        <button class="capsule-btn" data-val="7days">7 days</button>
+        <button class="capsule-btn active" data-val="30days">30 days</button>
+        <button class="capsule-btn" data-val="all">All</button>
+      </div>
+    </div>
+    
+    <div class="container" style="padding-top: 15px; padding-bottom: 0;">
+      <!-- 表頭獨立出來，不再用 JS 生成 -->
+      <div class="list-header">
+        <div>Date</div><div>Time</div><div>BP</div><div>HR</div><div>Notes</div>
+      </div>
     </div>
   </div>
   
-  <div class="container" style="padding-top: 10px;">
+  <!-- 列表資料區塊 -->
+  <div class="container" style="padding-top: 5px;">
     <div id="recordsList">Loading...</div>
   </div>
 
@@ -219,14 +235,10 @@
         return dtA - dtB; 
       });
 
-      let html = `
-        <div class="list-header">
-          <div>Date</div><div>Time</div><div>BP</div><div>HR</div><div>Notes</div>
-        </div>
-      `;
+      let html = '';
 
       if (displayData.length === 0) {
-        html += `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
+        html = `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
       } else {
         let lastDate = null;
 
@@ -316,7 +328,7 @@
       btn.style.backgroundColor = '#4CAF50';
       
       setTimeout(() => { 
-        btn.innerText = 'Save Record';
+        btn.innerText = 'Save';
         btn.style.backgroundColor = originalColor;
         btn.disabled = false;
       }, 2000);
