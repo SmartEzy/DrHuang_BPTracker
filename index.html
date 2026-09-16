@@ -8,19 +8,17 @@
   <style>
     :root {
       --primary-color: #8FA3B8;
-      --primary-dark: #495057; /* 深灰色 */
+      --primary-dark: #495057; 
       --bg-color: #F4F6F8;
       --text-main: #333333;
       --border-color: #CED4DA;
     }
-    /* 移除 body 的 padding 以實現滿版橫幅 */
     body {
       font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-color); color: var(--text-main);
       margin: 0; padding: 0; 
     }
     
-    /* 滿版橫幅設計 */
     .banner {
       background-color: var(--primary-dark);
       color: white;
@@ -37,104 +35,105 @@
       border: none; padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: bold;
     }
 
-    /* 內容容器 */
     .container {
-      width: 100%; max-width: 500px; margin: 0 auto; padding: 20px; box-sizing: border-box;
+      width: 100%; max-width: 500px; margin: 0 auto; padding: 15px 20px; box-sizing: border-box;
     }
 
     .form-group { margin-bottom: 12px; }
     
-    input[type="number"], input[type="text"], input[type="date"], input[type="time"] {
-      width: 100%; padding: 12px 10px; border: 1px solid var(--border-color); border-radius: 6px;
-      box-sizing: border-box; font-size: 16px; color: var(--text-main); background: #FFFFFF;
+    /* 修正 Date/Time 重疊的 Flex 設定 */
+    .flex-row {
+      display: flex; gap: 10px; width: 100%;
+    }
+    .flex-row > div {
+      flex: 1; min-width: 0; /* 避免內容撐破外框 */
     }
     
-    /* 調整 Placeholder 顏色 */
+    input[type="number"], input[type="text"], input[type="date"], input[type="time"] {
+      width: 100%; padding: 12px 8px; border: 1px solid var(--border-color); border-radius: 6px;
+      box-sizing: border-box; font-size: 16px; color: var(--text-main); background: #FFFFFF;
+    }
     ::placeholder { color: #A0AAB5; }
 
-    button {
+    /* BP / HR 同列新排版 */
+    .bp-hr-row {
+      display: flex; align-items: center; gap: 4px; width: 100%;
+    }
+    .bp-hr-row input {
+      flex: 1; min-width: 0; text-align: center; padding: 12px 4px;
+    }
+    .symbol { font-size: 18px; color: #666; font-weight: 300; }
+    .unit { font-size: 13px; color: #666; margin-right: 4px; }
+
+    button.primary-btn {
       width: 100%; padding: 14px; background-color: var(--primary-color); color: white;
       border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 5px;
     }
-    button:hover { background-color: #768B9E; }
+    button.primary-btn:hover { background-color: #768B9E; }
     
-    /* 列表分欄樣式 (改為三欄: DateTime, BP, HR) */
+    /* 單行清單樣式 */
     .list-header {
       display: grid;
-      grid-template-columns: 2fr 1.5fr 1fr; 
-      gap: 5px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid var(--border-color);
-      font-weight: bold; font-size: 13px; color: var(--primary-dark);
-      text-align: center;
+      grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr; 
+      gap: 4px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-dark);
+      font-weight: bold; font-size: 12px; color: var(--primary-dark); text-align: center;
     }
     .list-header div:first-child { text-align: left; }
+    .list-header div:last-child { text-align: left; }
 
-    .record-item {
-      padding: 12px 0; border-bottom: 1px solid var(--border-color);
-    }
-    
     .record-row {
-      display: grid;
-      grid-template-columns: 2fr 1.5fr 1fr;
-      gap: 5px;
-      align-items: center;
-      font-size: 15px; color: var(--text-main);
-      text-align: center;
+      display: grid; grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr;
+      gap: 4px; align-items: center; padding: 10px 0;
+      font-size: 13px; color: var(--text-main); text-align: center;
     }
+    .record-row div:first-child { text-align: left; }
+    .record-row div:last-child { text-align: left; }
     
-    .record-row .dt-col { text-align: left; font-size: 13px; line-height: 1.4; }
-    .dt-col span { color: #666; font-size: 12px; }
-    
-    /* 備註樣式獨立成行 */
-    .record-note {
-      font-size: 12px; color: #777; margin-top: 6px; text-align: left;
-      background-color: #E9ECEF; padding: 6px 10px; border-radius: 4px;
+    .note-col {
+      font-size: 11px; color: #666; word-break: break-word; line-height: 1.2;
     }
+
+    /* 日期分隔線與一般分隔線 */
+    .day-divider { border-top: 2px solid var(--primary-color); margin: 2px 0; }
+    .item-divider { border-top: 1px dashed #E2E8F0; }
+
   </style>
 </head>
 <body>
 
-  <!-- 輸入區滿版橫幅 -->
+  <!-- 輸入區橫幅 -->
   <div class="banner">BP Tracker</div>
   
   <div class="container">
     <form id="bpForm">
-      <!-- Date & Time 同列 -->
-      <div class="form-group" style="display:flex; gap:10px;">
-        <div style="flex: 1;">
-          <input type="date" id="date" required>
-        </div>
-        <div style="flex: 1;">
-          <input type="time" id="time" required>
-        </div>
+      <!-- Date & Time (修正重疊) -->
+      <div class="form-group flex-row">
+        <div><input type="date" id="date" required></div>
+        <div><input type="time" id="time" required></div>
       </div>
       
-      <!-- SBP, DBP, HR 同列 -->
-      <div class="form-group" style="display:flex; gap:10px;">
-        <div style="flex:1;">
-          <input type="number" id="systolic" placeholder="SBP" inputmode="numeric" pattern="[0-9]*" required>
-        </div>
-        <div style="flex:1;">
-          <input type="number" id="diastolic" placeholder="DBP" inputmode="numeric" pattern="[0-9]*" required>
-        </div>
-        <div style="flex:1;">
-          <input type="number" id="heartRate" placeholder="HR" inputmode="numeric" pattern="[0-9]*" required>
-        </div>
+      <!-- SBP / DBP mmHg HR bpm (新版面) -->
+      <div class="form-group bp-hr-row">
+        <input type="number" id="systolic" placeholder="SBP" inputmode="numeric" pattern="[0-9]*" required>
+        <span class="symbol">/</span>
+        <input type="number" id="diastolic" placeholder="DBP" inputmode="numeric" pattern="[0-9]*" required>
+        <span class="unit">mmHg</span>
+        <input type="number" id="heartRate" placeholder="HR" inputmode="numeric" pattern="[0-9]*" required style="margin-left: 2px;">
+        <span class="unit" style="margin-right: 0;">bpm</span>
       </div>
       
-      <!-- Notes 置底 -->
+      <!-- Notes -->
       <div class="form-group">
         <input type="text" id="notes" placeholder="Notes (e.g., dizzy, felt unwell...)">
       </div>
       
-      <button type="submit" id="submitBtn">Save Record</button>
+      <button type="submit" id="submitBtn" class="primary-btn">Save Record</button>
       <div id="status" style="text-align: center; margin-top: 10px; font-size: 14px;"></div>
     </form>
   </div>
 
-  <!-- 列表區滿版橫幅與選單 -->
-  <div class="banner" style="margin-top: 10px;">
+  <!-- 列表區橫幅與選單 -->
+  <div class="banner" style="margin-top: 5px;">
     <span>Recent Records</span>
     <select id="limitSelect">
       <option value="7days">Last 7 Days</option>
@@ -144,27 +143,23 @@
     </select>
   </div>
   
-  <div class="container" style="padding-top: 10px;">
+  <div class="container" style="padding-top: 15px;">
     <div id="recordsList">Loading...</div>
   </div>
 
   <script>
-    // ⚠️ 已經替換為您的 API URL
+    // 直接綁定您的 API (擴大使用者先擱置)
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
-    
     let allRecords = [];
 
-    // 初始化當下時間
     const now = new Date();
     document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-    // 渲染列表 (包含時間與數量篩選)
     function renderList() {
       const limitVal = document.getElementById('limitSelect').value;
       let displayData = [];
 
-      // 處理篩選邏輯
       if (limitVal === '7days') {
         let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
         displayData = allRecords.filter(r => new Date(r.date) >= cutoff);
@@ -179,33 +174,38 @@
 
       let html = `
         <div class="list-header">
-          <div>Date Time</div><div>BP</div><div>HR</div>
+          <div>Date</div><div>Time</div><div>BP</div><div>HR</div><div>Notes</div>
         </div>
       `;
 
       if (displayData.length === 0) {
         html += `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
       } else {
+        let lastDate = null;
+
         displayData.forEach(item => {
-          // 強制格式轉換為 YYYY/M/D (去除 0)
           let dateObj = new Date(item.date);
           let formattedDate = isNaN(dateObj) ? item.date.replace(/-/g, '/') : `${dateObj.getFullYear()}/${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
           
-          // 強制擷取時間並去除小時與分鐘前導 0 (例 08:05 -> 8:5)
           let timeParts = item.time.match(/(\d+):(\d+)/);
           let formattedTime = item.time;
-          if (timeParts) {
-             formattedTime = `${parseInt(timeParts[1], 10)}:${parseInt(timeParts[2], 10)}`;
+          if (timeParts) formattedTime = `${parseInt(timeParts[1], 10)}:${parseInt(timeParts[2], 10)}`;
+
+          // 判斷是否跨越不同天，加入明顯的日分隔線
+          if (lastDate !== null && lastDate !== formattedDate) {
+            html += `<div class="day-divider"></div>`;
+          } else if (lastDate !== null) {
+            html += `<div class="item-divider"></div>`;
           }
+          lastDate = formattedDate;
 
           html += `
-            <div class="record-item">
-              <div class="record-row">
-                <div class="dt-col">${formattedDate}<br><span>${formattedTime}</span></div>
-                <div>${item.systolic}/${item.diastolic}</div>
-                <div>${item.heartRate}</div>
-              </div>
-              ${item.notes ? `<div class="record-note">${item.notes}</div>` : ''}
+            <div class="record-row">
+              <div>${formattedDate}</div>
+              <div>${formattedTime}</div>
+              <div>${item.systolic}/${item.diastolic}</div>
+              <div>${item.heartRate}</div>
+              <div class="note-col">${item.notes || ''}</div>
             </div>
           `;
         });
@@ -215,18 +215,16 @@
 
     document.getElementById('limitSelect').addEventListener('change', renderList);
 
-    // 獲取資料
     async function loadData() {
       try {
         let response = await fetch(API_URL);
         allRecords = await response.json();
         renderList();
       } catch (err) {
-        document.getElementById('recordsList').innerHTML = '<div style="text-align:center; color:red; padding:20px;">Failed to load data. Please ensure you deployed a "New Version" in Apps Script.</div>';
+        document.getElementById('recordsList').innerHTML = '<div style="text-align:center; color:red; padding:20px;">Failed to load data.</div>';
       }
     }
 
-    // 提交表單
     document.getElementById('bpForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
