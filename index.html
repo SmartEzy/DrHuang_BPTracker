@@ -7,13 +7,13 @@
   <link rel="manifest" href="manifest.json">
   <style>
     :root {
-      --primary-color: #8FA3B8; /* 淡灰藍色 */
+      --primary-color: #8FA3B8;
       --primary-dark: #768B9E;
-      --bg-color: #F4F6F8; /* 淺灰底色 */
+      --bg-color: #F4F6F8;
       --card-bg: #FFFFFF;
-      --text-main: #495057; /* 灰色字體 */
+      --text-main: #495057;
       --border-color: #CED4DA;
-      --special-color: #A39193; /* 較為柔和的特殊狀況顏色 */
+      --special-color: #A39193;
     }
     body {
       font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -23,13 +23,12 @@
     .container {
       width: 100%; max-width: 400px; background: var(--card-bg);
       padding: 24px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px;
+      box-sizing: border-box;
     }
     h2 { margin-top: 0; color: var(--primary-dark); text-align: center; font-size: 20px; }
+    
     .form-group { margin-bottom: 15px; }
-    
-    /* 備註欄預設隱藏 */
     #notesGroup { display: none; }
-    
     label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; color: var(--text-main); }
     input[type="number"], input[type="date"], input[type="time"], input[type="text"] {
       width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;
@@ -43,19 +42,47 @@
     }
     button:hover { background-color: var(--primary-dark); }
     
-    /* 單行列表樣式 */
+    /* 列表分欄樣式 (CSS Grid) */
+    .list-header {
+      display: grid;
+      grid-template-columns: 2.5fr 1.5fr 1fr 1fr; /* 欄位寬度比例 */
+      gap: 5px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--border-color);
+      font-weight: bold; font-size: 13px; color: var(--primary-dark);
+      text-align: center;
+    }
+    .list-header div:first-child { text-align: left; }
+
     .record-item {
-      padding: 12px 0; border-bottom: 1px solid var(--border-color);
-      font-size: 14px; color: var(--text-main); line-height: 1.6;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border-color);
     }
     .record-item:last-child { border-bottom: none; }
     
-    /* 圓底標記樣式 (調整為適合單行穿插的大小) */
+    .record-row {
+      display: grid;
+      grid-template-columns: 2.5fr 1.5fr 1fr 1fr; /* 需與 header 比例一致 */
+      gap: 5px;
+      align-items: center;
+      font-size: 14px; color: var(--text-main);
+      text-align: center;
+    }
+    .record-row div:first-child {
+      text-align: left; font-size: 12px; /* 日期字體稍微縮小以防換行太長 */
+    }
+    
+    /* 備註欄樣式 */
+    .record-note {
+      font-size: 12px; color: #888;
+      margin-top: 6px; text-align: left;
+    }
+
+    /* 圓底標記樣式 */
     .circle-badge {
       display: inline-flex; justify-content: center; align-items: center;
-      width: 18px; height: 18px; border-radius: 50%;
+      width: 20px; height: 20px; border-radius: 50%;
       font-size: 11px; font-weight: bold; color: white;
-      margin: 0 4px; vertical-align: middle;
     }
     .badge-regular { background-color: var(--primary-color); }
     .badge-special { background-color: var(--special-color); }
@@ -77,7 +104,6 @@
       </div>
       <div class="form-group" style="display:flex; gap:10px;">
         <div style="flex:1;">
-          <!-- 加入 inputmode 與 pattern 呼叫純數字鍵盤 -->
           <label>SBP</label><input type="number" id="systolic" inputmode="numeric" pattern="[0-9]*" required>
         </div>
         <div style="flex:1;">
@@ -94,7 +120,6 @@
           <label><input type="radio" name="type" value="Special"> Special</label>
         </div>
       </div>
-      <!-- 備註欄 (預設隱藏) -->
       <div class="form-group" id="notesGroup">
         <label>Notes</label><input type="text" id="notes" placeholder="e.g., after exercise, feeling dizzy...">
       </div>
@@ -110,15 +135,13 @@
   </div>
 
   <script>
-    // ⚠️ 記得替換為您的 API URL
+    // 已將您提供的 API 網址直接寫入
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
 
-    // 預設填入當下時間
     const now = new Date();
     document.getElementById('date').value = now.toLocaleDateString('en-CA');
     document.getElementById('time').value = now.toLocaleTimeString('en-GB', { hour: "2-digit", minute: "2-digit" });
 
-    // 監聽 Radio Button 變更，動態顯示/隱藏備註欄位
     const typeRadios = document.querySelectorAll('input[name="type"]');
     const notesGroup = document.getElementById('notesGroup');
     const notesInput = document.getElementById('notes');
@@ -129,41 +152,56 @@
           notesGroup.style.display = 'block';
         } else {
           notesGroup.style.display = 'none';
-          notesInput.value = ''; // 切換回 Regular 時清空備註內容
+          notesInput.value = '';
         }
       });
     });
 
-    // 載入資料列表
     async function loadData() {
       try {
         let response = await fetch(API_URL);
         let data = await response.json();
-        let html = '';
-        data.forEach(item => {
-          let isRegular = (item.type === 'Regular' || item.type === '規律測量');
-          let badgeClass = isRegular ? 'badge-regular' : 'badge-special';
-          let badgeLetter = isRegular ? 'R' : 'S';
+        
+        // 建立表頭
+        let html = `
+          <div class="list-header">
+            <div>DateTime</div>
+            <div>BP</div>
+            <div>HR</div>
+            <div>Type</div>
+          </div>
+        `;
 
-          // 將 YYYY-MM-DD 轉為 YYYY/M/D 格式
-          let formattedDate = item.date.replace(/-/g, '/');
-          let notesStr = item.notes ? ` ${item.notes}` : '';
+        if (data.length === 0) {
+          html += `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
+        } else {
+          data.forEach(item => {
+            let isRegular = (item.type === 'Regular' || item.type === '規律測量');
+            let badgeClass = isRegular ? 'badge-regular' : 'badge-special';
+            let badgeLetter = isRegular ? 'R' : 'S';
 
-          // 單行呈現
-          html += `
-            <div class="record-item">
-              ${formattedDate} ${item.time} BP ${item.systolic} / ${item.diastolic} HR ${item.heartRate} 
-              <span class="circle-badge ${badgeClass}">${badgeLetter}</span>${notesStr}
-            </div>
-          `;
-        });
-        document.getElementById('recordsList').innerHTML = html || 'No records found.';
+            let formattedDate = item.date.replace(/-/g, '/');
+            
+            // 由於手機寬度較窄，將日期與時間用空白區隔，必要時讓瀏覽器自動折行
+            html += `
+              <div class="record-item">
+                <div class="record-row">
+                  <div>${formattedDate} ${item.time}</div>
+                  <div>${item.systolic}/${item.diastolic}</div>
+                  <div>${item.heartRate}</div>
+                  <div><span class="circle-badge ${badgeClass}">${badgeLetter}</span></div>
+                </div>
+                ${item.notes ? `<div class="record-note">${item.notes}</div>` : ''}
+              </div>
+            `;
+          });
+        }
+        document.getElementById('recordsList').innerHTML = html;
       } catch (err) {
         document.getElementById('recordsList').innerHTML = 'Failed to load data. Please check API settings.';
       }
     }
 
-    // 提交表單
     document.getElementById('bpForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
@@ -194,7 +232,7 @@
         document.getElementById('bpForm').reset();
         document.getElementById('date').value = new Date().toLocaleDateString('en-CA');
         document.getElementById('time').value = new Date().toLocaleTimeString('en-GB', { hour: "2-digit", minute: "2-digit" });
-        notesGroup.style.display = 'none'; // 儲存後將備註欄再次隱藏
+        notesGroup.style.display = 'none'; 
         loadData();
       } catch (error) {
         status.innerText = '❌ Failed to save. Please try again.';
