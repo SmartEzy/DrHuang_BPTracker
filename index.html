@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>血壓紀錄</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    :root {
+      --primary-color: #8FA3B8; /* 淡灰藍色 */
+      --primary-dark: #768B9E;
+      --bg-color: #F4F6F8; /* 淺灰底色 */
+      --card-bg: #FFFFFF;
+      --text-main: #495057; /* 灰色字體 */
+      --border-color: #CED4DA;
+      --emergency-color: #A88F8F;
+    }
+    body {
+      font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-color); color: var(--text-main);
+      margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center;
+    }
+    .container {
+      width: 100%; max-width: 400px; background: var(--card-bg);
+      padding: 24px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 20px;
+    }
+    h2 { margin-top: 0; color: var(--primary-dark); text-align: center; font-size: 20px; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; color: var(--text-main); }
+    input[type="number"], input[type="date"], input[type="time"], input[type="text"] {
+      width: 100%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;
+      box-sizing: border-box; font-size: 16px; color: var(--text-main); background: #FAFAFA;
+    }
+    .radio-group { display: flex; gap: 15px; margin-top: 5px; }
+    .radio-group label { font-weight: normal; font-size: 15px; display: flex; align-items: center; gap: 5px; }
+    button {
+      width: 100%; padding: 12px; background-color: var(--primary-color); color: white;
+      border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;
+    }
+    button:hover { background-color: var(--primary-dark); }
+    .record-item {
+      padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 14px;
+    }
+    .record-item:last-child { border-bottom: none; }
+    .badge {
+      display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 12px; color: white; margin-bottom: 5px;
+    }
+    .badge-regular { background-color: var(--primary-color); }
+    .badge-emergency { background-color: var(--emergency-color); }
+    .numbers { font-size: 16px; font-weight: bold; margin: 5px 0; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>血壓紀錄</h2>
+    <form id="bpForm">
+      <div class="form-group" style="display:flex; gap:10px;">
+        <div style="flex:1;">
+          <label>日期</label><input type="date" id="date" required>
+        </div>
+        <div style="flex:1;">
+          <label>時間</label><input type="time" id="time" required>
+        </div>
+      </div>
+      <div class="form-group" style="display:flex; gap:10px;">
+        <div style="flex:1;">
+          <label>收縮壓 (高壓)</label><input type="number" id="systolic" required>
+        </div>
+        <div style="flex:1;">
+          <label>舒張壓 (低壓)</label><input type="number" id="diastolic" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>心跳 (脈搏)</label><input type="number" id="heartRate" required>
+      </div>
+      <div class="form-group">
+        <label>測量狀況</label>
+        <div class="radio-group">
+          <label><input type="radio" name="type" value="規律測量" checked> 規律測量</label>
+          <label><input type="radio" name="type" value="突發狀況"> 突發狀況</label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>備註 (選填)</label><input type="text" id="notes" placeholder="例如：剛運動完、覺得頭暈...">
+      </div>
+      <button type="submit" id="submitBtn">儲存紀錄</button>
+      <div id="status" style="text-align: center; margin-top: 10px; font-size: 14px;"></div>
+    </form>
+  </div>
+
+  <div class="container">
+    <h2>近期紀錄列表</h2>
+    <div id="recordsList">載入中...</div>
+  </div>
+
+  <script>
+    // 請將下方網址替換為您從 Apps Script 獲得的網頁應用程式 URL
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
+
+    // 預設填入當下時間
+    const now = new Date();
+    document.getElementById('date').value = now.toLocaleDateString('en-CA');
+    document.getElementById('time').value = now.toLocaleTimeString('en-GB', { hour: "2-digit", minute: "2-digit" });
+
+    // 載入資料列表
+    async function loadData() {
+      try {
+        let response = await fetch(API_URL);
+        let data = await response.json();
+        let html = '';
+        data.forEach(item => {
+          let badgeClass = item.type === '規律測量' ? 'badge-regular' : 'badge-emergency';
+          html += `
+            <div class="record-item">
+              <span class="badge ${badgeClass}">${item.type}</span>
+              <span style="color: var(--text-main); font-size:12px; float:right;">${item.date} ${item.time}</span>
+              <div class="numbers">血壓：${item.systolic} / ${item.diastolic} mmHg ｜ 心跳：${item.heartRate} bpm</div>
+              ${item.notes ? `<div style="color:#6c757d; font-size:12px;">備註：${item.notes}</div>` : ''}
+            </div>
+          `;
+        });
+        document.getElementById('recordsList').innerHTML = html || '尚無紀錄';
+      } catch (err) {
+        document.getElementById('recordsList').innerHTML = '資料載入失敗，請確認 API 設定。';
+      }
+    }
+
+    // 提交表單
+    document.getElementById('bpForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('submitBtn');
+      const status = document.getElementById('status');
+      btn.disabled = true; btn.innerText = '儲存中...';
+
+      const payload = {
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        systolic: document.getElementById('systolic').value,
+        diastolic: document.getElementById('diastolic').value,
+        heartRate: document.getElementById('heartRate').value,
+        type: document.querySelector('input[name="type"]:checked').value,
+        notes: document.getElementById('notes').value
+      };
+
+      try {
+        await fetch(API_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload)
+        });
+        status.innerText = '✅ 紀錄成功！';
+        status.style.color = 'green';
+        setTimeout(() => { status.innerText = ''; }, 3000);
+        document.getElementById('bpForm').reset();
+        document.getElementById('date').value = new Date().toLocaleDateString('en-CA');
+        document.getElementById('time').value = new Date().toLocaleTimeString('en-GB', { hour: "2-digit", minute: "2-digit" });
+        loadData();
+      } catch (error) {
+        status.innerText = '❌ 紀錄失敗，請稍後再試。';
+        status.style.color = 'red';
+      } finally {
+        btn.disabled = false; btn.innerText = '儲存紀錄';
+      }
+    });
+
+    loadData();
+
+    // 註冊 Service Worker 支援離線與安裝
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js');
+    }
+  </script>
+</body>
+</html>
