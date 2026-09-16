@@ -41,12 +41,12 @@
 
     .form-group { margin-bottom: 12px; }
     
-    /* 修正 Date/Time 重疊的 Flex 設定 */
-    .flex-row {
-      display: flex; gap: 10px; width: 100%;
-    }
-    .flex-row > div {
-      flex: 1; min-width: 0; /* 避免內容撐破外框 */
+    /* 改用 CSS Grid 強制均分並產生間距，徹底解決手機重疊問題 */
+    .grid-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
     }
     
     input[type="number"], input[type="text"], input[type="date"], input[type="time"] {
@@ -55,7 +55,7 @@
     }
     ::placeholder { color: #A0AAB5; }
 
-    /* BP / HR 同列新排版 */
+    /* BP / HR 同列排版 */
     .bp-hr-row {
       display: flex; align-items: center; gap: 4px; width: 100%;
     }
@@ -71,7 +71,7 @@
     }
     button.primary-btn:hover { background-color: #768B9E; }
     
-    /* 單行清單樣式 */
+    /* 列表清單樣式 */
     .list-header {
       display: grid;
       grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr; 
@@ -93,7 +93,7 @@
       font-size: 11px; color: #666; word-break: break-word; line-height: 1.2;
     }
 
-    /* 日期分隔線與一般分隔線 */
+    /* 日期分隔線 */
     .day-divider { border-top: 2px solid var(--primary-color); margin: 2px 0; }
     .item-divider { border-top: 1px dashed #E2E8F0; }
 
@@ -106,13 +106,13 @@
   
   <div class="container">
     <form id="bpForm">
-      <!-- Date & Time (修正重疊) -->
-      <div class="form-group flex-row">
-        <div><input type="date" id="date" required></div>
-        <div><input type="time" id="time" required></div>
+      <!-- Date & Time 改為 Grid 排版 -->
+      <div class="form-group grid-row-2">
+        <input type="date" id="date" required>
+        <input type="time" id="time" required>
       </div>
       
-      <!-- SBP / DBP mmHg HR bpm (新版面) -->
+      <!-- SBP / DBP mmHg HR bpm -->
       <div class="form-group bp-hr-row">
         <input type="number" id="systolic" placeholder="SBP" inputmode="numeric" pattern="[0-9]*" required>
         <span class="symbol">/</span>
@@ -136,9 +136,9 @@
   <div class="banner" style="margin-top: 5px;">
     <span>Recent Records</span>
     <select id="limitSelect">
-      <option value="7days">Last 7 Days</option>
+      <!-- 統一改為時間維度 -->
+      <option value="7days" selected>Last 7 Days</option>
       <option value="30days">Last 30 Days</option>
-      <option value="20" selected>Last 20</option>
       <option value="all">All</option>
     </select>
   </div>
@@ -148,7 +148,7 @@
   </div>
 
   <script>
-    // 直接綁定您的 API (擴大使用者先擱置)
+    // 綁定您的 API
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
     let allRecords = [];
 
@@ -166,10 +166,8 @@
       } else if (limitVal === '30days') {
         let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
         displayData = allRecords.filter(r => new Date(r.date) >= cutoff);
-      } else if (limitVal === 'all') {
-        displayData = allRecords;
       } else {
-        displayData = allRecords.slice(0, parseInt(limitVal));
+        displayData = allRecords;
       }
 
       let html = `
@@ -191,7 +189,6 @@
           let formattedTime = item.time;
           if (timeParts) formattedTime = `${parseInt(timeParts[1], 10)}:${parseInt(timeParts[2], 10)}`;
 
-          // 判斷是否跨越不同天，加入明顯的日分隔線
           if (lastDate !== null && lastDate !== formattedDate) {
             html += `<div class="day-divider"></div>`;
           } else if (lastDate !== null) {
