@@ -41,12 +41,12 @@
 
     .form-group { margin-bottom: 12px; }
     
-    /* 改用 CSS Grid 強制均分並產生間距，徹底解決手機重疊問題 */
-    .grid-row-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      width: 100%;
+    /* 絕對分開的日期時間排版 */
+    .date-time-row {
+      display: flex; justify-content: space-between; width: 100%;
+    }
+    .date-time-row > div {
+      width: 48%; /* 強制左右各佔 48%，中間留 4% 空白，絕對不會重疊 */
     }
     
     input[type="number"], input[type="text"], input[type="date"], input[type="time"] {
@@ -55,19 +55,20 @@
     }
     ::placeholder { color: #A0AAB5; }
 
-    /* BP / HR 同列排版 */
+    /* BP / HR 排版 */
     .bp-hr-row {
-      display: flex; align-items: center; gap: 4px; width: 100%;
+      display: flex; align-items: center; width: 100%;
     }
     .bp-hr-row input {
       flex: 1; min-width: 0; text-align: center; padding: 12px 4px;
     }
-    .symbol { font-size: 18px; color: #666; font-weight: 300; }
-    .unit { font-size: 13px; color: #666; margin-right: 4px; }
+    .symbol { font-size: 18px; color: #333; font-weight: bold; margin: 0 4px; }
+    .unit { font-size: 13px; color: #333; font-weight: bold; margin: 0 4px; }
 
     button.primary-btn {
       width: 100%; padding: 14px; background-color: var(--primary-color); color: white;
       border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 5px;
+      transition: background-color 0.2s;
     }
     button.primary-btn:hover { background-color: #768B9E; }
     
@@ -76,67 +77,59 @@
       display: grid;
       grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr; 
       gap: 4px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-dark);
-      font-weight: bold; font-size: 12px; color: var(--primary-dark); text-align: center;
+      font-weight: bold; font-size: 13px; color: var(--primary-dark); text-align: center;
     }
-    .list-header div:first-child { text-align: left; }
-    .list-header div:last-child { text-align: left; }
+    .list-header div:first-child, .list-header div:last-child { text-align: left; }
 
     .record-row {
       display: grid; grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr;
-      gap: 4px; align-items: center; padding: 10px 0;
-      font-size: 13px; color: var(--text-main); text-align: center;
+      gap: 4px; align-items: center; 
+      padding: 6px 0; /* 列高改緊密 */
+      font-size: 14px; /* 字體微調放大 */
+      color: var(--text-main); text-align: center;
     }
-    .record-row div:first-child { text-align: left; }
-    .record-row div:last-child { text-align: left; }
+    .record-row div:first-child, .record-row div:last-child { text-align: left; }
     
-    .note-col {
-      font-size: 11px; color: #666; word-break: break-word; line-height: 1.2;
-    }
-
-    /* 日期分隔線 */
-    .day-divider { border-top: 2px solid var(--primary-color); margin: 2px 0; }
+    .note-col { font-size: 12px; color: #666; word-break: break-word; line-height: 1.2; }
+    
+    .day-divider { border-top: 2px solid var(--primary-color); margin: 4px 0; }
     .item-divider { border-top: 1px dashed #E2E8F0; }
 
   </style>
 </head>
 <body>
 
-  <!-- 輸入區橫幅 -->
+  <!-- 輸入區 -->
   <div class="banner">BP Tracker</div>
-  
   <div class="container">
     <form id="bpForm">
-      <!-- Date & Time 改為 Grid 排版 -->
-      <div class="form-group grid-row-2">
-        <input type="date" id="date" required>
-        <input type="time" id="time" required>
+      <div class="form-group date-time-row">
+        <div><input type="date" id="date" required></div>
+        <div><input type="time" id="time" required></div>
       </div>
       
-      <!-- SBP / DBP mmHg HR bpm -->
       <div class="form-group bp-hr-row">
         <input type="number" id="systolic" placeholder="SBP" inputmode="numeric" pattern="[0-9]*" required>
         <span class="symbol">/</span>
         <input type="number" id="diastolic" placeholder="DBP" inputmode="numeric" pattern="[0-9]*" required>
         <span class="unit">mmHg</span>
-        <input type="number" id="heartRate" placeholder="HR" inputmode="numeric" pattern="[0-9]*" required style="margin-left: 2px;">
-        <span class="unit" style="margin-right: 0;">bpm</span>
+        <input type="number" id="heartRate" placeholder="HR" inputmode="numeric" pattern="[0-9]*" required>
+        <span class="unit" style="margin-right:0;">bpm</span>
       </div>
       
-      <!-- Notes -->
       <div class="form-group">
         <input type="text" id="notes" placeholder="Notes (e.g., dizzy, felt unwell...)">
       </div>
       
+      <!-- 移除下方的 status div，避免畫面跳動 -->
       <button type="submit" id="submitBtn" class="primary-btn">Save Record</button>
-      <div id="status" style="text-align: center; margin-top: 10px; font-size: 14px;"></div>
     </form>
   </div>
 
-  <!-- 列表區橫幅與選單 -->
+  <!-- 列表區 -->
   <div class="banner" style="margin-top: 5px;">
     <span>Recent Records</span>
     <select id="limitSelect">
-      <!-- 統一改為時間維度 -->
       <option value="7days" selected>Last 7 Days</option>
       <option value="30days">Last 30 Days</option>
       <option value="all">All</option>
@@ -148,7 +141,7 @@
   </div>
 
   <script>
-    // 綁定您的 API
+    // ⚠️ 記得綁定您的 API
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
     let allRecords = [];
 
@@ -169,6 +162,9 @@
       } else {
         displayData = allRecords;
       }
+
+      // 將資料反轉，變成「舊的在上方，新的在下方」
+      displayData = displayData.reverse();
 
       let html = `
         <div class="list-header">
@@ -222,12 +218,13 @@
       }
     }
 
-    document.getElementById('bpForm').addEventListener('submit', async (e) => {
+    // 0 秒體驗：Optimistic UI 提交機制
+    document.getElementById('bpForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
-      const status = document.getElementById('status');
-      btn.disabled = true; btn.innerText = 'Saving...';
+      btn.disabled = true;
 
+      // 1. 整理輸入資料
       const payload = {
         date: document.getElementById('date').value,
         time: document.getElementById('time').value,
@@ -237,29 +234,34 @@
         notes: document.getElementById('notes').value
       };
 
-      try {
-        await fetch(API_URL, {
-          method: 'POST',
-          redirect: 'follow',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        });
-        status.innerText = '✅ Saved!';
-        status.style.color = 'green';
-        setTimeout(() => { status.innerText = ''; }, 3000);
-        
-        document.getElementById('bpForm').reset();
-        let curr = new Date();
-        document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
-        document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
-        
-        loadData();
-      } catch (error) {
-        status.innerText = '❌ Failed.';
-        status.style.color = 'red';
-      } finally {
-        btn.disabled = false; btn.innerText = 'Save Record';
-      }
+      // 2. 瞬間加到本地紀錄中並重繪列表 (使用者完全不需等待)
+      allRecords.unshift(payload); 
+      renderList();
+
+      // 3. 瞬間清空表單並恢復當前時間
+      document.getElementById('bpForm').reset();
+      let curr = new Date();
+      document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
+      document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
+
+      // 4. 按鈕變色提示成功
+      const originalColor = btn.style.backgroundColor;
+      btn.innerText = '✅ Saved!';
+      btn.style.backgroundColor = '#4CAF50'; // 綠色
+      
+      setTimeout(() => { 
+        btn.innerText = 'Save Record';
+        btn.style.backgroundColor = originalColor;
+        btn.disabled = false;
+      }, 2000);
+
+      // 5. 在背景默默發送給 Google API (不卡住畫面)
+      fetch(API_URL, {
+        method: 'POST',
+        redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      }).catch(err => console.error('Background save failed:', err));
     });
 
     loadData();
