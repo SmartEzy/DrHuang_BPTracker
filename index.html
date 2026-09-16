@@ -90,6 +90,7 @@
       background-color: #FFFFFF; color: var(--primary-dark);
     }
 
+    /* 標題列凍結 (Sticky) 修復：加入 iOS 專屬語法 */
     .list-header {
       display: grid;
       grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr; 
@@ -97,11 +98,14 @@
       padding: 10px 0 8px 0;
       border-bottom: 2px solid var(--primary-dark);
       font-weight: bold; font-size: 13px; color: var(--primary-dark); text-align: center;
+      
+      /* 關鍵修復：必須同時包含這兩行，蘋果手機才會生效 */
+      position: -webkit-sticky; 
       position: sticky;
+      
       top: 0;
       background-color: var(--bg-color); 
       z-index: 10;
-      margin-top: -10px;
     }
     .list-header div:first-child, .list-header div:last-child { text-align: left; }
     .list-header div:nth-child(4) { text-align: right; padding-right: 8px; }
@@ -248,7 +252,6 @@
           let sysNum = parseInt(item.systolic, 10);
           let sysHtml = (sysNum >= 130) ? `<span class="high-bp">${item.systolic}</span>` : item.systolic;
 
-          // 判斷是否為同一天，決定要顯示完整日期還是留白
           let displayDateText = (lastDate !== formattedDate) ? formattedDate : '';
 
           if (lastDate !== null && lastDate !== formattedDate) {
