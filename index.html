@@ -35,7 +35,6 @@
       border: none; padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: bold;
     }
 
-    /* 重整按鈕樣式 */
     .refresh-btn {
       background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center;
     }
@@ -46,12 +45,11 @@
 
     .form-group { margin-bottom: 12px; }
     
-    /* 終極解決 Date/Time 重疊的排版語法 */
     .date-time-fix {
       display: flex; width: 100%;
     }
     .date-time-fix > div:first-child {
-      flex: 1; min-width: 0; margin-right: 12px; /* 強制留出 12px 空白 */
+      flex: 1; min-width: 0; margin-right: 12px; 
     }
     .date-time-fix > div:last-child {
       flex: 1; min-width: 0;
@@ -63,7 +61,6 @@
     }
     ::placeholder { color: #A0AAB5; }
 
-    /* BP / HR 排版 */
     .bp-hr-row {
       display: flex; align-items: center; width: 100%;
     }
@@ -80,21 +77,29 @@
     }
     button.primary-btn:hover { background-color: #768B9E; }
     
-    /* 列表清單樣式 */
+    /* 標題列凍結 (Sticky) 設計 */
     .list-header {
       display: grid;
       grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr; 
-      gap: 4px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-dark);
+      gap: 4px; 
+      padding: 10px 0 8px 0; /* 增加上方 padding */
+      border-bottom: 2px solid var(--primary-dark);
       font-weight: bold; font-size: 13px; color: var(--primary-dark); text-align: center;
+      
+      /* 凍結屬性 */
+      position: sticky;
+      top: 0;
+      background-color: var(--bg-color); /* 設定底色避免資料透過去 */
+      z-index: 10; /* 確保浮在資料上方 */
+      margin-top: -10px; /* 修正視覺偏移 */
     }
     .list-header div:first-child, .list-header div:last-child { text-align: left; }
 
-    /* 列高縮減，畫面更緊密 */
     .record-row {
       display: grid; grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr;
       gap: 4px; align-items: center; 
-      padding: 3px 0; /* 大幅縮小上下間距 */
-      font-size: 13px; /* 字體稍微縮小以配合緊湊度 */
+      padding: 3px 0; 
+      font-size: 13px; 
       color: var(--text-main); text-align: center;
     }
     .record-row div:first-child, .record-row div:last-child { text-align: left; }
@@ -108,7 +113,7 @@
 </head>
 <body>
 
-  <!-- 輸入區橫幅 (加入重整按鈕) -->
+  <!-- 輸入區橫幅 -->
   <div class="banner">
     <span>BP Tracker</span>
     <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
@@ -116,7 +121,6 @@
   
   <div class="container">
     <form id="bpForm">
-      <!-- 修正重疊問題的 Date & Time -->
       <div class="form-group date-time-fix">
         <div><input type="date" id="date" required></div>
         <div><input type="time" id="time" required></div>
@@ -144,13 +148,12 @@
     <span>Recent Records</span>
     <select id="limitSelect">
       <option value="7days">Last 7 Days</option>
-      <!-- 預設改為 30 天 -->
       <option value="30days" selected>Last 30 Days</option>
       <option value="all">All</option>
     </select>
   </div>
   
-  <div class="container" style="padding-top: 15px;">
+  <div class="container" style="padding-top: 10px;">
     <div id="recordsList">Loading...</div>
   </div>
 
@@ -163,9 +166,17 @@
     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
     function renderList() {
+      // 1. 強制將所有紀錄依照「真實時間」從新到舊排序
+      allRecords.sort((a, b) => {
+        let dtA = new Date(`${a.date.replace(/-/g, '/')} ${a.time}`);
+        let dtB = new Date(`${b.date.replace(/-/g, '/')} ${b.time}`);
+        return dtB - dtA; // 降序 (最新的在最上面)
+      });
+
       const limitVal = document.getElementById('limitSelect').value;
       let displayData = [];
 
+      // 2. 進行日期區間過濾
       if (limitVal === '7days') {
         let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
         displayData = allRecords.filter(r => new Date(r.date) >= cutoff);
@@ -175,8 +186,6 @@
       } else {
         displayData = allRecords;
       }
-
-      displayData = displayData.reverse();
 
       let html = `
         <div class="list-header">
@@ -193,9 +202,12 @@
           let dateObj = new Date(item.date);
           let formattedDate = isNaN(dateObj) ? item.date.replace(/-/g, '/') : `${dateObj.getFullYear()}/${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
           
+          // 修復時間 bug：強制補齊 2 位數的分鐘 (padStart)
           let timeParts = item.time.match(/(\d+):(\d+)/);
           let formattedTime = item.time;
-          if (timeParts) formattedTime = `${parseInt(timeParts[1], 10)}:${parseInt(timeParts[2], 10)}`;
+          if (timeParts) {
+            formattedTime = `${parseInt(timeParts[1], 10)}:${timeParts[2].padStart(2, '0')}`;
+          }
 
           if (lastDate !== null && lastDate !== formattedDate) {
             html += `<div class="day-divider"></div>`;
@@ -244,7 +256,8 @@
         notes: document.getElementById('notes').value
       };
 
-      allRecords.unshift(payload); 
+      // 瞬間加入並重繪
+      allRecords.push(payload); 
       renderList();
 
       document.getElementById('bpForm').reset();
