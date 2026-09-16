@@ -104,6 +104,9 @@
       margin-top: -10px;
     }
     .list-header div:first-child, .list-header div:last-child { text-align: left; }
+    
+    /* 讓 HR 標題也靠右對齊，並保留安全邊距 */
+    .list-header div:nth-child(4) { text-align: right; padding-right: 8px; }
 
     .record-row {
       display: grid; grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr;
@@ -115,7 +118,9 @@
     }
     .record-row div:first-child, .record-row div:last-child { text-align: left; }
     
-    /* 專門對齊 BP 斜線的微型網格 */
+    /* 讓 HR 數據靠右對齊，完美對齊個位數 */
+    .record-row div:nth-child(4) { text-align: right; padding-right: 8px; }
+    
     .bp-col-align {
       display: grid;
       grid-template-columns: 1fr auto 1fr;
@@ -123,7 +128,7 @@
       align-items: center;
     }
     .bp-sys { text-align: right; }
-    .bp-slash { color: #888; font-weight: normal; } /* 斜線顏色微調變淡 */
+    .bp-slash { color: #888; font-weight: normal; } 
     .bp-dia { text-align: left; }
 
     .note-col { font-size: 12px; color: #666; word-break: break-word; line-height: 1.2; font-variant-numeric: normal; }
@@ -137,7 +142,6 @@
 </head>
 <body>
 
-  <!-- 輸入區 -->
   <div class="banner">
     <span>BP Tracker</span>
     <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
@@ -167,7 +171,6 @@
     </form>
   </div>
 
-  <!-- 列表區 -->
   <div class="banner" style="margin-top: 5px;">
     <span>Records</span>
     <div class="capsule-group">
