@@ -12,7 +12,7 @@
       --bg-color: #F4F6F8;
       --text-main: #333333;
       --border-color: #CED4DA;
-      --danger-color: #D32F2F; /* 紅色警示 */
+      --danger-color: #D32F2F; 
     }
     body {
       font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -111,13 +111,12 @@
       padding: 3px 0; 
       font-size: 13px; 
       color: var(--text-main); text-align: center;
-      font-variant-numeric: tabular-nums; /* 確保數字等寬，讓冒號完美對齊 */
+      font-variant-numeric: tabular-nums; 
     }
     .record-row div:first-child, .record-row div:last-child { text-align: left; }
     
     .note-col { font-size: 12px; color: #666; word-break: break-word; line-height: 1.2; font-variant-numeric: normal; }
     
-    /* 高血壓警示樣式 */
     .high-bp { color: var(--danger-color); font-weight: bold; }
     
     .day-divider { border-top: 2px solid var(--primary-color); margin: 3px 0; }
@@ -127,7 +126,7 @@
 </head>
 <body>
 
-  <!-- 輸入區橫幅 -->
+  <!-- 輸入區 -->
   <div class="banner">
     <span>BP Tracker</span>
     <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
@@ -157,7 +156,7 @@
     </form>
   </div>
 
-  <!-- 列表區橫幅與膠囊按鈕 -->
+  <!-- 列表區 -->
   <div class="banner" style="margin-top: 5px;">
     <span>Records</span>
     <div class="capsule-group">
@@ -219,16 +218,24 @@
 
         displayData.forEach(item => {
           let dateObj = new Date(item.date);
-          let formattedDate = isNaN(dateObj) ? item.date.replace(/-/g, '/') : `${dateObj.getFullYear()}/${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
+          
+          // 強制將月份與日期補齊兩位數 (padStart)
+          let formattedDate = item.date;
+          if (!isNaN(dateObj)) {
+            let y = dateObj.getFullYear();
+            let m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            let d = String(dateObj.getDate()).padStart(2, '0');
+            formattedDate = `${y}/${m}/${d}`;
+          } else {
+            formattedDate = item.date.replace(/-/g, '/');
+          }
           
           let timeParts = item.time.match(/(\d+):(\d+)/);
           let formattedTime = item.time;
           if (timeParts) {
-            // 時、分皆強制補齊兩位數，例如 9:00 變成 09:00，讓冒號完美對齊
             formattedTime = `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}`;
           }
 
-          // 判斷 SBP 是否 >= 130，加上紅色警告 class
           let sysNum = parseInt(item.systolic, 10);
           let sysHtml = (sysNum >= 130) ? `<span class="high-bp">${item.systolic}</span>` : item.systolic;
 
