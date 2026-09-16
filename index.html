@@ -30,11 +30,6 @@
       align-items: center;
     }
     
-    .banner select {
-      background: #FFFFFF; color: var(--primary-dark);
-      border: none; padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: bold;
-    }
-
     .refresh-btn {
       background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center;
     }
@@ -45,17 +40,27 @@
 
     .form-group { margin-bottom: 12px; }
     
-    .date-time-fix {
-      display: flex; width: 100%;
+    /* 終極修正：按照內容長度不對稱切割，並縮減內部留白 */
+    .date-time-layout {
+      display: flex; justify-content: space-between; width: 100%;
     }
-    .date-time-fix > div:first-child {
-      flex: 1; min-width: 0; margin-right: 12px; 
+    .date-time-layout .date-box {
+      width: 56%; /* 日期中文字長，給較大空間 */
     }
-    .date-time-fix > div:last-child {
-      flex: 1; min-width: 0;
+    .date-time-layout .time-box {
+      width: 41%; /* 時間數字短，空間較小 */
+    }
+    .date-time-layout input {
+      width: 100%;
+      padding: 12px 2px; /* 縮減左右 padding，避免撐破 */
+      font-size: 16px; 
+      text-align: center; /* 置中顯示，避免字頭字尾被切到 */
+      box-sizing: border-box;
+      border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); background: #FFFFFF;
+      -webkit-appearance: none; /* 移除 iOS 預設多餘樣式 */
     }
     
-    input[type="number"], input[type="text"], input[type="date"], input[type="time"] {
+    input[type="number"], input[type="text"] {
       width: 100%; padding: 12px 8px; border: 1px solid var(--border-color); border-radius: 6px;
       box-sizing: border-box; font-size: 16px; color: var(--text-main); background: #FFFFFF;
     }
@@ -77,21 +82,32 @@
     }
     button.primary-btn:hover { background-color: #768B9E; }
     
+    /* 膠囊按鈕設計 */
+    .capsule-group {
+      display: flex; background-color: #343A40; border-radius: 20px; padding: 3px;
+    }
+    .capsule-btn {
+      background: transparent; color: #A0AAB5; border: none; padding: 6px 12px;
+      font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 18px;
+      transition: all 0.2s;
+    }
+    .capsule-btn.active {
+      background-color: #FFFFFF; color: var(--primary-dark);
+    }
+
     /* 標題列凍結 (Sticky) 設計 */
     .list-header {
       display: grid;
       grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr; 
       gap: 4px; 
-      padding: 10px 0 8px 0; /* 增加上方 padding */
+      padding: 10px 0 8px 0;
       border-bottom: 2px solid var(--primary-dark);
       font-weight: bold; font-size: 13px; color: var(--primary-dark); text-align: center;
-      
-      /* 凍結屬性 */
       position: sticky;
       top: 0;
-      background-color: var(--bg-color); /* 設定底色避免資料透過去 */
-      z-index: 10; /* 確保浮在資料上方 */
-      margin-top: -10px; /* 修正視覺偏移 */
+      background-color: var(--bg-color); 
+      z-index: 10;
+      margin-top: -10px;
     }
     .list-header div:first-child, .list-header div:last-child { text-align: left; }
 
@@ -121,9 +137,10 @@
   
   <div class="container">
     <form id="bpForm">
-      <div class="form-group date-time-fix">
-        <div><input type="date" id="date" required></div>
-        <div><input type="time" id="time" required></div>
+      <!-- 重新設計的 Date & Time -->
+      <div class="form-group date-time-layout">
+        <div class="date-box"><input type="date" id="date" required></div>
+        <div class="time-box"><input type="time" id="time" required></div>
       </div>
       
       <div class="form-group bp-hr-row">
@@ -143,14 +160,14 @@
     </form>
   </div>
 
-  <!-- 列表區橫幅與選單 -->
+  <!-- 列表區橫幅與膠囊按鈕 -->
   <div class="banner" style="margin-top: 5px;">
-    <span>Recent Records</span>
-    <select id="limitSelect">
-      <option value="7days">Last 7 Days</option>
-      <option value="30days" selected>Last 30 Days</option>
-      <option value="all">All</option>
-    </select>
+    <span>Records</span>
+    <div class="capsule-group">
+      <button class="capsule-btn" data-val="7days">7 days</button>
+      <button class="capsule-btn active" data-val="30days">30 days</button>
+      <button class="capsule-btn" data-val="all">All</button>
+    </div>
   </div>
   
   <div class="container" style="padding-top: 10px;">
@@ -160,32 +177,43 @@
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
     let allRecords = [];
+    let currentFilter = '30days'; // 預設 30 天
 
     const now = new Date();
     document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
+    // 膠囊按鈕點擊事件
+    document.querySelectorAll('.capsule-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        // 移除所有按鈕的 active 狀態
+        document.querySelectorAll('.capsule-btn').forEach(b => b.classList.remove('active'));
+        // 為點擊的按鈕加上 active
+        e.target.classList.add('active');
+        // 更新過濾條件並重新渲染
+        currentFilter = e.target.getAttribute('data-val');
+        renderList();
+      });
+    });
+
     function renderList() {
-      // 1. 強制將所有紀錄依照「真實時間」從新到舊排序
-      allRecords.sort((a, b) => {
+      let displayData = [...allRecords];
+
+      // 1. 日期區間過濾
+      if (currentFilter === '7days') {
+        let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
+        displayData = displayData.filter(r => new Date(r.date.replace(/-/g, '/')) >= cutoff);
+      } else if (currentFilter === '30days') {
+        let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
+        displayData = displayData.filter(r => new Date(r.date.replace(/-/g, '/')) >= cutoff);
+      }
+
+      // 2. 排序：時間序反轉 (dtA - dtB)，舊的在上方，新的在下方
+      displayData.sort((a, b) => {
         let dtA = new Date(`${a.date.replace(/-/g, '/')} ${a.time}`);
         let dtB = new Date(`${b.date.replace(/-/g, '/')} ${b.time}`);
-        return dtB - dtA; // 降序 (最新的在最上面)
+        return dtA - dtB; 
       });
-
-      const limitVal = document.getElementById('limitSelect').value;
-      let displayData = [];
-
-      // 2. 進行日期區間過濾
-      if (limitVal === '7days') {
-        let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
-        displayData = allRecords.filter(r => new Date(r.date) >= cutoff);
-      } else if (limitVal === '30days') {
-        let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
-        displayData = allRecords.filter(r => new Date(r.date) >= cutoff);
-      } else {
-        displayData = allRecords;
-      }
 
       let html = `
         <div class="list-header">
@@ -202,7 +230,6 @@
           let dateObj = new Date(item.date);
           let formattedDate = isNaN(dateObj) ? item.date.replace(/-/g, '/') : `${dateObj.getFullYear()}/${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
           
-          // 修復時間 bug：強制補齊 2 位數的分鐘 (padStart)
           let timeParts = item.time.match(/(\d+):(\d+)/);
           let formattedTime = item.time;
           if (timeParts) {
@@ -230,8 +257,6 @@
       document.getElementById('recordsList').innerHTML = html;
     }
 
-    document.getElementById('limitSelect').addEventListener('change', renderList);
-
     async function loadData() {
       try {
         let response = await fetch(API_URL);
@@ -256,7 +281,6 @@
         notes: document.getElementById('notes').value
       };
 
-      // 瞬間加入並重繪
       allRecords.push(payload); 
       renderList();
 
