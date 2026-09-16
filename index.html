@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,68 +8,60 @@
   <style>
     :root {
       --primary-color: #8FA3B8;
-      --primary-dark: #495057; /* 改為深灰色 */
+      --primary-dark: #495057; /* 深灰色 */
       --bg-color: #F4F6F8;
       --text-main: #333333;
       --border-color: #CED4DA;
-      --special-color: #A39193;
     }
+    /* 移除 body 的 padding 以實現滿版橫幅 */
     body {
       font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-color); color: var(--text-main);
-      margin: 0; padding: 15px; 
+      margin: 0; padding: 0; 
     }
     
-    /* 移除卡片，改用單純的 wrapper 限制最大寬度，並讓寬度更飽滿 */
-    .wrapper {
-      width: 100%; max-width: 500px; margin: 0 auto 30px auto;
-    }
-    
-    /* 深灰底標題樣式 */
-    .section-header {
+    /* 滿版橫幅設計 */
+    .banner {
       background-color: var(--primary-dark);
       color: white;
-      padding: 10px 15px;
-      font-size: 16px;
+      padding: 16px 20px;
+      font-size: 18px;
       font-weight: bold;
-      border-radius: 6px;
-      margin-bottom: 15px;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .section-header select {
+    
+    .banner select {
       background: #FFFFFF; color: var(--primary-dark);
-      border: none; padding: 2px 6px; border-radius: 4px; font-size: 13px;
+      border: none; padding: 4px 8px; border-radius: 4px; font-size: 13px; font-weight: bold;
     }
 
-    .form-group { margin-bottom: 15px; }
-    #notesGroup { display: none; }
-    
-    label { display: block; margin-bottom: 5px; font-weight: bold; font-size: 14px; color: var(--primary-dark); }
+    /* 內容容器 */
+    .container {
+      width: 100%; max-width: 500px; margin: 0 auto; padding: 20px; box-sizing: border-box;
+    }
+
+    .form-group { margin-bottom: 12px; }
     
     input[type="number"], input[type="text"], input[type="date"], input[type="time"] {
-      width: 100%; padding: 10px 6px; border: 1px solid var(--border-color); border-radius: 6px;
-      box-sizing: border-box; font-size: 15px; color: var(--text-main); background: #FFFFFF;
+      width: 100%; padding: 12px 10px; border: 1px solid var(--border-color); border-radius: 6px;
+      box-sizing: border-box; font-size: 16px; color: var(--text-main); background: #FFFFFF;
     }
-
-    /* Type Radio Buttons 的新排版 */
-    .type-radios {
-      display: flex; flex-direction: column; justify-content: center; gap: 8px;
-      margin-top: 22px; /* 對齊輸入框 */
-    }
-    .type-radios label { font-weight: normal; font-size: 14px; display: flex; align-items: center; gap: 4px; margin:0; }
     
+    /* 調整 Placeholder 顏色 */
+    ::placeholder { color: #A0AAB5; }
+
     button {
-      width: 100%; padding: 12px; background-color: var(--primary-color); color: white;
-      border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;
+      width: 100%; padding: 14px; background-color: var(--primary-color); color: white;
+      border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 5px;
     }
     button:hover { background-color: #768B9E; }
     
-    /* 列表分欄樣式 */
+    /* 列表分欄樣式 (改為三欄: DateTime, BP, HR) */
     .list-header {
       display: grid;
-      grid-template-columns: 2fr 1.5fr 1fr 1.5fr; 
+      grid-template-columns: 2fr 1.5fr 1fr; 
       gap: 5px;
       padding-bottom: 10px;
       border-bottom: 2px solid var(--border-color);
@@ -84,7 +76,7 @@
     
     .record-row {
       display: grid;
-      grid-template-columns: 2fr 1.5fr 1fr 1.5fr;
+      grid-template-columns: 2fr 1.5fr 1fr;
       gap: 5px;
       align-items: center;
       font-size: 15px; color: var(--text-main);
@@ -92,60 +84,48 @@
     }
     
     .record-row .dt-col { text-align: left; font-size: 13px; line-height: 1.4; }
-    .dt-col span { color: #666; }
+    .dt-col span { color: #666; font-size: 12px; }
     
-    .record-row .type-col {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    /* 備註樣式獨立成行 */
+    .record-note {
+      font-size: 12px; color: #777; margin-top: 6px; text-align: left;
+      background-color: #E9ECEF; padding: 6px 10px; border-radius: 4px;
     }
-    .type-col .note-text {
-      font-size: 11px; color: #888; margin-top: 4px; text-align: center; line-height: 1.1; word-break: break-word;
-    }
-
-    .circle-badge {
-      display: inline-flex; justify-content: center; align-items: center;
-      width: 20px; height: 20px; border-radius: 50%;
-      font-size: 11px; font-weight: bold; color: white;
-    }
-    .badge-regular { background-color: var(--primary-color); }
-    .badge-special { background-color: var(--special-color); }
   </style>
 </head>
 <body>
 
-  <div class="wrapper">
-    <div class="section-header">BP Tracker</div>
+  <!-- 輸入區滿版橫幅 -->
+  <div class="banner">BP Tracker</div>
+  
+  <div class="container">
     <form id="bpForm">
-      <!-- Date, Time, 還有 Type 放同一列 -->
-      <div class="form-group" style="display:flex; gap:8px;">
-        <div style="flex: 1.8;">
-          <label>Date</label>
+      <!-- Date & Time 同列 -->
+      <div class="form-group" style="display:flex; gap:10px;">
+        <div style="flex: 1;">
           <input type="date" id="date" required>
         </div>
-        <div style="flex: 1.5;">
-          <label>Time</label>
+        <div style="flex: 1;">
           <input type="time" id="time" required>
         </div>
-        <!-- 上下排列的 Radio Buttons -->
-        <div class="type-radios" style="flex: 1;">
-          <label><input type="radio" name="type" value="Regular" checked> Reg</label>
-          <label><input type="radio" name="type" value="Special"> Spec</label>
+      </div>
+      
+      <!-- SBP, DBP, HR 同列 -->
+      <div class="form-group" style="display:flex; gap:10px;">
+        <div style="flex:1;">
+          <input type="number" id="systolic" placeholder="SBP" inputmode="numeric" pattern="[0-9]*" required>
+        </div>
+        <div style="flex:1;">
+          <input type="number" id="diastolic" placeholder="DBP" inputmode="numeric" pattern="[0-9]*" required>
+        </div>
+        <div style="flex:1;">
+          <input type="number" id="heartRate" placeholder="HR" inputmode="numeric" pattern="[0-9]*" required>
         </div>
       </div>
       
-      <div class="form-group" id="notesGroup">
-        <label>Notes</label><input type="text" id="notes" placeholder="e.g., dizzy, after exercise...">
-      </div>
-      
-      <div class="form-group" style="display:flex; gap:8px;">
-        <div style="flex:1;">
-          <label>SBP</label><input type="number" id="systolic" inputmode="numeric" pattern="[0-9]*" required>
-        </div>
-        <div style="flex:1;">
-          <label>DBP</label><input type="number" id="diastolic" inputmode="numeric" pattern="[0-9]*" required>
-        </div>
-        <div style="flex:1;">
-          <label>HR</label><input type="number" id="heartRate" inputmode="numeric" pattern="[0-9]*" required>
-        </div>
+      <!-- Notes 置底 -->
+      <div class="form-group">
+        <input type="text" id="notes" placeholder="Notes (e.g., dizzy, felt unwell...)">
       </div>
       
       <button type="submit" id="submitBtn">Save Record</button>
@@ -153,55 +133,53 @@
     </form>
   </div>
 
-  <div class="wrapper">
-    <div class="section-header">
-      <span>Recent Records</span>
-      <!-- 新增：筆數切換選單 -->
-      <select id="limitSelect">
-        <option value="5">Last 5</option>
-        <option value="10">Last 10</option>
-        <option value="20" selected>Last 20</option>
-        <option value="all">All</option>
-      </select>
-    </div>
+  <!-- 列表區滿版橫幅與選單 -->
+  <div class="banner" style="margin-top: 10px;">
+    <span>Recent Records</span>
+    <select id="limitSelect">
+      <option value="7days">Last 7 Days</option>
+      <option value="30days">Last 30 Days</option>
+      <option value="20" selected>Last 20</option>
+      <option value="all">All</option>
+    </select>
+  </div>
+  
+  <div class="container" style="padding-top: 10px;">
     <div id="recordsList">Loading...</div>
   </div>
 
   <script>
+    // ⚠️ 已經替換為您的 API URL
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
     
-    // 儲存從後端抓下來的所有資料
     let allRecords = [];
 
-    // 初始化時間 (轉換為 YYYY-MM-DD 與 24H 格式以供 input 使用)
+    // 初始化當下時間
     const now = new Date();
     document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-    // 監聽 Radio Button
-    const typeRadios = document.querySelectorAll('input[name="type"]');
-    const notesGroup = document.getElementById('notesGroup');
-    const notesInput = document.getElementById('notes');
-
-    typeRadios.forEach(radio => {
-      radio.addEventListener('change', (e) => {
-        if (e.target.value === 'Special') {
-          notesGroup.style.display = 'block';
-        } else {
-          notesGroup.style.display = 'none';
-          notesInput.value = '';
-        }
-      });
-    });
-
-    // 渲染列表的函式 (負責處理日期格式轉換與筆數過濾)
+    // 渲染列表 (包含時間與數量篩選)
     function renderList() {
       const limitVal = document.getElementById('limitSelect').value;
-      const displayData = limitVal === 'all' ? allRecords : allRecords.slice(0, parseInt(limitVal));
+      let displayData = [];
+
+      // 處理篩選邏輯
+      if (limitVal === '7days') {
+        let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
+        displayData = allRecords.filter(r => new Date(r.date) >= cutoff);
+      } else if (limitVal === '30days') {
+        let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
+        displayData = allRecords.filter(r => new Date(r.date) >= cutoff);
+      } else if (limitVal === 'all') {
+        displayData = allRecords;
+      } else {
+        displayData = allRecords.slice(0, parseInt(limitVal));
+      }
 
       let html = `
         <div class="list-header">
-          <div>Date Time</div><div>BP</div><div>HR</div><div>Type</div>
+          <div>Date Time</div><div>BP</div><div>HR</div>
         </div>
       `;
 
@@ -209,17 +187,16 @@
         html += `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
       } else {
         displayData.forEach(item => {
-          let isRegular = (item.type === 'Regular' || item.type === '規律測量');
-          let badgeClass = isRegular ? 'badge-regular' : 'badge-special';
-          let badgeLetter = isRegular ? 'R' : 'S';
-
-          // 強制轉換日期格式為 YYYY/M/D (不補零)
+          // 強制格式轉換為 YYYY/M/D (去除 0)
           let dateObj = new Date(item.date);
           let formattedDate = isNaN(dateObj) ? item.date.replace(/-/g, '/') : `${dateObj.getFullYear()}/${dateObj.getMonth() + 1}/${dateObj.getDate()}`;
           
-          // 強制擷取時間為 HH:MM (去掉秒數與 AM/PM，統一 24H)
+          // 強制擷取時間並去除小時與分鐘前導 0 (例 08:05 -> 8:5)
           let timeParts = item.time.match(/(\d+):(\d+)/);
-          let formattedTime = timeParts ? `${timeParts[1]}:${timeParts[2]}` : item.time;
+          let formattedTime = item.time;
+          if (timeParts) {
+             formattedTime = `${parseInt(timeParts[1], 10)}:${parseInt(timeParts[2], 10)}`;
+          }
 
           html += `
             <div class="record-item">
@@ -227,11 +204,8 @@
                 <div class="dt-col">${formattedDate}<br><span>${formattedTime}</span></div>
                 <div>${item.systolic}/${item.diastolic}</div>
                 <div>${item.heartRate}</div>
-                <div class="type-col">
-                  <span class="circle-badge ${badgeClass}">${badgeLetter}</span>
-                  ${item.notes ? `<span class="note-text">${item.notes}</span>` : ''}
-                </div>
               </div>
+              ${item.notes ? `<div class="record-note">${item.notes}</div>` : ''}
             </div>
           `;
         });
@@ -239,17 +213,16 @@
       document.getElementById('recordsList').innerHTML = html;
     }
 
-    // 監聽下拉選單變更，即時重新渲染
     document.getElementById('limitSelect').addEventListener('change', renderList);
 
-    // 從 API 獲取資料
+    // 獲取資料
     async function loadData() {
       try {
         let response = await fetch(API_URL);
         allRecords = await response.json();
         renderList();
       } catch (err) {
-        document.getElementById('recordsList').innerHTML = 'Failed to load data.';
+        document.getElementById('recordsList').innerHTML = '<div style="text-align:center; color:red; padding:20px;">Failed to load data. Please ensure you deployed a "New Version" in Apps Script.</div>';
       }
     }
 
@@ -266,7 +239,6 @@
         systolic: document.getElementById('systolic').value,
         diastolic: document.getElementById('diastolic').value,
         heartRate: document.getElementById('heartRate').value,
-        type: document.querySelector('input[name="type"]:checked').value,
         notes: document.getElementById('notes').value
       };
 
@@ -285,9 +257,7 @@
         let curr = new Date();
         document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
         document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
-        notesGroup.style.display = 'none'; 
         
-        // 重新讀取並刷新列表
         loadData();
       } catch (error) {
         status.innerText = '❌ Failed.';
