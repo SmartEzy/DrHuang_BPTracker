@@ -12,6 +12,7 @@
       --bg-color: #F4F6F8;
       --text-main: #333333;
       --border-color: #CED4DA;
+      --danger-color: #D32F2F; /* 紅色警示 */
     }
     body {
       font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -40,24 +41,19 @@
 
     .form-group { margin-bottom: 12px; }
     
-    /* 終極修正：按照內容長度不對稱切割，並縮減內部留白 */
     .date-time-layout {
       display: flex; justify-content: space-between; width: 100%;
     }
-    .date-time-layout .date-box {
-      width: 56%; /* 日期中文字長，給較大空間 */
-    }
-    .date-time-layout .time-box {
-      width: 41%; /* 時間數字短，空間較小 */
-    }
+    .date-time-layout .date-box { width: 56%; }
+    .date-time-layout .time-box { width: 41%; }
     .date-time-layout input {
       width: 100%;
-      padding: 12px 2px; /* 縮減左右 padding，避免撐破 */
+      padding: 12px 2px;
       font-size: 16px; 
-      text-align: center; /* 置中顯示，避免字頭字尾被切到 */
+      text-align: center;
       box-sizing: border-box;
       border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); background: #FFFFFF;
-      -webkit-appearance: none; /* 移除 iOS 預設多餘樣式 */
+      -webkit-appearance: none;
     }
     
     input[type="number"], input[type="text"] {
@@ -82,7 +78,6 @@
     }
     button.primary-btn:hover { background-color: #768B9E; }
     
-    /* 膠囊按鈕設計 */
     .capsule-group {
       display: flex; background-color: #343A40; border-radius: 20px; padding: 3px;
     }
@@ -95,7 +90,6 @@
       background-color: #FFFFFF; color: var(--primary-dark);
     }
 
-    /* 標題列凍結 (Sticky) 設計 */
     .list-header {
       display: grid;
       grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr; 
@@ -117,10 +111,14 @@
       padding: 3px 0; 
       font-size: 13px; 
       color: var(--text-main); text-align: center;
+      font-variant-numeric: tabular-nums; /* 確保數字等寬，讓冒號完美對齊 */
     }
     .record-row div:first-child, .record-row div:last-child { text-align: left; }
     
-    .note-col { font-size: 12px; color: #666; word-break: break-word; line-height: 1.2; }
+    .note-col { font-size: 12px; color: #666; word-break: break-word; line-height: 1.2; font-variant-numeric: normal; }
+    
+    /* 高血壓警示樣式 */
+    .high-bp { color: var(--danger-color); font-weight: bold; }
     
     .day-divider { border-top: 2px solid var(--primary-color); margin: 3px 0; }
     .item-divider { border-top: 1px dashed #E2E8F0; }
@@ -137,7 +135,6 @@
   
   <div class="container">
     <form id="bpForm">
-      <!-- 重新設計的 Date & Time -->
       <div class="form-group date-time-layout">
         <div class="date-box"><input type="date" id="date" required></div>
         <div class="time-box"><input type="time" id="time" required></div>
@@ -177,20 +174,16 @@
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
     let allRecords = [];
-    let currentFilter = '30days'; // 預設 30 天
+    let currentFilter = '30days'; 
 
     const now = new Date();
     document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-    // 膠囊按鈕點擊事件
     document.querySelectorAll('.capsule-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
-        // 移除所有按鈕的 active 狀態
         document.querySelectorAll('.capsule-btn').forEach(b => b.classList.remove('active'));
-        // 為點擊的按鈕加上 active
         e.target.classList.add('active');
-        // 更新過濾條件並重新渲染
         currentFilter = e.target.getAttribute('data-val');
         renderList();
       });
@@ -199,7 +192,6 @@
     function renderList() {
       let displayData = [...allRecords];
 
-      // 1. 日期區間過濾
       if (currentFilter === '7days') {
         let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
         displayData = displayData.filter(r => new Date(r.date.replace(/-/g, '/')) >= cutoff);
@@ -208,7 +200,6 @@
         displayData = displayData.filter(r => new Date(r.date.replace(/-/g, '/')) >= cutoff);
       }
 
-      // 2. 排序：時間序反轉 (dtA - dtB)，舊的在上方，新的在下方
       displayData.sort((a, b) => {
         let dtA = new Date(`${a.date.replace(/-/g, '/')} ${a.time}`);
         let dtB = new Date(`${b.date.replace(/-/g, '/')} ${b.time}`);
@@ -233,8 +224,13 @@
           let timeParts = item.time.match(/(\d+):(\d+)/);
           let formattedTime = item.time;
           if (timeParts) {
-            formattedTime = `${parseInt(timeParts[1], 10)}:${timeParts[2].padStart(2, '0')}`;
+            // 時、分皆強制補齊兩位數，例如 9:00 變成 09:00，讓冒號完美對齊
+            formattedTime = `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}`;
           }
+
+          // 判斷 SBP 是否 >= 130，加上紅色警告 class
+          let sysNum = parseInt(item.systolic, 10);
+          let sysHtml = (sysNum >= 130) ? `<span class="high-bp">${item.systolic}</span>` : item.systolic;
 
           if (lastDate !== null && lastDate !== formattedDate) {
             html += `<div class="day-divider"></div>`;
@@ -247,7 +243,7 @@
             <div class="record-row">
               <div>${formattedDate}</div>
               <div>${formattedTime}</div>
-              <div>${item.systolic}/${item.diastolic}</div>
+              <div>${sysHtml}/${item.diastolic}</div>
               <div>${item.heartRate}</div>
               <div class="note-col">${item.notes || ''}</div>
             </div>
