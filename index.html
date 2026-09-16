@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>血壓紀錄</title>
+  <title>BP Tracker</title>
   <link rel="manifest" href="manifest.json">
   <style>
     :root {
@@ -38,64 +38,76 @@
       border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 10px;
     }
     button:hover { background-color: var(--primary-dark); }
+    
+    /* 列表樣式更新 */
     .record-item {
-      padding: 12px; border-bottom: 1px solid var(--border-color); font-size: 14px;
+      padding: 14px 0; border-bottom: 1px solid var(--border-color);
     }
     .record-item:last-child { border-bottom: none; }
-    .badge {
-      display: inline-block; padding: 3px 8px; border-radius: 12px; font-size: 12px; color: white; margin-bottom: 5px;
+    .record-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;
+    }
+    .datetime { font-size: 14px; font-weight: bold; color: var(--primary-dark); }
+    
+    /* 圓底標記樣式 */
+    .circle-badge {
+      display: inline-flex; justify-content: center; align-items: center;
+      width: 24px; height: 24px; border-radius: 50%;
+      font-size: 12px; font-weight: bold; color: white;
     }
     .badge-regular { background-color: var(--primary-color); }
     .badge-emergency { background-color: var(--emergency-color); }
-    .numbers { font-size: 16px; font-weight: bold; margin: 5px 0; }
+    
+    .numbers { font-size: 16px; font-weight: 500; color: var(--text-main); }
+    .notes-text { color: #888; font-size: 13px; margin-top: 4px; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h2>血壓紀錄</h2>
+    <h2>BP Tracker</h2>
     <form id="bpForm">
       <div class="form-group" style="display:flex; gap:10px;">
         <div style="flex:1;">
-          <label>日期</label><input type="date" id="date" required>
+          <label>Date</label><input type="date" id="date" required>
         </div>
         <div style="flex:1;">
-          <label>時間</label><input type="time" id="time" required>
+          <label>Time</label><input type="time" id="time" required>
         </div>
       </div>
       <div class="form-group" style="display:flex; gap:10px;">
         <div style="flex:1;">
-          <label>收縮壓 (高壓)</label><input type="number" id="systolic" required>
+          <label>SBP</label><input type="number" id="systolic" required>
         </div>
         <div style="flex:1;">
-          <label>舒張壓 (低壓)</label><input type="number" id="diastolic" required>
+          <label>DBP</label><input type="number" id="diastolic" required>
         </div>
       </div>
       <div class="form-group">
-        <label>心跳 (脈搏)</label><input type="number" id="heartRate" required>
+        <label>HR</label><input type="number" id="heartRate" required>
       </div>
       <div class="form-group">
-        <label>測量狀況</label>
+        <label>Type</label>
         <div class="radio-group">
-          <label><input type="radio" name="type" value="規律測量" checked> 規律測量</label>
-          <label><input type="radio" name="type" value="突發狀況"> 突發狀況</label>
+          <label><input type="radio" name="type" value="Regular" checked> Regular</label>
+          <label><input type="radio" name="type" value="Emergency"> Emergency</label>
         </div>
       </div>
       <div class="form-group">
-        <label>備註 (選填)</label><input type="text" id="notes" placeholder="例如：剛運動完、覺得頭暈...">
+        <label>Notes (Optional)</label><input type="text" id="notes" placeholder="e.g., after exercise, feeling dizzy...">
       </div>
-      <button type="submit" id="submitBtn">儲存紀錄</button>
+      <button type="submit" id="submitBtn">Save Record</button>
       <div id="status" style="text-align: center; margin-top: 10px; font-size: 14px;"></div>
     </form>
   </div>
 
   <div class="container">
-    <h2>近期紀錄列表</h2>
-    <div id="recordsList">載入中...</div>
+    <h2>Recent Records</h2>
+    <div id="recordsList">Loading...</div>
   </div>
 
   <script>
-    // 請將下方網址替換為您從 Apps Script 獲得的網頁應用程式 URL
+    // ⚠️ 請替換為您的 API 網址
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
 
     // 預設填入當下時間
@@ -110,19 +122,25 @@
         let data = await response.json();
         let html = '';
         data.forEach(item => {
-          let badgeClass = item.type === '規律測量' ? 'badge-regular' : 'badge-emergency';
+          // 判斷標記：支援新版的 'Regular' 或舊版的 '規律測量'
+          let isRegular = (item.type === 'Regular' || item.type === '規律測量');
+          let badgeClass = isRegular ? 'badge-regular' : 'badge-emergency';
+          let badgeLetter = isRegular ? 'R' : 'E';
+
           html += `
             <div class="record-item">
-              <span class="badge ${badgeClass}">${item.type}</span>
-              <span style="color: var(--text-main); font-size:12px; float:right;">${item.date} ${item.time}</span>
-              <div class="numbers">血壓：${item.systolic} / ${item.diastolic} mmHg ｜ 心跳：${item.heartRate} bpm</div>
-              ${item.notes ? `<div style="color:#6c757d; font-size:12px;">備註：${item.notes}</div>` : ''}
+              <div class="record-header">
+                <span class="datetime">${item.date} ${item.time}</span>
+                <span class="circle-badge ${badgeClass}">${badgeLetter}</span>
+              </div>
+              <div class="numbers">${item.systolic} / ${item.diastolic} mmHg &nbsp;&nbsp; ${item.heartRate} bpm</div>
+              ${item.notes ? `<div class="notes-text">Notes: ${item.notes}</div>` : ''}
             </div>
           `;
         });
-        document.getElementById('recordsList').innerHTML = html || '尚無紀錄';
+        document.getElementById('recordsList').innerHTML = html || 'No records found.';
       } catch (err) {
-        document.getElementById('recordsList').innerHTML = '資料載入失敗，請確認 API 設定。';
+        document.getElementById('recordsList').innerHTML = 'Failed to load data. Please check API settings.';
       }
     }
 
@@ -131,7 +149,7 @@
       e.preventDefault();
       const btn = document.getElementById('submitBtn');
       const status = document.getElementById('status');
-      btn.disabled = true; btn.innerText = '儲存中...';
+      btn.disabled = true; btn.innerText = 'Saving...';
 
       const payload = {
         date: document.getElementById('date').value,
@@ -144,34 +162,32 @@
       };
 
       try {
+        // 使用 text/plain 避免 CORS 預檢請求錯誤
         await fetch(API_URL, {
           method: 'POST',
-          // 加入 redirect: 'follow' 處理 Google 的轉址
-          redirect: 'follow', 
-          // 指定 Content-Type 為 text/plain 來避開 CORS 預檢
-          headers: {
-            'Content-Type': 'text/plain;charset=utf-8',
-          },
+          redirect: 'follow',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
           body: JSON.stringify(payload)
         });
-        status.innerText = '✅ 紀錄成功！';
+        status.innerText = '✅ Saved Successfully!';
         status.style.color = 'green';
         setTimeout(() => { status.innerText = ''; }, 3000);
+        
+        // 重設表單，並重新填入當下時間
         document.getElementById('bpForm').reset();
         document.getElementById('date').value = new Date().toLocaleDateString('en-CA');
         document.getElementById('time').value = new Date().toLocaleTimeString('en-GB', { hour: "2-digit", minute: "2-digit" });
         loadData();
       } catch (error) {
-        status.innerText = '❌ 紀錄失敗，請稍後再試。';
+        status.innerText = '❌ Failed to save. Please try again.';
         status.style.color = 'red';
       } finally {
-        btn.disabled = false; btn.innerText = '儲存紀錄';
+        btn.disabled = false; btn.innerText = 'Save Record';
       }
     });
 
     loadData();
 
-    // 註冊 Service Worker 支援離線與安裝
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
