@@ -2,15 +2,19 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <!-- 加入這兩行，強制控制 iOS 頂部狀態列為淺色 -->
+  <!-- 針對 iOS 狀態列的強制覆寫設定 (白底黑字) -->
   <meta name="theme-color" content="#F4F6F8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BP Tracker</title>
-  <link rel="manifest" href="manifest.json">
+  
+  <!-- 加上 ?v=2 強迫 iPhone 重新讀取，放棄舊的深灰色快取 -->
+  <link rel="manifest" href="manifest.json?v=2">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
+  
   <style>
     :root {
       --primary-color: #8FA3B8;
@@ -47,6 +51,7 @@
 
     .form-group { margin-bottom: 12px; }
     
+    /* 日期時間不對稱切割 */
     .date-time-layout {
       display: flex; justify-content: space-between; width: 100%;
     }
@@ -64,6 +69,7 @@
     }
     ::placeholder { color: #A0AAB5; }
 
+    /* BP與HR同列 */
     .bp-hr-row {
       display: flex; align-items: center; width: 100%;
     }
@@ -73,6 +79,7 @@
     .symbol { font-size: 18px; color: #333; font-weight: bold; margin: 0 4px; }
     .unit { font-size: 13px; color: #333; font-weight: bold; margin: 0 4px; }
 
+    /* Notes與Save按鈕同列 */
     .notes-save-row {
       display: flex; gap: 8px; width: 100%; align-items: center;
     }
@@ -87,6 +94,7 @@
     }
     .notes-save-row button.primary-btn:hover { background-color: #768B9E; }
     
+    /* 膠囊按鈕 */
     .capsule-group {
       display: flex; background-color: #343A40; border-radius: 20px; padding: 3px;
     }
@@ -99,6 +107,9 @@
       background-color: #FFFFFF; color: var(--primary-dark);
     }
 
+    /* ---------------------------------------------------
+       【全區凍結模組】把上半部全部包起來固定在最上方
+       --------------------------------------------------- */
     .sticky-top-panel {
       position: -webkit-sticky; 
       position: sticky;
@@ -109,31 +120,33 @@
       padding-top: env(safe-area-inset-top); /* 確保不會被瀏海遮擋 */
     }
 
+    /* 表頭 */
     .list-header {
       display: grid;
       grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr; 
       gap: 4px; 
       padding-bottom: 8px;
       border-bottom: 2px solid var(--primary-dark);
-      font-weight: bold; font-size: 14px; /* 表頭字體加大 */
+      font-weight: bold; font-size: 14px; 
       color: var(--primary-dark); text-align: center;
     }
     .list-header div:first-child, .list-header div:last-child { text-align: left; }
-    .list-header div:nth-child(4) { text-align: right; padding-right: 8px; }
+    .list-header div:nth-child(4) { text-align: right; padding-right: 8px; } /* HR標題靠右 */
 
-    /* --- 核心調整：文字變大、間距變小、維持列高 --- */
+    /* 列表列 (字體加大，壓縮列高) */
     .record-row {
       display: grid; grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr;
       gap: 4px; align-items: center; 
-      padding: 2px 0; /* padding 縮小 */
-      font-size: 15px; /* 字體加大 */
-      line-height: 1.1; /* 壓縮行高 */
+      padding: 2px 0; 
+      font-size: 15px; 
+      line-height: 1.1; 
       color: var(--text-main); text-align: center;
       font-variant-numeric: tabular-nums; 
     }
     .record-row div:first-child, .record-row div:last-child { text-align: left; }
-    .record-row div:nth-child(4) { text-align: right; padding-right: 8px; }
+    .record-row div:nth-child(4) { text-align: right; padding-right: 8px; } /* HR數據靠右 */
     
+    /* 專門對齊 BP 斜線的微型網格 */
     .bp-col-align {
       display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center;
     }
@@ -152,6 +165,9 @@
 </head>
 <body>
 
+  <!-- ==========================================
+       上半部：全區凍結模組 (Sticky Top Panel)
+       ========================================== -->
   <div class="sticky-top-panel">
     
     <div class="banner">
@@ -199,6 +215,10 @@
 
   </div> 
 
+
+  <!-- ==========================================
+       下半部：純資料列表 (滑動區)
+       ========================================== -->
   <div class="container" style="padding-top: 5px; padding-bottom: 40px;">
     <div id="recordsList">Loading...</div>
   </div>
@@ -232,6 +252,7 @@
         displayData = displayData.filter(r => new Date(r.date.replace(/-/g, '/')) >= cutoff);
       }
 
+      // 排序邏輯：dtA - dtB (舊的在上方，新的在最下方)
       displayData.sort((a, b) => {
         let dtA = new Date(`${a.date.replace(/-/g, '/')} ${a.time}`);
         let dtB = new Date(`${b.date.replace(/-/g, '/')} ${b.time}`);
@@ -267,6 +288,7 @@
           let sysNum = parseInt(item.systolic, 10);
           let sysHtml = (sysNum >= 130) ? `<span class="high-bp">${item.systolic}</span>` : item.systolic;
 
+          // 若與上一筆日期相同，則不顯示日期 (群組化顯示)
           let displayDateText = (lastDate !== formattedDate) ? formattedDate : '';
 
           if (lastDate !== null && lastDate !== formattedDate) {
