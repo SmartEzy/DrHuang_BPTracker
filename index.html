@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=31">
+  <link rel="manifest" href="manifest.json?v=32">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -160,7 +160,7 @@
     .chart-container {
       width: 100%; max-width: 500px; margin: 0 auto; 
       padding: 10px 20px; box-sizing: border-box;
-      background-color: var(--bg-color); height: 220px; display: none; 
+      background-color: var(--bg-color); height: 240px; display: none; 
     }
 
     .capsule-group {
@@ -378,36 +378,106 @@
       syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr });
     }
 
+    // 🌟 全新重構：懸浮柱狀圖 (Omron 風格) + 130警戒紅線
     function updateChart(displayData) {
       const ctx = document.getElementById('bpChart').getContext('2d');
+      
       const labels = displayData.map(d => {
         let dateParts = d.date.split('/'); 
         return dateParts.length === 3 ? `${dateParts[1]}/${dateParts[2]}` : d.date; 
       });
-      const sysData = displayData.map(d => d.systolic);
-      const diaData = displayData.map(d => d.diastolic);
+      
+      // 懸浮柱狀圖所需的資料格式: [DBP, SBP]
+      const bpRangeData = displayData.map(d => [parseInt(d.diastolic), parseInt(d.systolic)]);
+      const hrData = displayData.map(d => parseInt(d.heartRate));
+      // 130 警戒線，全畫面上都是 130
+      const limit130Data = displayData.map(() => 130);
 
       if (bpChartInstance) {
         bpChartInstance.data.labels = labels;
-        bpChartInstance.data.datasets[0].data = sysData;
-        bpChartInstance.data.datasets[1].data = diaData;
+        bpChartInstance.data.datasets[0].data = bpRangeData;
+        bpChartInstance.data.datasets[1].data = hrData;
+        bpChartInstance.data.datasets[2].data = limit130Data;
         bpChartInstance.update();
       } else {
         bpChartInstance = new Chart(ctx, {
-          type: 'line',
           data: {
             labels: labels,
             datasets: [
-              { label: 'SYS', data: sysData, borderColor: '#495057', backgroundColor: '#495057', borderWidth: 2, tension: 0.3, pointRadius: 2.5 },
-              { label: 'DIA', data: diaData, borderColor: '#8FA3B8', backgroundColor: '#8FA3B8', borderWidth: 2, tension: 0.3, pointRadius: 2.5 }
+              {
+                type: 'bar',
+                label: 'BP Range',
+                data: bpRangeData,
+                backgroundColor: '#7895B2', // 質感的藍灰色柱體
+                borderRadius: 100,          // 兩端圓角 (藥丸形狀)
+                barThickness: 6,            // 固定細長柱體
+                order: 2                    // 繪製順序 (圖層)
+              },
+              {
+                type: 'line',
+                label: 'HR',
+                data: hrData,
+                borderColor: '#CBD5E1',     // 非常淡的灰線
+                borderWidth: 1.5,
+                tension: 0.4,               // 微幅平滑
+                pointRadius: 1,             // 極小點
+                order: 3
+              },
+              {
+                type: 'line',
+                label: '130 Limit',
+                data: limit130Data,
+                borderColor: 'rgba(211, 47, 47, 0.4)', // 微微透明的紅色
+                borderWidth: 1,
+                borderDash: [4, 4],         // 虛線樣式
+                pointRadius: 0,             // 不顯示資料點
+                fill: false,
+                order: 1                    // 畫在最上層
+              }
             ]
           },
           options: {
-            responsive: true, maintainAspectRatio: false,
-            plugins: { legend: { display: true, position: 'top', labels: { boxWidth: 10, font: { size: 11 } } } },
+            responsive: true, 
+            maintainAspectRatio: false,
+            interaction: {
+              mode: 'index',
+              intersect: false,
+            },
+            plugins: { 
+              legend: { 
+                display: true, 
+                position: 'top', 
+                labels: { 
+                  boxWidth: 12, 
+                  font: { size: 11 },
+                  // 隱藏 130 警戒線的圖例標籤，保持畫面乾淨
+                  filter: function(item, chart) {
+                    return !item.text.includes('130 Limit');
+                  }
+                } 
+              },
+              tooltip: {
+                callbacks: {
+                  // 讓懸浮提示窗顯示得更專業 (SYS/DIA)
+                  label: function(context) {
+                    if (context.dataset.label === 'BP Range') {
+                      return `BP: ${context.raw[1]} / ${context.raw[0]} mmHg`;
+                    }
+                    if (context.dataset.label === 'HR') {
+                      return `HR: ${context.raw} bpm`;
+                    }
+                    return null;
+                  }
+                }
+              }
+            },
             scales: {
               x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 10 } } },
-              y: { grid: { color: '#E2E8F0' }, suggestedMin: 60, suggestedMax: 150 }
+              y: { 
+                grid: { color: '#E2E8F0' }, 
+                suggestedMin: 50, 
+                suggestedMax: 160 
+              }
             }
           }
         });
@@ -452,7 +522,6 @@
           let sysNum = parseInt(item.systolic, 10);
           let sysHtml = (sysNum >= 130) ? `<span class="high-bp">${item.systolic}</span>` : (item.systolic || '');
 
-          // 🌟 修復的邏輯：先計算出 displayDateText，再更新 lastDate
           let displayDateText = (lastDate !== formattedDate) ? formattedDate : '';
 
           if (lastDate !== null && lastDate !== formattedDate) html += `<div class="day-divider"></div>`;
