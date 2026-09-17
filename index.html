@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=34">
+  <link rel="manifest" href="manifest.json?v=35">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -147,7 +147,6 @@
       box-sizing: border-box; width: 100%;
     }
 
-    /* 圖表切換按鈕區域（包含按鈕與新圖例） */
     .chart-controls-left {
       display: flex; align-items: center; gap: 12px;
     }
@@ -162,7 +161,6 @@
       background-color: #E2E8F0; color: var(--primary-dark);
     }
 
-    /* 🌟 自訂純手工 HTML 圖例 */
     .custom-legend {
       display: flex; gap: 12px; font-size: 12px; 
       color: #64748B; font-weight: bold;
@@ -281,7 +279,6 @@
     </div>
 
     <div class="records-header">
-      <!-- 🌟 將圖表按鈕與自訂圖例包裝在一起 -->
       <div class="chart-controls-left">
         <button id="toggleChartBtn" class="chart-toggle-btn active" title="Toggle Trend Chart">
           <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -345,7 +342,6 @@
     const chartContainer = document.getElementById('chartContainer');
     const customLegend = document.getElementById('customLegend');
     
-    // 點擊圖表按鈕時，同步隱藏/顯示圖例
     toggleChartBtn.addEventListener('click', () => {
       if (chartContainer.style.display === 'block') {
         chartContainer.style.display = 'none';
@@ -445,7 +441,6 @@
                 data: hrData,
                 borderColor: '#CBD5E1',     
                 borderWidth: 1.5,
-                // 🌟 改為 tension: 0 (完全不平滑的真實折線) 遵守醫療真實性
                 tension: 0,               
                 pointRadius: 1.5,             
                 order: 3
@@ -471,7 +466,6 @@
               intersect: false,
             },
             plugins: { 
-              // 🌟 關閉內建圖例，使用自訂的 HTML 圖例，徹底釋放垂直空間！
               legend: { 
                 display: false
               },
@@ -493,7 +487,9 @@
               x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 10 } } },
               y: { 
                 grid: { color: '#E2E8F0' }, 
-                suggestedMin: 50, 
+                // 🌟 關閉從 0 開始，並設定建議最小值，徹底釋放圖表空間！
+                beginAtZero: false,
+                suggestedMin: 40, 
                 suggestedMax: 160 
               }
             }
