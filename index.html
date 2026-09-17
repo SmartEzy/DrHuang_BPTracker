@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=18">
+  <link rel="manifest" href="manifest.json?v=19">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -31,38 +31,44 @@
       margin: 0; padding: 0; 
     }
     
-    /* 🌟 完美還原截圖：白底 Logo 區塊 + 深灰橫幅的拼接設計 */
+    /* 🌟 完美還原截圖：三段式無縫拼接橫幅，並大幅縮減高度 */
     .banner-container {
       display: flex;
-      align-items: stretch; /* 讓左右區塊等高 */
+      align-items: stretch; /* 讓內部三個區塊等高 */
       width: 100%;
-      height: 56px; /* 固定高度，確保拼接完美 */
+      height: 44px; /* 壓縮高度，減少上下留白 */
       box-sizing: border-box;
     }
 
-    /* 左側：純白底色區塊，裝 Logo */
+    /* 1. 最左側：窄深的灰底 */
+    .banner-left-bar {
+      width: 12px; 
+      background-color: var(--primary-dark);
+    }
+
+    /* 2. 中間：純白底色區塊裝 Logo */
     .logo-box {
       background-color: #FFFFFF;
-      padding: 0 16px; 
+      padding: 0 8px; /* 縮小左右留白 */
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
     .banner-logo {
-      width: 32px; 
-      height: 32px;
+      width: 28px; /* 配合變矮的橫幅，稍微調整尺寸 */
+      height: 28px;
       object-fit: contain;
     }
 
-    /* 右側：深灰色橫幅區塊 */
+    /* 3. 右側：主要的深灰色橫幅區塊 */
     .banner-content {
       background-color: var(--primary-dark);
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 20px 0 16px;
+      padding: 0 16px 0 12px;
     }
     
     .banner-text {
@@ -159,7 +165,7 @@
       margin: 0 auto;
     }
 
-    /* 🌟 解決 HR 間距過大：縮小 BP 欄寬 (從 2fr 降到 1.5fr)，讓 HR 緊靠 BP 右側 */
+    /* 保留前一版解決 HR 間距過大的最佳比例 */
     .list-header {
       display: grid;
       grid-template-columns: 2fr 1.2fr 1.5fr 40px 3.3fr; 
@@ -169,7 +175,7 @@
       font-weight: bold; font-size: 14px; 
       color: var(--primary-dark); text-align: center;
     }
-    .list-header div:nth-child(4) { text-align: center; padding: 0; } /* HR 置中對齊 */
+    .list-header div:nth-child(4) { text-align: center; padding: 0; } 
     .list-header div:last-child { text-align: left; padding-left: 12px; }
 
     .record-row {
@@ -182,7 +188,7 @@
       color: var(--text-main); text-align: center;
       font-variant-numeric: tabular-nums; 
     }
-    .record-row div:nth-child(4) { text-align: center; padding: 0; font-weight: bold; } /* HR 置中對齊 */
+    .record-row div:nth-child(4) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:last-child { text-align: left; padding-left: 12px; }
     
     .bp-col-align {
@@ -202,12 +208,13 @@
 
   <div class="sticky-top-panel">
     
-    <!-- 🌟 全新拼接式 Header 結構 -->
+    <!-- 🌟 三段式無縫拼接結構 -->
     <div class="banner-container">
-      <div class="logo-box">
+      <div class="banner-left-bar"></div> <!-- 左側深灰窄條 -->
+      <div class="logo-box"> <!-- 白底 Logo -->
         <img src="./icon.png" alt="Logo" class="banner-logo">
       </div>
-      <div class="banner-content">
+      <div class="banner-content"> <!-- 右側深灰文字區 -->
         <span class="banner-text">BP Tracker</span>
         <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
       </div>
