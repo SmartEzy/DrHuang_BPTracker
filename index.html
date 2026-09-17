@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=13">
+  <link rel="manifest" href="manifest.json?v=15">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -31,12 +31,15 @@
       margin: 0; padding: 0; 
     }
     
-    /* 🌟 頂部橫幅大改造：徹底捨棄深灰底，融入背景 */
+    /* 🌟 恢復深灰色橫幅，左右對齊排列 */
     .banner {
-      background-color: var(--bg-color);
-      padding: 12px 20px 8px 20px; /* 縮小上下邊距，節省高度 */
+      background-color: var(--primary-dark);
+      color: white;
+      padding: 14px 20px; 
+      font-size: 18px;
+      font-weight: bold;
       display: flex;
-      justify-content: space-between;
+      justify-content: space-between; /* 恢復左右靠齊 */
       align-items: center;
       box-sizing: border-box;
       width: 100%;
@@ -45,38 +48,24 @@
     .banner-title {
       display: flex;
       align-items: center;
-      gap: 8px; /* 元件間的完美間距 */
+      gap: 10px; 
     }
 
-    /* 🌟 新增：最左側的深灰小桿 */
-    .title-bar {
-      width: 4px;
-      height: 20px;
-      background-color: var(--primary-dark);
-      border-radius: 2px;
-    }
-
-    /* 🌟 Logo：白底、同高度、蘋果風微圓角 */
+    /* Logo：尺寸精準，不撐大橫幅 */
     .banner-logo {
-      width: 20px; 
-      height: 20px;
+      width: 22px; 
+      height: 22px;
       background-color: #FFFFFF; 
-      border-radius: 5px; 
+      border-radius: 6px; 
       padding: 2px; 
       object-fit: cover;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.1); 
     }
     
-    .banner-text {
-      font-size: 18px;
-      font-weight: bold;
-      color: var(--primary-dark); /* 深灰色文字 */
-    }
-
     .refresh-btn {
       background: none; border: none; 
-      color: var(--primary-dark); /* 配合淺色背景改為深灰按鈕 */
-      font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center;
+      color: white; 
+      font-size: 20px; cursor: pointer; padding: 0; 
+      display: flex; align-items: center;
     }
 
     .container {
@@ -160,7 +149,6 @@
       margin: 0 auto;
     }
 
-    /* 🌟 精準網格鎖定：將 HR 設為固定 44px 寬，徹底解決間距過大問題 */
     .list-header {
       display: grid;
       grid-template-columns: 2fr 1.2fr 2fr 44px 3fr; 
@@ -203,12 +191,11 @@
 
   <div class="sticky-top-panel">
     
-    <!-- 🌟 全新極簡 Title 區塊 -->
     <div class="banner">
+      <!-- 🌟 Logo 與標題靠左正常排列 -->
       <div class="banner-title">
-        <div class="title-bar"></div>
         <img src="./icon.png" alt="Logo" class="banner-logo">
-        <span class="banner-text">BP Tracker</span>
+        <span>BP Tracker</span>
       </div>
       <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
     </div>
