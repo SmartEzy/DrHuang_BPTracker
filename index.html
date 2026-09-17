@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=16">
+  <link rel="manifest" href="manifest.json?v=17">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -31,10 +31,10 @@
       margin: 0; padding: 0; 
     }
     
-    /* 🌟 徹底移除深灰底色，改為融入背景的無邊框標題列 */
+    /* 🌟 完全還原截圖：深灰色橫幅 */
     .banner {
-      background-color: var(--bg-color);
-      padding: 12px 20px 8px 20px; 
+      background-color: var(--primary-dark);
+      padding: 12px 20px; 
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -45,35 +45,36 @@
     .banner-title {
       display: flex;
       align-items: center;
-      gap: 10px; /* 元素間距 */
+      gap: 12px; /* 白底Logo與文字的間距 */
     }
 
-    /* 🌟 三元素高度統一為 24px */
-    .title-bar {
-      width: 4px;
-      height: 24px;
-      background-color: var(--primary-dark);
-      border-radius: 2px;
+    /* 🌟 完全還原截圖：白底方形 Logo 區塊 */
+    .logo-box {
+      background-color: #FFFFFF;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 4px; /* 加上極微小的圓角，看起來更精緻 */
     }
 
     .banner-logo {
-      width: 24px; 
-      height: 24px;
+      width: 26px; /* 圖示大小，產生完美的留白邊界 */
+      height: 26px;
       object-fit: contain;
-      /* 移除白底與圓角，直接顯示原圖 */
     }
     
+    /* 🌟 完全還原截圖：白色標題文字 */
     .banner-text {
-      font-size: 22px;
-      line-height: 24px;
+      font-size: 20px;
       font-weight: bold;
-      color: var(--primary-dark);
+      color: #FFFFFF;
     }
 
-    /* 重新整理按鈕改為深灰色 */
     .refresh-btn {
       background: none; border: none; 
-      color: var(--primary-dark); 
+      color: #FFFFFF; 
       font-size: 20px; cursor: pointer; padding: 0; 
       display: flex; align-items: center;
     }
@@ -201,11 +202,12 @@
 
   <div class="sticky-top-panel">
     
+    <!-- 🌟 完全對齊您圖片設計的 Banner -->
     <div class="banner">
-      <!-- 🌟 無邊框標題列：窄桿 + Logo原圖 + 深灰文字 -->
       <div class="banner-title">
-        <div class="title-bar"></div>
-        <img src="./icon.png" alt="Logo" class="banner-logo">
+        <div class="logo-box">
+          <img src="./icon.png" alt="Logo" class="banner-logo">
+        </div>
         <span class="banner-text">BP Tracker</span>
       </div>
       <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
