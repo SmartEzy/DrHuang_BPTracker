@@ -2,11 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <!-- 加入這兩行，強制控制 iOS 頂部狀態列為淺色 -->
+  <meta name="theme-color" content="#F4F6F8">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BP Tracker</title>
+  <link rel="manifest" href="manifest.json">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
-  <link rel="manifest" href="manifest.json">
   <style>
     :root {
       --primary-color: #8FA3B8;
@@ -95,16 +99,14 @@
       background-color: #FFFFFF; color: var(--primary-dark);
     }
 
-    /* ---------------------------------------------------
-       【全區凍結模組】把上半部全部包起來固定在最上方
-       --------------------------------------------------- */
     .sticky-top-panel {
-      position: -webkit-sticky; /* 支援 iOS */
+      position: -webkit-sticky; 
       position: sticky;
       top: 0;
       z-index: 100;
-      background-color: var(--bg-color); /* 填滿底色，避免滑動時字體重疊 */
-      box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); /* 在凍結區塊下方加一點點陰影，增加立體感 */
+      background-color: var(--bg-color); 
+      box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); 
+      padding-top: env(safe-area-inset-top); /* 確保不會被瀏海遮擋 */
     }
 
     .list-header {
@@ -113,16 +115,19 @@
       gap: 4px; 
       padding-bottom: 8px;
       border-bottom: 2px solid var(--primary-dark);
-      font-weight: bold; font-size: 13px; color: var(--primary-dark); text-align: center;
+      font-weight: bold; font-size: 14px; /* 表頭字體加大 */
+      color: var(--primary-dark); text-align: center;
     }
     .list-header div:first-child, .list-header div:last-child { text-align: left; }
     .list-header div:nth-child(4) { text-align: right; padding-right: 8px; }
 
+    /* --- 核心調整：文字變大、間距變小、維持列高 --- */
     .record-row {
       display: grid; grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr;
       gap: 4px; align-items: center; 
-      padding: 3px 0; 
-      font-size: 13px; 
+      padding: 2px 0; /* padding 縮小 */
+      font-size: 15px; /* 字體加大 */
+      line-height: 1.1; /* 壓縮行高 */
       color: var(--text-main); text-align: center;
       font-variant-numeric: tabular-nums; 
     }
@@ -136,7 +141,7 @@
     .bp-slash { color: #888; font-weight: normal; } 
     .bp-dia { text-align: left; }
 
-    .note-col { font-size: 12px; color: #666; word-break: break-word; line-height: 1.2; font-variant-numeric: normal; }
+    .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; }
     
     .high-bp { color: var(--danger-color); font-weight: bold; }
     
@@ -147,19 +152,13 @@
 </head>
 <body>
 
-  <!-- ==========================================
-       上半部：全區凍結模組 (Sticky Top Panel)
-       包含：主橫幅 + 輸入表單 + 紀錄橫幅 + 列表標題
-       ========================================== -->
   <div class="sticky-top-panel">
     
-    <!-- 主橫幅 -->
     <div class="banner">
       <span>BP Tracker</span>
       <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
     </div>
     
-    <!-- 輸入區 -->
     <div class="container" style="padding-bottom: 5px;">
       <form id="bpForm">
         <div class="form-group date-time-layout">
@@ -176,7 +175,6 @@
           <span class="unit" style="margin-right:0;">bpm</span>
         </div>
         
-        <!-- Notes 與 Save 放在同一行 -->
         <div class="form-group notes-save-row" style="margin-bottom: 0;">
           <input type="text" id="notes" placeholder="Notes (e.g., dizzy...)">
           <button type="submit" id="submitBtn" class="primary-btn">Save</button>
@@ -184,7 +182,6 @@
       </form>
     </div>
 
-    <!-- 紀錄橫幅 -->
     <div class="banner" style="margin-top: 10px;">
       <span>Records</span>
       <div class="capsule-group">
@@ -194,7 +191,6 @@
       </div>
     </div>
     
-    <!-- 列表標題 (表頭) -->
     <div class="container" style="padding-top: 15px; padding-bottom: 0;">
       <div class="list-header">
         <div>Date</div><div>Time</div><div>BP</div><div>HR</div><div>Notes</div>
@@ -202,12 +198,7 @@
     </div>
 
   </div> 
-  <!-- 全區凍結模組 結束 -->
 
-
-  <!-- ==========================================
-       下半部：純資料列表 (滑動區)
-       ========================================== -->
   <div class="container" style="padding-top: 5px; padding-bottom: 40px;">
     <div id="recordsList">Loading...</div>
   </div>
