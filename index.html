@@ -11,11 +11,10 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=29">
+  <link rel="manifest" href="manifest.json?v=30">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
-  <!-- 🌟 引入 Chart.js 圖表套件 -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
@@ -129,17 +128,26 @@
     }
     .notes-save-row button.primary-btn:hover { background-color: #768B9E; }
     
+    /* 🌟 快捷狀態標籤 (Quick Tags) 樣式 */
+    .quick-tags-container {
+      display: flex; gap: 8px; margin-top: 10px; margin-bottom: 2px;
+      overflow-x: auto; padding-bottom: 2px;
+    }
+    .quick-tags-container::-webkit-scrollbar { display: none; } /* 隱藏滾動條 */
+    .quick-tag-btn {
+      background-color: #E2E8F0; color: #495057; border: none;
+      padding: 6px 12px; font-size: 13px; font-weight: 500;
+      border-radius: 14px; cursor: pointer; white-space: nowrap;
+      transition: background-color 0.2s;
+    }
+    .quick-tag-btn:active { background-color: #CBD5E1; }
+
     .records-header {
-      display: flex;
-      justify-content: space-between; /* 🌟 讓左邊放圖表按鈕，右邊放天數切換 */
-      align-items: center;
-      padding: 16px 20px 4px 20px;
-      background-color: var(--bg-color);
-      box-sizing: border-box;
-      width: 100%;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px 4px 20px; background-color: var(--bg-color);
+      box-sizing: border-box; width: 100%;
     }
 
-    /* 🌟 圖表展開切換按鈕 */
     .chart-toggle-btn {
       background: none; border: none; padding: 4px 8px; margin: 0;
       color: var(--primary-color); cursor: pointer;
@@ -150,13 +158,10 @@
       background-color: #E2E8F0; color: var(--primary-dark);
     }
 
-    /* 🌟 圖表容器 (預設隱藏) */
     .chart-container {
       width: 100%; max-width: 500px; margin: 0 auto; 
       padding: 10px 20px; box-sizing: border-box;
-      background-color: var(--bg-color);
-      height: 220px; /* 固定高度，畫面不會亂跳 */
-      display: none; 
+      background-color: var(--bg-color); height: 220px; display: none; 
     }
 
     .capsule-group {
@@ -173,52 +178,34 @@
     }
 
     .sticky-top-panel {
-      position: -webkit-sticky; 
-      position: sticky;
-      top: 0; 
-      z-index: 100;
-      background-color: var(--bg-color); 
-      box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); 
-      padding-top: max(env(safe-area-inset-top), 20px);
-      max-width: 500px;
-      margin: 0 auto;
+      position: -webkit-sticky; position: sticky; top: 0; z-index: 100;
+      background-color: var(--bg-color); box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); 
+      padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto;
     }
 
     .list-header {
-      display: grid;
-      grid-template-columns: 88px 48px 1.8fr 1fr 2fr 24px; 
-      gap: 6px; 
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--primary-dark);
-      font-weight: bold; font-size: 14px; 
-      color: var(--primary-dark); text-align: center;
+      display: grid; grid-template-columns: 88px 48px 1.8fr 1fr 2fr 24px; 
+      gap: 6px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-dark);
+      font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center;
     }
     .list-header div:nth-child(4) { text-align: center; padding: 0; } 
     .list-header div:nth-child(5) { text-align: left; padding-left: 8px; }
 
     .record-row {
-      display: grid; 
-      grid-template-columns: 88px 48px 1.8fr 1fr 2fr 24px;
-      gap: 6px; align-items: center; 
-      padding: 4px 0; 
-      font-size: 15px; 
-      line-height: 1.1; 
-      color: var(--text-main); text-align: center;
-      font-variant-numeric: tabular-nums; 
+      display: grid; grid-template-columns: 88px 48px 1.8fr 1fr 2fr 24px;
+      gap: 6px; align-items: center; padding: 4px 0; 
+      font-size: 15px; line-height: 1.1; color: var(--text-main); 
+      text-align: center; font-variant-numeric: tabular-nums; 
     }
     .record-row div:nth-child(4) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:nth-child(5) { text-align: left; padding-left: 8px; }
     
     .delete-btn {
       background: none; border: none; padding: 0; margin: 0;
-      color: #CBD5E1; 
-      cursor: pointer;
-      display: flex; justify-content: center; align-items: center;
-      transition: color 0.2s;
+      color: #CBD5E1; cursor: pointer; display: flex; 
+      justify-content: center; align-items: center; transition: color 0.2s;
     }
-    .delete-btn:hover, .delete-btn:active {
-      color: var(--danger-color); 
-    }
+    .delete-btn:hover, .delete-btn:active { color: var(--danger-color); }
 
     .bp-col-align {
       display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center; justify-content: center;
@@ -268,10 +255,18 @@
           <input type="text" id="notes" placeholder="Notes (e.g., dizzy...)">
           <button type="submit" id="submitBtn" class="primary-btn">Save</button>
         </div>
+        
+        <!-- 🌟 快捷狀態標籤列 -->
+        <div class="quick-tags-container">
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('💊 吃藥')">💊 吃藥</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('😵 暈眩')">😵 暈眩</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕 頭痛')">🤕 頭痛</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('☕ 咖啡')">☕ 咖啡</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃 運動')">🏃 運動</button>
+        </div>
       </form>
     </div>
 
-    <!-- 🌟 控制列：圖表開關 ＆ 天數過濾器 -->
     <div class="records-header">
       <button id="toggleChartBtn" class="chart-toggle-btn" title="Toggle Trend Chart">
         <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -285,7 +280,6 @@
       </div>
     </div>
 
-    <!-- 🌟 隱藏式圖表容器 -->
     <div id="chartContainer" class="chart-container">
       <canvas id="bpChart"></canvas>
     </div>
@@ -299,20 +293,36 @@
   </div> 
 
   <div class="container" style="padding-top: 5px; padding-bottom: 40px;">
-    <div id="recordsList">Loading...</div>
+    <div id="recordsList">
+      <div style="text-align:center; padding: 20px; color: #888;">Loading...</div>
+    </div>
   </div>
 
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
     let allRecords = [];
     let currentFilter = '30days'; 
-    let bpChartInstance = null; // 儲存圖表實例
+    let bpChartInstance = null; 
 
+    // 初始化時間
     const now = new Date();
     document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-    // 圖表切換按鈕邏輯
+    // 🌟 Quick Tag 自動填入邏輯
+    function addQuickTag(tagText) {
+      const notesInput = document.getElementById('notes');
+      if (notesInput.value.trim() === '') {
+        notesInput.value = tagText;
+      } else {
+        // 如果還沒加入過這個標籤，才用逗號串接，避免重複點擊
+        if (!notesInput.value.includes(tagText)) {
+          notesInput.value += `, ${tagText}`;
+        }
+      }
+    }
+
+    // 圖表切換
     const toggleChartBtn = document.getElementById('toggleChartBtn');
     const chartContainer = document.getElementById('chartContainer');
     toggleChartBtn.addEventListener('click', () => {
@@ -322,7 +332,7 @@
       } else {
         chartContainer.style.display = 'block';
         toggleChartBtn.classList.add('active');
-        if (bpChartInstance) bpChartInstance.update(); // 展開時觸發重繪以防跑版
+        if (bpChartInstance) bpChartInstance.update(); 
       }
     });
 
@@ -335,6 +345,37 @@
       });
     });
 
+    // 🌟 將請求推送到雲端，失敗則加入離線暫存隊列
+    function syncToCloud(payload) {
+      fetch(API_URL, {
+        method: 'POST',
+        redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      }).catch(err => {
+        console.warn('Network offline or fetch failed. Saving to sync queue.', err);
+        let queue = JSON.parse(localStorage.getItem('bpSyncQueue') || '[]');
+        queue.push(payload);
+        localStorage.setItem('bpSyncQueue', JSON.stringify(queue));
+      });
+    }
+
+    // 🌟 網路恢復時，自動消耗離線隊列
+    window.addEventListener('online', () => {
+      let queue = JSON.parse(localStorage.getItem('bpSyncQueue') || '[]');
+      if (queue.length > 0) {
+        queue.forEach(payload => {
+          fetch(API_URL, {
+            method: 'POST',
+            redirect: 'follow',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify(payload)
+          });
+        });
+        localStorage.removeItem('bpSyncQueue');
+      }
+    });
+
     function deleteRecord(formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime) {
       const msg = `${formattedDate} ${formattedTime} ${sys}/${dia} mmHg  ${hr} bpm\n確定刪除？`;
       if (!confirm(msg)) return;
@@ -342,23 +383,14 @@
       allRecords = allRecords.filter(r => !(r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr));
       renderList();
 
-      fetch(API_URL, {
-        method: 'POST',
-        redirect: 'follow',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr })
-      }).catch(err => console.error('Delete failed:', err));
+      syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr });
     }
 
-    // 🌟 獨立的繪製圖表函數
     function updateChart(displayData) {
       const ctx = document.getElementById('bpChart').getContext('2d');
-      
-      // 整理圖表需要的 X軸 (日期時間) 與 Y軸 (收縮/舒張壓) 數據
       const labels = displayData.map(d => {
-        let dateParts = d.date.split('/'); // 轉換為短格式 MM/DD
-        let shortDate = dateParts.length === 3 ? `${dateParts[1]}/${dateParts[2]}` : d.date;
-        return shortDate; 
+        let dateParts = d.date.split('/'); 
+        return dateParts.length === 3 ? `${dateParts[1]}/${dateParts[2]}` : d.date; 
       });
       const sysData = displayData.map(d => d.systolic);
       const diaData = displayData.map(d => d.diastolic);
@@ -374,46 +406,16 @@
           data: {
             labels: labels,
             datasets: [
-              {
-                label: 'SYS',
-                data: sysData,
-                borderColor: '#495057', // 深灰色
-                backgroundColor: '#495057',
-                borderWidth: 2,
-                tension: 0.3, // 平滑曲線
-                pointRadius: 2.5
-              },
-              {
-                label: 'DIA',
-                data: diaData,
-                borderColor: '#8FA3B8', // 藍灰色
-                backgroundColor: '#8FA3B8',
-                borderWidth: 2,
-                tension: 0.3, 
-                pointRadius: 2.5
-              }
+              { label: 'SYS', data: sysData, borderColor: '#495057', backgroundColor: '#495057', borderWidth: 2, tension: 0.3, pointRadius: 2.5 },
+              { label: 'DIA', data: diaData, borderColor: '#8FA3B8', backgroundColor: '#8FA3B8', borderWidth: 2, tension: 0.3, pointRadius: 2.5 }
             ]
           },
           options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                display: true,
-                position: 'top',
-                labels: { boxWidth: 10, font: { size: 11, family: '-apple-system' } }
-              }
-            },
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: true, position: 'top', labels: { boxWidth: 10, font: { size: 11 } } } },
             scales: {
-              x: { 
-                grid: { display: false },
-                ticks: { maxTicksLimit: 6, font: { size: 10 } } // 限制 X 軸標籤數量，防擁擠
-              },
-              y: { 
-                grid: { color: '#E2E8F0' },
-                suggestedMin: 60, 
-                suggestedMax: 150 
-              }
+              x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 10 } } },
+              y: { grid: { color: '#E2E8F0' }, suggestedMin: 60, suggestedMax: 150 }
             }
           }
         });
@@ -421,8 +423,10 @@
     }
 
     function renderList() {
-      let displayData = [...allRecords];
+      // 🌟 將當前最新紀錄存入快取，供下次秒開使用
+      localStorage.setItem('bpCacheRecords', JSON.stringify(allRecords));
 
+      let displayData = [...allRecords];
       displayData = displayData.filter(r => r && r.date && String(r.date).trim() !== '');
 
       if (currentFilter === '7days') {
@@ -434,70 +438,39 @@
       }
 
       displayData.sort((a, b) => {
-        let dateA = a.date ? String(a.date).replace(/-/g, '/') : '';
-        let timeA = a.time ? String(a.time) : '';
-        let dtA = new Date(`${dateA} ${timeA}`);
-
-        let dateB = b.date ? String(b.date).replace(/-/g, '/') : '';
-        let timeB = b.time ? String(b.time) : '';
-        let dtB = new Date(`${dateB} ${timeB}`);
-
-        let timeValA = isNaN(dtA.getTime()) ? 0 : dtA.getTime();
-        let timeValB = isNaN(dtB.getTime()) ? 0 : dtB.getTime();
-
-        return timeValA - timeValB; 
+        let dtA = new Date(`${a.date ? String(a.date).replace(/-/g, '/') : ''} ${a.time ? String(a.time) : ''}`);
+        let dtB = new Date(`${b.date ? String(b.date).replace(/-/g, '/') : ''} ${b.time ? String(b.time) : ''}`);
+        return (isNaN(dtA.getTime()) ? 0 : dtA.getTime()) - (isNaN(dtB.getTime()) ? 0 : dtB.getTime()); 
       });
 
-      // 🌟 同步更新圖表
       updateChart(displayData);
-
       let html = '';
 
       if (displayData.length === 0) {
         html = `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
       } else {
         let lastDate = null;
-
         displayData.forEach(item => {
           let rawDate = item.date ? String(item.date) : '';
           let dateObj = new Date(rawDate);
-          
-          let formattedDate = rawDate;
-          if (!isNaN(dateObj) && rawDate !== '') {
-            let y = dateObj.getFullYear();
-            let m = String(dateObj.getMonth() + 1).padStart(2, '0');
-            let d = String(dateObj.getDate()).padStart(2, '0');
-            formattedDate = `${y}/${m}/${d}`;
-          } else {
-            formattedDate = rawDate.replace(/-/g, '/');
-          }
+          let formattedDate = (!isNaN(dateObj) && rawDate !== '') ? `${dateObj.getFullYear()}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${String(dateObj.getDate()).padStart(2, '0')}` : rawDate.replace(/-/g, '/');
           
           let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
-          let formattedTime = item.time ? String(item.time) : '';
-          if (timeParts) {
-            formattedTime = `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}`;
-          }
+          let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
 
           let sysNum = parseInt(item.systolic, 10);
           let sysHtml = (sysNum >= 130) ? `<span class="high-bp">${item.systolic}</span>` : (item.systolic || '');
 
-          let displayDateText = (lastDate !== formattedDate) ? formattedDate : '';
-
-          if (lastDate !== null && lastDate !== formattedDate) {
-            html += `<div class="day-divider"></div>`;
-          } else if (lastDate !== null) {
-            html += `<div class="item-divider"></div>`;
-          }
+          if (lastDate !== null && lastDate !== formattedDate) html += `<div class="day-divider"></div>`;
+          else if (lastDate !== null) html += `<div class="item-divider"></div>`;
           lastDate = formattedDate;
 
           html += `
             <div class="record-row">
-              <div>${displayDateText}</div>
+              <div>${lastDate !== formattedDate ? formattedDate : ''}</div>
               <div>${formattedTime}</div>
               <div class="bp-col-align">
-                <span class="bp-sys">${sysHtml}</span>
-                <span class="bp-slash">/</span>
-                <span class="bp-dia">${item.diastolic || ''}</span>
+                <span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${item.diastolic || ''}</span>
               </div>
               <div>${item.heartRate || ''}</div>
               <div class="note-col">${item.notes || ''}</div>
@@ -517,27 +490,27 @@
     }
 
     async function loadData() {
+      // 🌟 秒開快取：先從本地讀取上次資料，瞬間畫出列表與圖表
+      const cachedData = localStorage.getItem('bpCacheRecords');
+      if (cachedData) {
+        try {
+          allRecords = JSON.parse(cachedData);
+          renderList();
+        } catch(e) { console.error('Cache parsing error'); }
+      }
+
+      // 背景默默去抓最新資料
       try {
         let response = await fetch(API_URL);
         let rawText = await response.text(); 
-        
-        try {
-          allRecords = JSON.parse(rawText);
-          if (!Array.isArray(allRecords)) allRecords = [];
-        } catch (e) {
-          console.error("JSON Error:", rawText);
-          document.getElementById('recordsList').innerHTML = '<div style="text-align:center; color:red; padding:20px;">[資料格式錯誤]<br>請檢查試算表中是否有空列或損壞的格式。</div>';
-          return;
-        }
-
-        try {
-          renderList();
-        } catch(e) {
-          console.error("Render Error:", e);
-          document.getElementById('recordsList').innerHTML = `<div style="text-align:center; color:red; padding:20px;">[繪製失敗]<br>${e.message}</div>`;
-        }
+        allRecords = JSON.parse(rawText);
+        if (!Array.isArray(allRecords)) allRecords = [];
+        renderList(); // 抓到新資料後再次更新畫面
       } catch (err) {
-        document.getElementById('recordsList').innerHTML = `<div style="text-align:center; color:red; padding:20px;">[API連線失敗]<br>${err.message}</div>`;
+        console.warn('Load from cloud failed. Working offline mode.', err);
+        if (allRecords.length === 0) {
+          document.getElementById('recordsList').innerHTML = `<div style="text-align:center; color:red; padding:20px;">[請檢查網路連線]<br>${err.message}</div>`;
+        }
       }
     }
 
@@ -574,12 +547,7 @@
         btn.disabled = false;
       }, 2000);
 
-      fetch(API_URL, {
-        method: 'POST',
-        redirect: 'follow',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      }).catch(err => console.error('Background save failed:', err));
+      syncToCloud(payload);
     });
 
     loadData();
