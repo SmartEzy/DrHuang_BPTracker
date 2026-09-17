@@ -11,9 +11,12 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=28">
+  <link rel="manifest" href="manifest.json?v=29">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
+  
+  <!-- 🌟 引入 Chart.js 圖表套件 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   
   <style>
     :root {
@@ -128,12 +131,32 @@
     
     .records-header {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between; /* 🌟 讓左邊放圖表按鈕，右邊放天數切換 */
       align-items: center;
       padding: 16px 20px 4px 20px;
       background-color: var(--bg-color);
       box-sizing: border-box;
       width: 100%;
+    }
+
+    /* 🌟 圖表展開切換按鈕 */
+    .chart-toggle-btn {
+      background: none; border: none; padding: 4px 8px; margin: 0;
+      color: var(--primary-color); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 6px; transition: all 0.2s;
+    }
+    .chart-toggle-btn.active {
+      background-color: #E2E8F0; color: var(--primary-dark);
+    }
+
+    /* 🌟 圖表容器 (預設隱藏) */
+    .chart-container {
+      width: 100%; max-width: 500px; margin: 0 auto; 
+      padding: 10px 20px; box-sizing: border-box;
+      background-color: var(--bg-color);
+      height: 220px; /* 固定高度，畫面不會亂跳 */
+      display: none; 
     }
 
     .capsule-group {
@@ -248,12 +271,23 @@
       </form>
     </div>
 
+    <!-- 🌟 控制列：圖表開關 ＆ 天數過濾器 -->
     <div class="records-header">
+      <button id="toggleChartBtn" class="chart-toggle-btn" title="Toggle Trend Chart">
+        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+      </button>
       <div class="capsule-group">
         <button class="capsule-btn" data-val="7days">7 days</button>
         <button class="capsule-btn active" data-val="30days">30 days</button>
         <button class="capsule-btn" data-val="all">All</button>
       </div>
+    </div>
+
+    <!-- 🌟 隱藏式圖表容器 -->
+    <div id="chartContainer" class="chart-container">
+      <canvas id="bpChart"></canvas>
     </div>
     
     <div class="container" style="padding-top: 5px; padding-bottom: 0;">
@@ -272,10 +306,25 @@
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
     let allRecords = [];
     let currentFilter = '30days'; 
+    let bpChartInstance = null; // 儲存圖表實例
 
     const now = new Date();
     document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    // 圖表切換按鈕邏輯
+    const toggleChartBtn = document.getElementById('toggleChartBtn');
+    const chartContainer = document.getElementById('chartContainer');
+    toggleChartBtn.addEventListener('click', () => {
+      if (chartContainer.style.display === 'block') {
+        chartContainer.style.display = 'none';
+        toggleChartBtn.classList.remove('active');
+      } else {
+        chartContainer.style.display = 'block';
+        toggleChartBtn.classList.add('active');
+        if (bpChartInstance) bpChartInstance.update(); // 展開時觸發重繪以防跑版
+      }
+    });
 
     document.querySelectorAll('.capsule-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
@@ -286,30 +335,89 @@
       });
     });
 
-    // 🌟 全新精準刪除函數，格式化對話框
     function deleteRecord(formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime) {
-      // 依照您的要求排列對話框文字
       const msg = `${formattedDate} ${formattedTime} ${sys}/${dia} mmHg  ${hr} bpm\n確定刪除？`;
       if (!confirm(msg)) return;
 
-      // 1. 使用「未格式化」的 rawDate 與 rawTime 來過濾，保證畫面能立刻刪掉！
       allRecords = allRecords.filter(r => !(r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr));
       renderList();
 
-      // 2. 將格式化後的標準時間送給後端
       fetch(API_URL, {
         method: 'POST',
         redirect: 'follow',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify({ 
-          action: 'delete', 
-          date: formattedDate, 
-          time: formattedTime,
-          sys: sys,
-          dia: dia,
-          hr: hr
-        })
+        body: JSON.stringify({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr })
       }).catch(err => console.error('Delete failed:', err));
+    }
+
+    // 🌟 獨立的繪製圖表函數
+    function updateChart(displayData) {
+      const ctx = document.getElementById('bpChart').getContext('2d');
+      
+      // 整理圖表需要的 X軸 (日期時間) 與 Y軸 (收縮/舒張壓) 數據
+      const labels = displayData.map(d => {
+        let dateParts = d.date.split('/'); // 轉換為短格式 MM/DD
+        let shortDate = dateParts.length === 3 ? `${dateParts[1]}/${dateParts[2]}` : d.date;
+        return shortDate; 
+      });
+      const sysData = displayData.map(d => d.systolic);
+      const diaData = displayData.map(d => d.diastolic);
+
+      if (bpChartInstance) {
+        bpChartInstance.data.labels = labels;
+        bpChartInstance.data.datasets[0].data = sysData;
+        bpChartInstance.data.datasets[1].data = diaData;
+        bpChartInstance.update();
+      } else {
+        bpChartInstance = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: 'SYS',
+                data: sysData,
+                borderColor: '#495057', // 深灰色
+                backgroundColor: '#495057',
+                borderWidth: 2,
+                tension: 0.3, // 平滑曲線
+                pointRadius: 2.5
+              },
+              {
+                label: 'DIA',
+                data: diaData,
+                borderColor: '#8FA3B8', // 藍灰色
+                backgroundColor: '#8FA3B8',
+                borderWidth: 2,
+                tension: 0.3, 
+                pointRadius: 2.5
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: {
+                display: true,
+                position: 'top',
+                labels: { boxWidth: 10, font: { size: 11, family: '-apple-system' } }
+              }
+            },
+            scales: {
+              x: { 
+                grid: { display: false },
+                ticks: { maxTicksLimit: 6, font: { size: 10 } } // 限制 X 軸標籤數量，防擁擠
+              },
+              y: { 
+                grid: { color: '#E2E8F0' },
+                suggestedMin: 60, 
+                suggestedMax: 150 
+              }
+            }
+          }
+        });
+      }
     }
 
     function renderList() {
@@ -339,6 +447,9 @@
 
         return timeValA - timeValB; 
       });
+
+      // 🌟 同步更新圖表
+      updateChart(displayData);
 
       let html = '';
 
@@ -391,7 +502,6 @@
               <div>${item.heartRate || ''}</div>
               <div class="note-col">${item.notes || ''}</div>
               <div>
-                <!-- 🌟 傳入格式化與未格式化的資料供刪除腳本精準比對 -->
                 <button class="delete-btn" onclick="deleteRecord('${formattedDate}', '${formattedTime}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}')" title="Delete">
                   <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
