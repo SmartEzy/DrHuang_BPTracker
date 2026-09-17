@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=17">
+  <link rel="manifest" href="manifest.json?v=18">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -31,41 +31,40 @@
       margin: 0; padding: 0; 
     }
     
-    /* 🌟 完全還原截圖：深灰色橫幅 */
-    .banner {
-      background-color: var(--primary-dark);
-      padding: 12px 20px; 
+    /* 🌟 完美還原截圖：白底 Logo 區塊 + 深灰橫幅的拼接設計 */
+    .banner-container {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-sizing: border-box;
+      align-items: stretch; /* 讓左右區塊等高 */
       width: 100%;
+      height: 56px; /* 固定高度，確保拼接完美 */
+      box-sizing: border-box;
     }
 
-    .banner-title {
-      display: flex;
-      align-items: center;
-      gap: 12px; /* 白底Logo與文字的間距 */
-    }
-
-    /* 🌟 完全還原截圖：白底方形 Logo 區塊 */
+    /* 左側：純白底色區塊，裝 Logo */
     .logo-box {
       background-color: #FFFFFF;
-      width: 36px;
-      height: 36px;
+      padding: 0 16px; 
       display: flex;
-      justify-content: center;
       align-items: center;
-      border-radius: 4px; /* 加上極微小的圓角，看起來更精緻 */
+      justify-content: center;
     }
 
     .banner-logo {
-      width: 26px; /* 圖示大小，產生完美的留白邊界 */
-      height: 26px;
+      width: 32px; 
+      height: 32px;
       object-fit: contain;
     }
+
+    /* 右側：深灰色橫幅區塊 */
+    .banner-content {
+      background-color: var(--primary-dark);
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px 0 16px;
+    }
     
-    /* 🌟 完全還原截圖：白色標題文字 */
     .banner-text {
       font-size: 20px;
       font-weight: bold;
@@ -160,21 +159,22 @@
       margin: 0 auto;
     }
 
+    /* 🌟 解決 HR 間距過大：縮小 BP 欄寬 (從 2fr 降到 1.5fr)，讓 HR 緊靠 BP 右側 */
     .list-header {
       display: grid;
-      grid-template-columns: 2fr 1.2fr 2fr 44px 3fr; 
+      grid-template-columns: 2fr 1.2fr 1.5fr 40px 3.3fr; 
       gap: 4px; 
       padding-bottom: 8px;
       border-bottom: 2px solid var(--primary-dark);
       font-weight: bold; font-size: 14px; 
       color: var(--primary-dark); text-align: center;
     }
-    .list-header div:nth-child(4) { text-align: right; padding-right: 4px; }
+    .list-header div:nth-child(4) { text-align: center; padding: 0; } /* HR 置中對齊 */
     .list-header div:last-child { text-align: left; padding-left: 12px; }
 
     .record-row {
       display: grid; 
-      grid-template-columns: 2fr 1.2fr 2fr 44px 3fr;
+      grid-template-columns: 2fr 1.2fr 1.5fr 40px 3.3fr;
       gap: 4px; align-items: center; 
       padding: 4px 0; 
       font-size: 15px; 
@@ -182,7 +182,7 @@
       color: var(--text-main); text-align: center;
       font-variant-numeric: tabular-nums; 
     }
-    .record-row div:nth-child(4) { text-align: right; padding-right: 4px; font-weight: bold; }
+    .record-row div:nth-child(4) { text-align: center; padding: 0; font-weight: bold; } /* HR 置中對齊 */
     .record-row div:last-child { text-align: left; padding-left: 12px; }
     
     .bp-col-align {
@@ -202,15 +202,15 @@
 
   <div class="sticky-top-panel">
     
-    <!-- 🌟 完全對齊您圖片設計的 Banner -->
-    <div class="banner">
-      <div class="banner-title">
-        <div class="logo-box">
-          <img src="./icon.png" alt="Logo" class="banner-logo">
-        </div>
-        <span class="banner-text">BP Tracker</span>
+    <!-- 🌟 全新拼接式 Header 結構 -->
+    <div class="banner-container">
+      <div class="logo-box">
+        <img src="./icon.png" alt="Logo" class="banner-logo">
       </div>
-      <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
+      <div class="banner-content">
+        <span class="banner-text">BP Tracker</span>
+        <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
+      </div>
     </div>
     
     <div class="container" style="padding-bottom: 5px; padding-top: 5px;">
