@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=15">
+  <link rel="manifest" href="manifest.json?v=16">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -31,15 +31,12 @@
       margin: 0; padding: 0; 
     }
     
-    /* 🌟 恢復深灰色橫幅，左右對齊排列 */
+    /* 🌟 徹底移除深灰底色，改為融入背景的無邊框標題列 */
     .banner {
-      background-color: var(--primary-dark);
-      color: white;
-      padding: 14px 20px; 
-      font-size: 18px;
-      font-weight: bold;
+      background-color: var(--bg-color);
+      padding: 12px 20px 8px 20px; 
       display: flex;
-      justify-content: space-between; /* 恢復左右靠齊 */
+      justify-content: space-between;
       align-items: center;
       box-sizing: border-box;
       width: 100%;
@@ -48,22 +45,35 @@
     .banner-title {
       display: flex;
       align-items: center;
-      gap: 10px; 
+      gap: 10px; /* 元素間距 */
     }
 
-    /* Logo：尺寸精準，不撐大橫幅 */
+    /* 🌟 三元素高度統一為 24px */
+    .title-bar {
+      width: 4px;
+      height: 24px;
+      background-color: var(--primary-dark);
+      border-radius: 2px;
+    }
+
     .banner-logo {
-      width: 22px; 
-      height: 22px;
-      background-color: #FFFFFF; 
-      border-radius: 6px; 
-      padding: 2px; 
-      object-fit: cover;
+      width: 24px; 
+      height: 24px;
+      object-fit: contain;
+      /* 移除白底與圓角，直接顯示原圖 */
     }
     
+    .banner-text {
+      font-size: 22px;
+      line-height: 24px;
+      font-weight: bold;
+      color: var(--primary-dark);
+    }
+
+    /* 重新整理按鈕改為深灰色 */
     .refresh-btn {
       background: none; border: none; 
-      color: white; 
+      color: var(--primary-dark); 
       font-size: 20px; cursor: pointer; padding: 0; 
       display: flex; align-items: center;
     }
@@ -192,10 +202,11 @@
   <div class="sticky-top-panel">
     
     <div class="banner">
-      <!-- 🌟 Logo 與標題靠左正常排列 -->
+      <!-- 🌟 無邊框標題列：窄桿 + Logo原圖 + 深灰文字 -->
       <div class="banner-title">
+        <div class="title-bar"></div>
         <img src="./icon.png" alt="Logo" class="banner-logo">
-        <span>BP Tracker</span>
+        <span class="banner-text">BP Tracker</span>
       </div>
       <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
     </div>
