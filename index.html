@@ -5,14 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>BP Tracker</title>
   
-  <!-- 🚀 完美複製您的設定：透明狀態列與強制無快取 -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=6">
+  <link rel="manifest" href="manifest.json?v=9">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -41,6 +40,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      /* 限制橫幅寬度與內部間距，確保在電腦上不會過寬 */
+      box-sizing: border-box;
+      width: 100%;
     }
     
     .refresh-btn {
@@ -93,19 +95,35 @@
     }
     .notes-save-row button.primary-btn:hover { background-color: #768B9E; }
     
+    /* 記錄區標題列 */
+    .records-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px 4px 20px;
+      background-color: var(--bg-color);
+      color: var(--primary-dark);
+      font-size: 18px;
+      font-weight: bold;
+      /* 限制橫幅寬度，確保在電腦上對齊 */
+      box-sizing: border-box;
+      width: 100%;
+    }
+
     .capsule-group {
-      display: flex; background-color: #343A40; border-radius: 20px; padding: 3px;
+      display: flex; background-color: #E2E8F0; border-radius: 20px; padding: 3px;
     }
     .capsule-btn {
-      background: transparent; color: #A0AAB5; border: none; padding: 6px 12px;
+      background: transparent; color: #64748B; border: none; padding: 6px 12px;
       font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 18px;
       transition: all 0.2s;
     }
     .capsule-btn.active {
       background-color: #FFFFFF; color: var(--primary-dark);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
     }
 
-    /* 🚀 在凍結區塊上方加入物理留白，強迫出現淺色頂部 */
+    /* 頂部凍結區塊：加上最大寬度與置中設定，讓大螢幕完美置中 */
     .sticky-top-panel {
       position: -webkit-sticky; 
       position: sticky;
@@ -113,11 +131,12 @@
       z-index: 100;
       background-color: var(--bg-color); 
       box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); 
-      /* 強制留出至少 20px 的淺色保護區，讓狀態列文字清楚顯示 */
       padding-top: max(env(safe-area-inset-top), 20px);
+      /* 電腦版完美對齊關鍵 */
+      max-width: 500px;
+      margin: 0 auto;
     }
 
-    /* 🚀 重新分配比例：Date, Time, BP, HR 皆置中對齊，縮小 BP 寬度讓 HR 靠過來 */
     .list-header {
       display: grid;
       grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr; 
@@ -128,6 +147,7 @@
       color: var(--primary-dark); text-align: center;
     }
     .list-header div:last-child { text-align: left; padding-left: 4px; }
+    .list-header div:nth-child(4) { justify-self: center; width: 36px; text-align: right; padding-right: 0; }
 
     .record-row {
       display: grid; 
@@ -139,7 +159,7 @@
       color: var(--text-main); text-align: center;
       font-variant-numeric: tabular-nums; 
     }
-    .record-row div:nth-child(4) { font-weight: bold; } /* HR 加粗 */
+    .record-row div:nth-child(4) { justify-self: center; width: 36px; text-align: right; padding-right: 0; font-weight: bold; }
     .record-row div:last-child { text-align: left; padding-left: 4px; }
     
     .bp-col-align {
@@ -187,7 +207,8 @@
       </form>
     </div>
 
-    <div class="banner" style="margin-top: 10px;">
+    <!-- 🌟 全新輕量化 Records 標題區塊 -->
+    <div class="records-header">
       <span>Records</span>
       <div class="capsule-group">
         <button class="capsule-btn" data-val="7days">7 days</button>
@@ -196,7 +217,7 @@
       </div>
     </div>
     
-    <div class="container" style="padding-top: 15px; padding-bottom: 0;">
+    <div class="container" style="padding-top: 5px; padding-bottom: 0;">
       <div class="list-header">
         <div>Date</div><div>Time</div><div>BP</div><div>HR</div><div>Notes</div>
       </div>
@@ -229,8 +250,7 @@
     function renderList() {
       let displayData = [...allRecords];
 
-      // 防禦性寫法：過濾掉沒有日期的無效資料
-      displayData = displayData.filter(r => r && r.date);
+      displayData = displayData.filter(r => r && r.date && String(r.date).trim() !== '');
 
       if (currentFilter === '7days') {
         let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
@@ -283,7 +303,7 @@
           }
 
           let sysNum = parseInt(item.systolic, 10);
-          let sysHtml = (sysNum >= 130) ? `<span class="high-bp">${item.systolic}</span>` : item.systolic;
+          let sysHtml = (sysNum >= 130) ? `<span class="high-bp">${item.systolic}</span>` : (item.systolic || '');
 
           let displayDateText = (lastDate !== formattedDate) ? formattedDate : '';
 
@@ -315,10 +335,25 @@
     async function loadData() {
       try {
         let response = await fetch(API_URL);
-        allRecords = await response.json();
-        renderList();
+        let rawText = await response.text(); 
+        
+        try {
+          allRecords = JSON.parse(rawText);
+          if (!Array.isArray(allRecords)) allRecords = [];
+        } catch (e) {
+          console.error("JSON Error:", rawText);
+          document.getElementById('recordsList').innerHTML = '<div style="text-align:center; color:red; padding:20px;">[資料格式錯誤]<br>請檢查試算表中是否有空列或損壞的格式。</div>';
+          return;
+        }
+
+        try {
+          renderList();
+        } catch(e) {
+          console.error("Render Error:", e);
+          document.getElementById('recordsList').innerHTML = `<div style="text-align:center; color:red; padding:20px;">[繪製失敗]<br>${e.message}</div>`;
+        }
       } catch (err) {
-        document.getElementById('recordsList').innerHTML = '<div style="text-align:center; color:red; padding:20px;">Failed to load data.</div>';
+        document.getElementById('recordsList').innerHTML = `<div style="text-align:center; color:red; padding:20px;">[API連線失敗]<br>${err.message}</div>`;
       }
     }
 
@@ -337,7 +372,12 @@
       };
 
       allRecords.push(payload); 
-      renderList();
+      
+      try {
+        renderList();
+      } catch(e) {
+        console.error(e);
+      }
 
       document.getElementById('bpForm').reset();
       let curr = new Date();
