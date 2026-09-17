@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=24">
+  <link rel="manifest" href="manifest.json?v=25">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -161,11 +161,11 @@
       margin: 0 auto;
     }
 
-    /* 🌟 左側收緊並減小 gap，右側 Notes 解放為 1fr 吃滿剩餘空間 */
+    /* 🌟 終極平衡版：Date/Time 鎖定對齊，剩下空間依黃金比例分配，拒絕過度擠壓！ */
     .list-header {
       display: grid;
-      grid-template-columns: 86px 46px 64px 34px 1fr; 
-      gap: 4px; 
+      grid-template-columns: 88px 48px 1.8fr 1fr 2fr; 
+      gap: 6px; 
       padding-bottom: 8px;
       border-bottom: 2px solid var(--primary-dark);
       font-weight: bold; font-size: 14px; 
@@ -176,8 +176,8 @@
 
     .record-row {
       display: grid; 
-      grid-template-columns: 86px 46px 64px 34px 1fr;
-      gap: 4px; align-items: center; 
+      grid-template-columns: 88px 48px 1.8fr 1fr 2fr;
+      gap: 6px; align-items: center; 
       padding: 4px 0; 
       font-size: 15px; 
       line-height: 1.1; 
