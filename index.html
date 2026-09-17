@@ -2,16 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  
-  <meta name="theme-color" content="#F4F6F8" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#F4F6F8" media="(prefers-color-scheme: dark)">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  
   <title>BP Tracker</title>
   
-  <link rel="manifest" href="manifest.json?v=5">
+  <!-- 🚀 完美複製您的設定：透明狀態列與強制無快取 -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">  
+
+  <link rel="manifest" href="manifest.json?v=6">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -25,12 +26,10 @@
       --danger-color: #D32F2F; 
     }
     
-    /* 強制設定底色，並利用蘋果安全邊距將深色橫幅往下擠 */
     html, body {
       font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-color); color: var(--text-main);
       margin: 0; padding: 0; 
-      padding-top: env(safe-area-inset-top); 
     }
     
     .banner {
@@ -106,6 +105,7 @@
       background-color: #FFFFFF; color: var(--primary-dark);
     }
 
+    /* 🚀 在凍結區塊上方加入物理留白，強迫出現淺色頂部 */
     .sticky-top-panel {
       position: -webkit-sticky; 
       position: sticky;
@@ -113,49 +113,46 @@
       z-index: 100;
       background-color: var(--bg-color); 
       box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); 
+      /* 強制留出至少 20px 的淺色保護區，讓狀態列文字清楚顯示 */
+      padding-top: max(env(safe-area-inset-top), 20px);
     }
 
+    /* 🚀 重新分配比例：Date, Time, BP, HR 皆置中對齊，縮小 BP 寬度讓 HR 靠過來 */
     .list-header {
       display: grid;
-      grid-template-columns: 1.8fr 1.1fr 2.3fr 1.2fr 1.6fr; 
+      grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr; 
       gap: 4px; 
       padding-bottom: 8px;
       border-bottom: 2px solid var(--primary-dark);
       font-weight: bold; font-size: 14px; 
       color: var(--primary-dark); text-align: center;
     }
-    /* 修改對齊：讓 Date 置中，只保留 Notes 靠左 */
-    .list-header div:last-child { text-align: left; }
-    .list-header div:nth-child(4) { justify-self: center; width: 36px; text-align: right; padding-right: 0; }
+    .list-header div:last-child { text-align: left; padding-left: 4px; }
 
     .record-row {
       display: grid; 
-      grid-template-columns: 1.8fr 1.1fr 2.3fr 1.2fr 1.6fr;
+      grid-template-columns: 1.8fr 1.2fr 2fr 1fr 2fr;
       gap: 4px; align-items: center; 
-      padding: 2px 0; 
+      padding: 4px 0; 
       font-size: 15px; 
       line-height: 1.1; 
       color: var(--text-main); text-align: center;
       font-variant-numeric: tabular-nums; 
     }
-    /* 修改對齊：讓 Date 置中，只保留 Notes 靠左 */
-    .record-row div:last-child { text-align: left; }
-    .record-row div:nth-child(4) { justify-self: center; width: 36px; text-align: right; padding-right: 0; font-weight: bold; }
+    .record-row div:nth-child(4) { font-weight: bold; } /* HR 加粗 */
+    .record-row div:last-child { text-align: left; padding-left: 4px; }
     
     .bp-col-align {
-      display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center;
+      display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center; justify-content: center;
     }
     .bp-sys { text-align: right; font-weight: bold; }
     .bp-slash { color: #888; font-weight: normal; } 
     .bp-dia { text-align: left; font-weight: bold; }
 
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; }
-    
     .high-bp { color: var(--danger-color); font-weight: bold; }
-    
     .day-divider { border-top: 2px solid var(--primary-color); margin: 3px 0; }
     .item-divider { border-top: 1px dashed #E2E8F0; margin: 3px 0; }
-
   </style>
 </head>
 <body>
@@ -232,7 +229,7 @@
     function renderList() {
       let displayData = [...allRecords];
 
-      // 防禦性寫法：過濾掉沒有日期的空白無效資料
+      // 防禦性寫法：過濾掉沒有日期的無效資料
       displayData = displayData.filter(r => r && r.date);
 
       if (currentFilter === '7days') {
@@ -243,7 +240,6 @@
         displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff);
       }
 
-      // 防禦性時間排序：若缺少時間，以 0 處理避免系統崩潰
       displayData.sort((a, b) => {
         let dateA = a.date ? String(a.date).replace(/-/g, '/') : '';
         let timeA = a.time ? String(a.time) : '';
