@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=25">
+  <link rel="manifest" href="manifest.json?v=26">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -161,10 +161,10 @@
       margin: 0 auto;
     }
 
-    /* 🌟 終極平衡版：Date/Time 鎖定對齊，剩下空間依黃金比例分配，拒絕過度擠壓！ */
+    /* 🌟 新增第六個隱藏區塊 (24px) 來裝垃圾桶 */
     .list-header {
       display: grid;
-      grid-template-columns: 88px 48px 1.8fr 1fr 2fr; 
+      grid-template-columns: 88px 48px 1.8fr 1fr 2fr 24px; 
       gap: 6px; 
       padding-bottom: 8px;
       border-bottom: 2px solid var(--primary-dark);
@@ -172,11 +172,11 @@
       color: var(--primary-dark); text-align: center;
     }
     .list-header div:nth-child(4) { text-align: center; padding: 0; } 
-    .list-header div:last-child { text-align: left; padding-left: 8px; }
+    .list-header div:nth-child(5) { text-align: left; padding-left: 8px; }
 
     .record-row {
       display: grid; 
-      grid-template-columns: 88px 48px 1.8fr 1fr 2fr;
+      grid-template-columns: 88px 48px 1.8fr 1fr 2fr 24px;
       gap: 6px; align-items: center; 
       padding: 4px 0; 
       font-size: 15px; 
@@ -185,8 +185,20 @@
       font-variant-numeric: tabular-nums; 
     }
     .record-row div:nth-child(4) { text-align: center; padding: 0; font-weight: bold; } 
-    .record-row div:last-child { text-align: left; padding-left: 8px; }
+    .record-row div:nth-child(5) { text-align: left; padding-left: 8px; }
     
+    /* 🌟 純 CSS 畫出來的微型垃圾桶按鈕 */
+    .delete-btn {
+      background: none; border: none; padding: 0; margin: 0;
+      color: #CBD5E1; /* 超淡的灰色 */
+      cursor: pointer;
+      display: flex; justify-content: center; align-items: center;
+      transition: color 0.2s;
+    }
+    .delete-btn:hover, .delete-btn:active {
+      color: var(--danger-color); /* 點擊時變成紅色警告 */
+    }
+
     .bp-col-align {
       display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center; justify-content: center;
     }
@@ -248,7 +260,7 @@
     
     <div class="container" style="padding-top: 5px; padding-bottom: 0;">
       <div class="list-header">
-        <div>Date</div><div>Time</div><div>BP</div><div>HR</div><div>Notes</div>
+        <div>Date</div><div>Time</div><div>BP</div><div>HR</div><div>Notes</div><div></div> <!-- 多留一個洞給垃圾桶對齊 -->
       </div>
     </div>
 
@@ -275,6 +287,23 @@
         renderList();
       });
     });
+
+    // 🌟 刪除資料的核心函數
+    function deleteRecord(dateStr, timeStr) {
+      if (!confirm(`確定要刪除 ${dateStr} ${timeStr} 的紀錄嗎？`)) return;
+
+      // 1. 先從前端畫面中移除，讓使用者立刻感覺到反應
+      allRecords = allRecords.filter(r => !(r.date === dateStr && r.time === timeStr));
+      renderList();
+
+      // 2. 在背景發送刪除指令給 Google Sheets
+      fetch(API_URL, {
+        method: 'POST',
+        redirect: 'follow',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ action: 'delete', date: dateStr, time: timeStr })
+      }).catch(err => console.error('Delete failed:', err));
+    }
 
     function renderList() {
       let displayData = [...allRecords];
@@ -354,6 +383,15 @@
               </div>
               <div>${item.heartRate || ''}</div>
               <div class="note-col">${item.notes || ''}</div>
+              <div>
+                <!-- 🌟 極簡 SVG 畫出來的垃圾桶圖示 -->
+                <button class="delete-btn" onclick="deleteRecord('${item.date}', '${item.time}')" title="Delete">
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                </button>
+              </div>
             </div>
           `;
         });
@@ -392,6 +430,7 @@
       btn.disabled = true;
 
       const payload = {
+        action: 'add', // 加上 action 標籤供後端辨識
         date: document.getElementById('date').value,
         time: document.getElementById('time').value,
         systolic: document.getElementById('systolic').value,
@@ -400,13 +439,9 @@
         notes: document.getElementById('notes').value
       };
 
+      // 畫面先加上去
       allRecords.push(payload); 
-      
-      try {
-        renderList();
-      } catch(e) {
-        console.error(e);
-      }
+      renderList();
 
       document.getElementById('bpForm').reset();
       let curr = new Date();
@@ -423,6 +458,7 @@
         btn.disabled = false;
       }, 2000);
 
+      // 送到後端
       fetch(API_URL, {
         method: 'POST',
         redirect: 'follow',
