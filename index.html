@@ -161,10 +161,10 @@
       margin: 0 auto;
     }
 
-    /* 🌟 將 BP 寬度比例縮小至 1fr，HR 縮至 34px，大幅向左聚攏數據區 */
+    /* 🌟 大幅限縮 Notes (0.5fr) 並增加左側主數據區權重 (BP 給予 1.5fr) */
     .list-header {
       display: grid;
-      grid-template-columns: 88px 48px 1fr 34px 1.6fr; 
+      grid-template-columns: 90px 50px 1.5fr 38px 0.5fr; 
       gap: 4px; 
       padding-bottom: 8px;
       border-bottom: 2px solid var(--primary-dark);
@@ -172,11 +172,11 @@
       color: var(--primary-dark); text-align: center;
     }
     .list-header div:nth-child(4) { text-align: center; padding: 0; } 
-    .list-header div:last-child { text-align: left; padding-left: 14px; }
+    .list-header div:last-child { text-align: left; padding-left: 12px; }
 
     .record-row {
       display: grid; 
-      grid-template-columns: 88px 48px 1fr 34px 1.6fr;
+      grid-template-columns: 90px 50px 1.5fr 38px 0.5fr;
       gap: 4px; align-items: center; 
       padding: 4px 0; 
       font-size: 15px; 
@@ -185,7 +185,7 @@
       font-variant-numeric: tabular-nums; 
     }
     .record-row div:nth-child(4) { text-align: center; padding: 0; font-weight: bold; } 
-    .record-row div:last-child { text-align: left; padding-left: 14px; }
+    .record-row div:last-child { text-align: left; padding-left: 12px; }
     
     .bp-col-align {
       display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center; justify-content: center;
@@ -215,7 +215,8 @@
       </div>
     </div>
     
-    <div class="container" style="padding-bottom: 5px; padding-top: 5px;">
+    <!-- 🌟 拉開橫幅與輸入區的間距 (padding-top 改為 16px) -->
+    <div class="container" style="padding-bottom: 5px; padding-top: 16px;">
       <form id="bpForm">
         <div class="form-group date-time-layout">
           <div class="date-box"><input type="date" id="date" required></div>
