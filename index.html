@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=19">
+  <link rel="manifest" href="manifest.json?v=20">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -31,44 +31,41 @@
       margin: 0; padding: 0; 
     }
     
-    /* 🌟 完美還原截圖：三段式無縫拼接橫幅，並大幅縮減高度 */
     .banner-container {
       display: flex;
-      align-items: stretch; /* 讓內部三個區塊等高 */
+      align-items: stretch; 
       width: 100%;
-      height: 44px; /* 壓縮高度，減少上下留白 */
+      height: 44px; 
       box-sizing: border-box;
     }
 
-    /* 1. 最左側：窄深的灰底 */
     .banner-left-bar {
       width: 12px; 
       background-color: var(--primary-dark);
     }
 
-    /* 2. 中間：純白底色區塊裝 Logo */
     .logo-box {
       background-color: #FFFFFF;
-      padding: 0 8px; /* 縮小左右留白 */
+      padding: 0 4px; /* 縮小左右留白，讓 Logo 有空間變大 */
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
+    /* 🌟 放大的 Logo：在 44px 高度內撐到最大 (36px) */
     .banner-logo {
-      width: 28px; /* 配合變矮的橫幅，稍微調整尺寸 */
-      height: 28px;
+      width: 36px; 
+      height: 36px;
       object-fit: contain;
     }
 
-    /* 3. 右側：主要的深灰色橫幅區塊 */
     .banner-content {
       background-color: var(--primary-dark);
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 16px 0 12px;
+      padding: 0 16px 0 10px;
     }
     
     .banner-text {
@@ -165,10 +162,13 @@
       margin: 0 auto;
     }
 
-    /* 保留前一版解決 HR 間距過大的最佳比例 */
+    /* 🌟 終極解決時間沒對齊＆Notes太大的問題：
+       1. Date 鎖定 88px，Time 鎖定 50px，保證冒號垂直完美對齊！
+       2. Notes 從原本的 3.3fr 壓縮到 0.9fr，把版面還給中心的 BP (1.1fr)
+    */
     .list-header {
       display: grid;
-      grid-template-columns: 2fr 1.2fr 1.5fr 40px 3.3fr; 
+      grid-template-columns: 88px 50px 1.1fr 40px 0.9fr; 
       gap: 4px; 
       padding-bottom: 8px;
       border-bottom: 2px solid var(--primary-dark);
@@ -180,7 +180,7 @@
 
     .record-row {
       display: grid; 
-      grid-template-columns: 2fr 1.2fr 1.5fr 40px 3.3fr;
+      grid-template-columns: 88px 50px 1.1fr 40px 0.9fr;
       gap: 4px; align-items: center; 
       padding: 4px 0; 
       font-size: 15px; 
@@ -208,13 +208,12 @@
 
   <div class="sticky-top-panel">
     
-    <!-- 🌟 三段式無縫拼接結構 -->
     <div class="banner-container">
-      <div class="banner-left-bar"></div> <!-- 左側深灰窄條 -->
-      <div class="logo-box"> <!-- 白底 Logo -->
+      <div class="banner-left-bar"></div> 
+      <div class="logo-box"> 
         <img src="./icon.png" alt="Logo" class="banner-logo">
       </div>
-      <div class="banner-content"> <!-- 右側深灰文字區 -->
+      <div class="banner-content"> 
         <span class="banner-text">BP Tracker</span>
         <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
       </div>
