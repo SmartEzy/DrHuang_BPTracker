@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=30">
+  <link rel="manifest" href="manifest.json?v=31">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -128,12 +128,11 @@
     }
     .notes-save-row button.primary-btn:hover { background-color: #768B9E; }
     
-    /* 🌟 快捷狀態標籤 (Quick Tags) 樣式 */
     .quick-tags-container {
       display: flex; gap: 8px; margin-top: 10px; margin-bottom: 2px;
       overflow-x: auto; padding-bottom: 2px;
     }
-    .quick-tags-container::-webkit-scrollbar { display: none; } /* 隱藏滾動條 */
+    .quick-tags-container::-webkit-scrollbar { display: none; } 
     .quick-tag-btn {
       background-color: #E2E8F0; color: #495057; border: none;
       padding: 6px 12px; font-size: 13px; font-weight: 500;
@@ -256,7 +255,6 @@
           <button type="submit" id="submitBtn" class="primary-btn">Save</button>
         </div>
         
-        <!-- 🌟 快捷狀態標籤列 -->
         <div class="quick-tags-container">
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('💊 吃藥')">💊 吃藥</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('😵 暈眩')">😵 暈眩</button>
@@ -304,25 +302,21 @@
     let currentFilter = '30days'; 
     let bpChartInstance = null; 
 
-    // 初始化時間
     const now = new Date();
     document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-    // 🌟 Quick Tag 自動填入邏輯
     function addQuickTag(tagText) {
       const notesInput = document.getElementById('notes');
       if (notesInput.value.trim() === '') {
         notesInput.value = tagText;
       } else {
-        // 如果還沒加入過這個標籤，才用逗號串接，避免重複點擊
         if (!notesInput.value.includes(tagText)) {
           notesInput.value += `, ${tagText}`;
         }
       }
     }
 
-    // 圖表切換
     const toggleChartBtn = document.getElementById('toggleChartBtn');
     const chartContainer = document.getElementById('chartContainer');
     toggleChartBtn.addEventListener('click', () => {
@@ -345,7 +339,6 @@
       });
     });
 
-    // 🌟 將請求推送到雲端，失敗則加入離線暫存隊列
     function syncToCloud(payload) {
       fetch(API_URL, {
         method: 'POST',
@@ -360,7 +353,6 @@
       });
     }
 
-    // 🌟 網路恢復時，自動消耗離線隊列
     window.addEventListener('online', () => {
       let queue = JSON.parse(localStorage.getItem('bpSyncQueue') || '[]');
       if (queue.length > 0) {
@@ -423,7 +415,6 @@
     }
 
     function renderList() {
-      // 🌟 將當前最新紀錄存入快取，供下次秒開使用
       localStorage.setItem('bpCacheRecords', JSON.stringify(allRecords));
 
       let displayData = [...allRecords];
@@ -461,13 +452,17 @@
           let sysNum = parseInt(item.systolic, 10);
           let sysHtml = (sysNum >= 130) ? `<span class="high-bp">${item.systolic}</span>` : (item.systolic || '');
 
+          // 🌟 修復的邏輯：先計算出 displayDateText，再更新 lastDate
+          let displayDateText = (lastDate !== formattedDate) ? formattedDate : '';
+
           if (lastDate !== null && lastDate !== formattedDate) html += `<div class="day-divider"></div>`;
           else if (lastDate !== null) html += `<div class="item-divider"></div>`;
+          
           lastDate = formattedDate;
 
           html += `
             <div class="record-row">
-              <div>${lastDate !== formattedDate ? formattedDate : ''}</div>
+              <div>${displayDateText}</div>
               <div>${formattedTime}</div>
               <div class="bp-col-align">
                 <span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${item.diastolic || ''}</span>
@@ -490,7 +485,6 @@
     }
 
     async function loadData() {
-      // 🌟 秒開快取：先從本地讀取上次資料，瞬間畫出列表與圖表
       const cachedData = localStorage.getItem('bpCacheRecords');
       if (cachedData) {
         try {
@@ -499,13 +493,12 @@
         } catch(e) { console.error('Cache parsing error'); }
       }
 
-      // 背景默默去抓最新資料
       try {
         let response = await fetch(API_URL);
         let rawText = await response.text(); 
         allRecords = JSON.parse(rawText);
         if (!Array.isArray(allRecords)) allRecords = [];
-        renderList(); // 抓到新資料後再次更新畫面
+        renderList(); 
       } catch (err) {
         console.warn('Load from cloud failed. Working offline mode.', err);
         if (allRecords.length === 0) {
