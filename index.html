@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=27">
+  <link rel="manifest" href="manifest.json?v=28">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -286,23 +286,25 @@
       });
     });
 
-    // 🌟 更新的刪除函數：接收更多參數，並顯示包含 BP / HR 的確認視窗
-    function deleteRecord(dateStr, timeStr, sys, dia, hr) {
-      if (!confirm(`確定要刪除 ${dateStr} ${timeStr}\n[血壓: ${sys}/${dia} mmHg, 心跳: ${hr} bpm]\n這筆紀錄嗎？`)) return;
+    // 🌟 全新精準刪除函數，格式化對話框
+    function deleteRecord(formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime) {
+      // 依照您的要求排列對話框文字
+      const msg = `${formattedDate} ${formattedTime} ${sys}/${dia} mmHg  ${hr} bpm\n確定刪除？`;
+      if (!confirm(msg)) return;
 
-      // 1. 從前端畫面中移除
-      allRecords = allRecords.filter(r => !(r.date === dateStr && r.time === timeStr && r.systolic == sys && r.diastolic == dia));
+      // 1. 使用「未格式化」的 rawDate 與 rawTime 來過濾，保證畫面能立刻刪掉！
+      allRecords = allRecords.filter(r => !(r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr));
       renderList();
 
-      // 2. 傳送精準參數給 Google Sheets 後端執行刪除
+      // 2. 將格式化後的標準時間送給後端
       fetch(API_URL, {
         method: 'POST',
         redirect: 'follow',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify({ 
           action: 'delete', 
-          date: dateStr, 
-          time: timeStr,
+          date: formattedDate, 
+          time: formattedTime,
           sys: sys,
           dia: dia,
           hr: hr
@@ -389,8 +391,8 @@
               <div>${item.heartRate || ''}</div>
               <div class="note-col">${item.notes || ''}</div>
               <div>
-                <!-- 🌟 帶入 BP 與 HR 數據供刪除功能使用 -->
-                <button class="delete-btn" onclick="deleteRecord('${formattedDate}', '${formattedTime}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}')" title="Delete">
+                <!-- 🌟 傳入格式化與未格式化的資料供刪除腳本精準比對 -->
+                <button class="delete-btn" onclick="deleteRecord('${formattedDate}', '${formattedTime}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}')" title="Delete">
                   <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
