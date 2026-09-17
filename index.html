@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=33">
+  <link rel="manifest" href="manifest.json?v=34">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -147,6 +147,11 @@
       box-sizing: border-box; width: 100%;
     }
 
+    /* 圖表切換按鈕區域（包含按鈕與新圖例） */
+    .chart-controls-left {
+      display: flex; align-items: center; gap: 12px;
+    }
+
     .chart-toggle-btn {
       background: none; border: none; padding: 4px 8px; margin: 0;
       color: var(--primary-color); cursor: pointer;
@@ -157,7 +162,15 @@
       background-color: #E2E8F0; color: var(--primary-dark);
     }
 
-    /* 🌟 圖表預設顯示 (block) 並將高度縮減為 190px */
+    /* 🌟 自訂純手工 HTML 圖例 */
+    .custom-legend {
+      display: flex; gap: 12px; font-size: 12px; 
+      color: #64748B; font-weight: bold;
+    }
+    .legend-item { display: flex; align-items: center; gap: 4px; }
+    .legend-bp-box { width: 10px; height: 10px; background: #7895B2; border-radius: 2px; }
+    .legend-hr-line { width: 14px; height: 2px; background: #CBD5E1; }
+
     .chart-container {
       width: 100%; max-width: 500px; margin: 0 auto; 
       padding: 5px 20px 10px 20px; box-sizing: border-box;
@@ -268,12 +281,20 @@
     </div>
 
     <div class="records-header">
-      <!-- 🌟 按鈕加上 active 類別以預設顯示狀態 -->
-      <button id="toggleChartBtn" class="chart-toggle-btn active" title="Toggle Trend Chart">
-        <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-        </svg>
-      </button>
+      <!-- 🌟 將圖表按鈕與自訂圖例包裝在一起 -->
+      <div class="chart-controls-left">
+        <button id="toggleChartBtn" class="chart-toggle-btn active" title="Toggle Trend Chart">
+          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+          </svg>
+        </button>
+        
+        <div id="customLegend" class="custom-legend">
+          <div class="legend-item"><div class="legend-bp-box"></div> BP</div>
+          <div class="legend-item"><div class="legend-hr-line"></div> HR</div>
+        </div>
+      </div>
+
       <div class="capsule-group">
         <button class="capsule-btn" data-val="7days">7 days</button>
         <button class="capsule-btn active" data-val="30days">30 days</button>
@@ -322,12 +343,17 @@
 
     const toggleChartBtn = document.getElementById('toggleChartBtn');
     const chartContainer = document.getElementById('chartContainer');
+    const customLegend = document.getElementById('customLegend');
+    
+    // 點擊圖表按鈕時，同步隱藏/顯示圖例
     toggleChartBtn.addEventListener('click', () => {
       if (chartContainer.style.display === 'block') {
         chartContainer.style.display = 'none';
+        customLegend.style.display = 'none';
         toggleChartBtn.classList.remove('active');
       } else {
         chartContainer.style.display = 'block';
+        customLegend.style.display = 'flex';
         toggleChartBtn.classList.add('active');
         if (bpChartInstance) bpChartInstance.update(); 
       }
@@ -419,8 +445,9 @@
                 data: hrData,
                 borderColor: '#CBD5E1',     
                 borderWidth: 1.5,
-                tension: 0.4,               
-                pointRadius: 1,             
+                // 🌟 改為 tension: 0 (完全不平滑的真實折線) 遵守醫療真實性
+                tension: 0,               
+                pointRadius: 1.5,             
                 order: 3
               },
               {
@@ -444,16 +471,9 @@
               intersect: false,
             },
             plugins: { 
+              // 🌟 關閉內建圖例，使用自訂的 HTML 圖例，徹底釋放垂直空間！
               legend: { 
-                display: true, 
-                position: 'top', 
-                labels: { 
-                  boxWidth: 12, 
-                  font: { size: 11 },
-                  filter: function(item, chart) {
-                    return !item.text.includes('130 Limit');
-                  }
-                } 
+                display: false
               },
               tooltip: {
                 callbacks: {
@@ -473,7 +493,6 @@
               x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 10 } } },
               y: { 
                 grid: { color: '#E2E8F0' }, 
-                // 🌟 使用 suggestedMin / Max 提供穩定的視覺基準，遇到極端值會自動擴張
                 suggestedMin: 50, 
                 suggestedMax: 160 
               }
