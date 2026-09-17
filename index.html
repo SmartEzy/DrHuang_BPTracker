@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=21">
+  <link rel="manifest" href="manifest.json?v=24">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -161,10 +161,10 @@
       margin: 0 auto;
     }
 
-    /* 🌟 大幅限縮 Notes (0.5fr) 並增加左側主數據區權重 (BP 給予 1.5fr) */
+    /* 🌟 左側收緊並減小 gap，右側 Notes 解放為 1fr 吃滿剩餘空間 */
     .list-header {
       display: grid;
-      grid-template-columns: 90px 50px 1.5fr 38px 0.5fr; 
+      grid-template-columns: 86px 46px 64px 34px 1fr; 
       gap: 4px; 
       padding-bottom: 8px;
       border-bottom: 2px solid var(--primary-dark);
@@ -172,11 +172,11 @@
       color: var(--primary-dark); text-align: center;
     }
     .list-header div:nth-child(4) { text-align: center; padding: 0; } 
-    .list-header div:last-child { text-align: left; padding-left: 12px; }
+    .list-header div:last-child { text-align: left; padding-left: 8px; }
 
     .record-row {
       display: grid; 
-      grid-template-columns: 90px 50px 1.5fr 38px 0.5fr;
+      grid-template-columns: 86px 46px 64px 34px 1fr;
       gap: 4px; align-items: center; 
       padding: 4px 0; 
       font-size: 15px; 
@@ -185,7 +185,7 @@
       font-variant-numeric: tabular-nums; 
     }
     .record-row div:nth-child(4) { text-align: center; padding: 0; font-weight: bold; } 
-    .record-row div:last-child { text-align: left; padding-left: 12px; }
+    .record-row div:last-child { text-align: left; padding-left: 8px; }
     
     .bp-col-align {
       display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center; justify-content: center;
@@ -215,7 +215,6 @@
       </div>
     </div>
     
-    <!-- 🌟 拉開橫幅與輸入區的間距 (padding-top 改為 16px) -->
     <div class="container" style="padding-bottom: 5px; padding-top: 16px;">
       <form id="bpForm">
         <div class="form-group date-time-layout">
