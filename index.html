@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   
-  <!-- 終極狀態列破解：強迫 Safari 讀取淺灰色，無視深色模式 -->
   <meta name="theme-color" content="#F4F6F8" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#F4F6F8" media="(prefers-color-scheme: dark)">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -12,7 +11,7 @@
   
   <title>BP Tracker</title>
   
-  <link rel="manifest" href="manifest.json?v=4">
+  <link rel="manifest" href="manifest.json?v=5">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -25,11 +24,13 @@
       --border-color: #CED4DA;
       --danger-color: #D32F2F; 
     }
-    /* 強制 body 為淺灰色，避免 Safari 亂抓顏色 */
+    
+    /* 強制設定底色，並利用蘋果安全邊距將深色橫幅往下擠 */
     html, body {
       font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-color); color: var(--text-main);
       margin: 0; padding: 0; 
+      padding-top: env(safe-area-inset-top); 
     }
     
     .banner {
@@ -108,17 +109,12 @@
     .sticky-top-panel {
       position: -webkit-sticky; 
       position: sticky;
-      top: 0;
+      top: 0; 
       z-index: 100;
       background-color: var(--bg-color); 
       box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); 
-      padding-top: env(safe-area-inset-top); 
-      
-      /* 欺騙 Safari 狀態列的終極絕招：加一條 1px 隱形淺灰邊框 */
-      border-top: 1px solid var(--bg-color);
     }
 
-    /* --- 重調網格比例，解決間距過大/過近的問題 --- */
     .list-header {
       display: grid;
       grid-template-columns: 1.8fr 1.1fr 2.3fr 1.2fr 1.6fr; 
@@ -128,12 +124,9 @@
       font-weight: bold; font-size: 14px; 
       color: var(--primary-dark); text-align: center;
     }
-    .list-header div:first-child, .list-header div:last-child { text-align: left; }
-    
-    /* 讓 HR 欄位置中，但文字靠右，解決過度擠壓 Notes 的問題 */
-    .list-header div:nth-child(4) { 
-      justify-self: center; width: 36px; text-align: right; padding-right: 0; 
-    }
+    /* 修改對齊：讓 Date 置中，只保留 Notes 靠左 */
+    .list-header div:last-child { text-align: left; }
+    .list-header div:nth-child(4) { justify-self: center; width: 36px; text-align: right; padding-right: 0; }
 
     .record-row {
       display: grid; 
@@ -145,12 +138,9 @@
       color: var(--text-main); text-align: center;
       font-variant-numeric: tabular-nums; 
     }
-    .record-row div:first-child, .record-row div:last-child { text-align: left; }
-    
-    /* 讓 HR 數據置中於欄位，但數字本身靠右對齊 */
-    .record-row div:nth-child(4) { 
-      justify-self: center; width: 36px; text-align: right; padding-right: 0; font-weight: bold; 
-    }
+    /* 修改對齊：讓 Date 置中，只保留 Notes 靠左 */
+    .record-row div:last-child { text-align: left; }
+    .record-row div:nth-child(4) { justify-self: center; width: 36px; text-align: right; padding-right: 0; font-weight: bold; }
     
     .bp-col-align {
       display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center;
@@ -170,7 +160,6 @@
 </head>
 <body>
 
-  <!-- 上半部：全區凍結模組 -->
   <div class="sticky-top-panel">
     
     <div class="banner">
@@ -218,7 +207,6 @@
 
   </div> 
 
-  <!-- 下半部：純資料列表 -->
   <div class="container" style="padding-top: 5px; padding-bottom: 40px;">
     <div id="recordsList">Loading...</div>
   </div>
@@ -244,18 +232,31 @@
     function renderList() {
       let displayData = [...allRecords];
 
+      // 防禦性寫法：過濾掉沒有日期的空白無效資料
+      displayData = displayData.filter(r => r && r.date);
+
       if (currentFilter === '7days') {
         let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
-        displayData = displayData.filter(r => new Date(r.date.replace(/-/g, '/')) >= cutoff);
+        displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff);
       } else if (currentFilter === '30days') {
         let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
-        displayData = displayData.filter(r => new Date(r.date.replace(/-/g, '/')) >= cutoff);
+        displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff);
       }
 
+      // 防禦性時間排序：若缺少時間，以 0 處理避免系統崩潰
       displayData.sort((a, b) => {
-        let dtA = new Date(`${a.date.replace(/-/g, '/')} ${a.time}`);
-        let dtB = new Date(`${b.date.replace(/-/g, '/')} ${b.time}`);
-        return dtA - dtB; 
+        let dateA = a.date ? String(a.date).replace(/-/g, '/') : '';
+        let timeA = a.time ? String(a.time) : '';
+        let dtA = new Date(`${dateA} ${timeA}`);
+
+        let dateB = b.date ? String(b.date).replace(/-/g, '/') : '';
+        let timeB = b.time ? String(b.time) : '';
+        let dtB = new Date(`${dateB} ${timeB}`);
+
+        let timeValA = isNaN(dtA.getTime()) ? 0 : dtA.getTime();
+        let timeValB = isNaN(dtB.getTime()) ? 0 : dtB.getTime();
+
+        return timeValA - timeValB; 
       });
 
       let html = '';
@@ -266,20 +267,21 @@
         let lastDate = null;
 
         displayData.forEach(item => {
-          let dateObj = new Date(item.date);
+          let rawDate = item.date ? String(item.date) : '';
+          let dateObj = new Date(rawDate);
           
-          let formattedDate = item.date;
-          if (!isNaN(dateObj)) {
+          let formattedDate = rawDate;
+          if (!isNaN(dateObj) && rawDate !== '') {
             let y = dateObj.getFullYear();
             let m = String(dateObj.getMonth() + 1).padStart(2, '0');
             let d = String(dateObj.getDate()).padStart(2, '0');
             formattedDate = `${y}/${m}/${d}`;
           } else {
-            formattedDate = item.date.replace(/-/g, '/');
+            formattedDate = rawDate.replace(/-/g, '/');
           }
           
-          let timeParts = item.time.match(/(\d+):(\d+)/);
-          let formattedTime = item.time;
+          let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
+          let formattedTime = item.time ? String(item.time) : '';
           if (timeParts) {
             formattedTime = `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}`;
           }
@@ -303,9 +305,9 @@
               <div class="bp-col-align">
                 <span class="bp-sys">${sysHtml}</span>
                 <span class="bp-slash">/</span>
-                <span class="bp-dia">${item.diastolic}</span>
+                <span class="bp-dia">${item.diastolic || ''}</span>
               </div>
-              <div>${item.heartRate}</div>
+              <div>${item.heartRate || ''}</div>
               <div class="note-col">${item.notes || ''}</div>
             </div>
           `;
