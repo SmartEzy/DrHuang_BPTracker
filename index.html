@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=9">
+  <link rel="manifest" href="manifest.json?v=11">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -40,9 +40,25 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      /* 限制橫幅寬度與內部間距，確保在電腦上不會過寬 */
       box-sizing: border-box;
       width: 100%;
+    }
+
+    /* 🌟 新增：讓 Logo 與標題文字水平對齊 */
+    .banner-title {
+      display: flex;
+      align-items: center;
+      gap: 10px; /* Logo與文字的間距 */
+    }
+
+    /* 🌟 新增：Logo 的白底與圓角設計 */
+    .banner-logo {
+      width: 26px;
+      height: 26px;
+      background-color: #FFFFFF; /* 純白底色 */
+      border-radius: 6px; /* 蘋果風格微圓角 */
+      padding: 2px; /* 產生白色邊框的效果 */
+      object-fit: cover;
     }
     
     .refresh-btn {
@@ -95,17 +111,12 @@
     }
     .notes-save-row button.primary-btn:hover { background-color: #768B9E; }
     
-    /* 記錄區標題列 */
     .records-header {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
       padding: 16px 20px 4px 20px;
       background-color: var(--bg-color);
-      color: var(--primary-dark);
-      font-size: 18px;
-      font-weight: bold;
-      /* 限制橫幅寬度，確保在電腦上對齊 */
       box-sizing: border-box;
       width: 100%;
     }
@@ -123,7 +134,6 @@
       box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
     }
 
-    /* 頂部凍結區塊：加上最大寬度與置中設定，讓大螢幕完美置中 */
     .sticky-top-panel {
       position: -webkit-sticky; 
       position: sticky;
@@ -132,7 +142,6 @@
       background-color: var(--bg-color); 
       box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); 
       padding-top: max(env(safe-area-inset-top), 20px);
-      /* 電腦版完美對齊關鍵 */
       max-width: 500px;
       margin: 0 auto;
     }
@@ -180,7 +189,11 @@
   <div class="sticky-top-panel">
     
     <div class="banner">
-      <span>BP Tracker</span>
+      <!-- 🌟 將 Logo 與文字包裝在一起 -->
+      <div class="banner-title">
+        <img src="./icon.png" alt="Logo" class="banner-logo">
+        <span>BP Tracker</span>
+      </div>
       <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
     </div>
     
@@ -207,9 +220,7 @@
       </form>
     </div>
 
-    <!-- 🌟 全新輕量化 Records 標題區塊 -->
     <div class="records-header">
-      <span>Records</span>
       <div class="capsule-group">
         <button class="capsule-btn" data-val="7days">7 days</button>
         <button class="capsule-btn active" data-val="30days">30 days</button>
