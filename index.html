@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=41">
+  <link rel="manifest" href="manifest.json?v=42">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -162,7 +162,7 @@
     .high-bp { color: var(--danger-color); font-weight: bold; }
     .item-divider { border-top: 1px dashed #E2E8F0; margin: 3px 0; }
 
-    /* 🌟 列印專用 CSS 排版引擎 (完全模擬醫院 A4 記錄表) */
+    /* 🌟 列印專用 CSS 排版引擎 */
     #printArea { display: none; }
     @media print {
       @page { margin: 10mm; size: A4 portrait; }
@@ -171,7 +171,7 @@
       
       #printArea {
         display: block !important; visibility: visible; position: absolute; left: 0; top: 0; width: 100%;
-        font-family: "DFKai-SB", "BiauKai", serif; /* 模擬醫院常用標楷體 */
+        font-family: "DFKai-SB", "BiauKai", serif; 
         color: #000;
       }
       #printArea * { visibility: visible; }
@@ -198,7 +198,6 @@
       <div class="banner-content"> 
         <span class="banner-text">BP Tracker</span>
         <div class="header-actions">
-          <!-- 🌟 列印報表按鈕 -->
           <button class="header-btn" onclick="generatePDF()" title="Export PDF">🖨️</button>
           <button class="header-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
         </div>
@@ -229,7 +228,6 @@
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('💊 吃藥')">💊 吃藥</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕 頭痛')">🤕 頭痛</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏥 院所')">🏥 院所</button>
-          <!-- 🌟 新增報表專用標記標籤 -->
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🎯 報表')" style="background-color: #E2E8F0; border: 1px solid #8FA3B8;">🎯 報表</button>
         </div>
       </form>
@@ -272,7 +270,7 @@
     <div id="recordsList"><div style="text-align:center; padding: 20px; color: #888;">Loading...</div></div>
   </div>
 
-  <!-- 🌟 列印區塊 (僅在列印時顯示，完全還原醫院格式) -->
+  <!-- 列印區塊 -->
   <div id="printArea">
     <h1 class="print-title">血壓記錄表</h1>
     <table class="print-table" id="printTable">
@@ -420,7 +418,12 @@
           let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
           let sysHtml = (item.systolic >= 130) ? `<span class="high-bp">${item.systolic}</span>` : (item.systolic || '');
           
-          if (lastDate !== null) html += `<div class="item-divider"></div>`;
+          let displayDateText = (lastDate !== formattedDate) ? formattedDate : '';
+
+          if (lastDate !== null && lastDate !== formattedDate) {
+             html += `<div class="item-divider"></div>`;
+          }
+          
           lastDate = formattedDate;
 
           let displayNote = (item.notes || '')
@@ -430,7 +433,7 @@
 
           html += `
             <div class="record-row">
-              <div>${formattedDate}</div><div>${formattedTime}</div>
+              <div>${displayDateText}</div><div>${formattedTime}</div>
               <div class="bp-col-align"><span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${item.diastolic || ''}</span></div>
               <div>${item.heartRate || ''}</div><div class="note-col">${displayNote}</div>
               <div>
@@ -444,9 +447,7 @@
       document.getElementById('recordsList').innerHTML = html;
     }
 
-    // 🌟 PDF 生成引擎：篩選有 "🎯" 的數據，動態排版成三個月並呼叫列印
     function generatePDF() {
-      // 1. 抓出有標籤「🎯」的有效資料，按時間排序
       let reportData = [...allRecords]
         .filter(r => r && r.date && r.notes && r.notes.includes('🎯'))
         .sort((a, b) => new Date(a.date.replace(/-/g, '/')).getTime() - new Date(b.date.replace(/-/g, '/')).getTime());
@@ -455,40 +456,30 @@
         alert("目前沒有包含「🎯 報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return;
       }
 
-      // 2. 找出資料涵蓋的「月份」集合 (YYYY/MM)
-      let monthMap = {}; // { '2026/09': { 1: record, 2: record... }, '2026/10': {...} }
+      let monthMap = {}; 
       reportData.forEach(r => {
         let dateObj = new Date(r.date.replace(/-/g, '/'));
         if (isNaN(dateObj)) return;
         let yyyy_mm = `${dateObj.getFullYear()}/${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
         let day = dateObj.getDate();
         if (!monthMap[yyyy_mm]) monthMap[yyyy_mm] = {};
-        // 若同一天有多筆🎯，保留第一筆 (通常是早晨)
         if (!monthMap[yyyy_mm][day]) monthMap[yyyy_mm][day] = r; 
       });
 
-      // 3. 取最新涵蓋的三個月份
       let availableMonths = Object.keys(monthMap).sort();
-      let targetMonths = availableMonths.slice(-3); // 最多取 3 個月
+      let targetMonths = availableMonths.slice(-3); 
 
-      // 4. 動態組合 Table HTML (完全符合 IMG_2710.jpg 的並排格式)
-      let tableHtml = `
-        <thead>
-          <tr>
-      `;
-      // 畫 3 欄的「月份標題」
+      let tableHtml = `<thead><tr>`;
       for (let i = 0; i < 3; i++) {
         let mTitle = targetMonths[i] ? `月份： ${targetMonths[i]}` : `月份：________`;
         tableHtml += `<th colspan="4" class="month-title">${mTitle}</th>`;
       }
       tableHtml += `</tr><tr>`;
-      // 畫 3 欄的「次標題 (日期/收/舒/脈)」
       for (let i = 0; i < 3; i++) {
         tableHtml += `<th class="day-col">日期</th><th class="sys-col">收縮壓</th><th class="dia-col">舒張壓</th><th class="hr-col">脈搏</th>`;
       }
       tableHtml += `</tr></thead><tbody>`;
 
-      // 畫 31 天的格子
       for (let day = 1; day <= 31; day++) {
         tableHtml += `<tr>`;
         for (let m = 0; m < 3; m++) {
@@ -504,13 +495,8 @@
       }
       tableHtml += `</tbody>`;
 
-      // 5. 渲染隱藏區塊，並呼叫瀏覽器原生列印
       document.getElementById('printTable').innerHTML = tableHtml;
-      
-      // 延遲一下確保渲染完成再呼叫列印
-      setTimeout(() => {
-        window.print();
-      }, 300);
+      setTimeout(() => { window.print(); }, 300);
     }
 
     async function loadData() {
