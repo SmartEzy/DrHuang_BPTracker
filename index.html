@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=35">
+  <link rel="manifest" href="manifest.json?v=38">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -143,7 +143,9 @@
 
     .records-header {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 16px 20px 4px 20px; background-color: var(--bg-color);
+      /* 🌟 增加上下 padding，讓膠囊按鈕有更多呼吸空間 */
+      padding: 18px 20px 12px 20px; 
+      background-color: var(--bg-color);
       box-sizing: border-box; width: 100%;
     }
 
@@ -161,28 +163,38 @@
       background-color: #E2E8F0; color: var(--primary-dark);
     }
 
+    /* 🌟 圖例與提示文字絕對定位，徹底分離不擠壓空間 */
+    .legend-wrapper {
+      position: relative;
+      display: flex; flex-direction: column;
+    }
+
     .custom-legend {
-      display: flex; gap: 12px; font-size: 12px; 
+      display: flex; align-items: center; gap: 10px; font-size: 12px; 
       color: #64748B; font-weight: bold;
     }
     .legend-item { display: flex; align-items: center; gap: 4px; }
-    .legend-bp-box { width: 10px; height: 10px; background: #7895B2; border-radius: 2px; }
+    
+    /* 🌟 BP 改成垂直棒 */
+    .legend-bp-bar { width: 5px; height: 12px; background: #7895B2; border-radius: 2px; }
     .legend-hr-line { width: 14px; height: 2px; background: #CBD5E1; }
 
-    .chart-container {
-      width: 100%; max-width: 500px; margin: 0 auto; 
-      padding: 5px 20px 10px 20px; box-sizing: border-box;
-      background-color: var(--bg-color); height: 190px; 
-      display: block; 
+    /* 🌟 提示字移到正下方，拿掉括號，絕對定位不吃空間 */
+    .chart-tip {
+      position: absolute; top: 100%; left: 0;
+      font-size: 9px; color: #A0AAB5; font-weight: normal; 
+      margin-top: 2px; white-space: nowrap;
     }
 
+    /* 🌟 鎖死膠囊群組，禁止折行與壓縮 */
     .capsule-group {
       display: flex; background-color: #E2E8F0; border-radius: 20px; padding: 3px;
+      flex-shrink: 0; 
     }
     .capsule-btn {
       background: transparent; color: #64748B; border: none; padding: 6px 12px;
       font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 18px;
-      transition: all 0.2s;
+      transition: all 0.2s; white-space: nowrap; line-height: 1.2;
     }
     .capsule-btn.active {
       background-color: #FFFFFF; color: var(--primary-dark);
@@ -268,12 +280,13 @@
           <button type="submit" id="submitBtn" class="primary-btn">Save</button>
         </div>
         
+        <!-- 🌟 更新排序與新增醫療院所標籤 -->
         <div class="quick-tags-container">
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('💊 吃藥')">💊 吃藥</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('😵 暈眩')">😵 暈眩</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕 頭痛')">🤕 頭痛</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('☕ 咖啡')">☕ 咖啡</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃 運動')">🏃 運動</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('💊 吃藥')">💊 吃藥</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕 頭痛')">🤕 頭痛</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏥 院所')">🏥 院所</button>
         </div>
       </form>
     </div>
@@ -286,11 +299,14 @@
           </svg>
         </button>
         
-      <div id="customLegend" class="custom-legend" style="align-items: center;">
-        <div class="legend-item"><div class="legend-bp-box"></div> BP</div>
-        <div class="legend-item"><div class="legend-hr-line"></div> HR</div>
-        <span style="color: #A0AAB5; font-size: 11px; font-weight: normal; margin-left: 2px;">(Tap bar for details)</span>
-      </div>
+        <div id="customLegend" class="legend-wrapper">
+          <div class="custom-legend">
+            <div class="legend-item"><div class="legend-bp-bar"></div> BP</div>
+            <div class="legend-item"><div class="legend-hr-line"></div> HR</div>
+          </div>
+          <!-- 🌟 無括號、絕對定位於圖例下方 -->
+          <span class="chart-tip">Tap bar for details</span>
+        </div>
       </div>
 
       <div class="capsule-group">
@@ -353,6 +369,16 @@
         customLegend.style.display = 'flex';
         toggleChartBtn.classList.add('active');
         if (bpChartInstance) bpChartInstance.update(); 
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      if (bpChartInstance && chartContainer.style.display === 'block') {
+        if (!chartContainer.contains(e.target) && !toggleChartBtn.contains(e.target)) {
+          bpChartInstance.setActiveElements([]);
+          bpChartInstance.tooltip.setActiveElements([], {x: 0, y: 0});
+          bpChartInstance.update();
+        }
       }
     });
 
@@ -471,6 +497,8 @@
                 display: false
               },
               tooltip: {
+                // 🌟 強制讓提示框顯示在柱狀體的正上方
+                yAlign: 'bottom',
                 callbacks: {
                   label: function(context) {
                     if (context.dataset.label === 'BP Range') {
@@ -488,7 +516,6 @@
               x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 10 } } },
               y: { 
                 grid: { color: '#E2E8F0' }, 
-                // 🌟 關閉從 0 開始，並設定建議最小值，徹底釋放圖表空間！
                 beginAtZero: false,
                 suggestedMin: 40, 
                 suggestedMax: 160 
@@ -544,6 +571,9 @@
           
           lastDate = formattedDate;
 
+          // 🌟 若備註中包含「🏥 院所」，在記錄表中只保留 emoji
+          let displayNote = (item.notes || '').replace(/🏥 院所/g, '🏥');
+
           html += `
             <div class="record-row">
               <div>${displayDateText}</div>
@@ -552,7 +582,7 @@
                 <span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${item.diastolic || ''}</span>
               </div>
               <div>${item.heartRate || ''}</div>
-              <div class="note-col">${item.notes || ''}</div>
+              <div class="note-col">${displayNote}</div>
               <div>
                 <button class="delete-btn" onclick="deleteRecord('${formattedDate}', '${formattedTime}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}')" title="Delete">
                   <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
