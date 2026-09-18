@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=39">
+  <link rel="manifest" href="manifest.json?v=40">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -236,11 +236,7 @@
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; }
     .high-bp { color: var(--danger-color); font-weight: bold; }
     
-    /* 🌟 移除 day-divider 粗線，統一使用精緻虛線 */
     .item-divider { border-top: 1px dashed #E2E8F0; margin: 3px 0; }
-    
-    /* 🌟 作息圖示樣式 */
-    .time-icon { font-size: 11px; margin-left: 2px; }
   </style>
 </head>
 <body>
@@ -435,7 +431,6 @@
         return dateParts.length === 3 ? `${dateParts[1]}/${dateParts[2]}` : d.date; 
       });
 
-      // 🌟 提取時間供 Tooltip 使用
       const times = displayData.map(d => {
         let timeParts = d.time ? String(d.time).match(/(\d+):(\d+)/) : null;
         return timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (d.time || '');
@@ -447,7 +442,7 @@
 
       if (bpChartInstance) {
         bpChartInstance.data.labels = labels;
-        bpChartInstance.data.times = times; // 更新時間陣列
+        bpChartInstance.data.times = times; 
         bpChartInstance.data.datasets[0].data = bpRangeData;
         bpChartInstance.data.datasets[1].data = hrData;
         bpChartInstance.data.datasets[2].data = limit130Data;
@@ -456,7 +451,7 @@
         bpChartInstance = new Chart(ctx, {
           data: {
             labels: labels,
-            times: times, // 綁定時間陣列到 chart data 中
+            times: times, 
             datasets: [
               {
                 type: 'bar',
@@ -501,16 +496,14 @@
               legend: { display: false },
               tooltip: {
                 yAlign: 'bottom',
-                displayColors: false, // 🌟 隱藏顏色方塊，達到極簡
+                displayColors: false,
                 callbacks: {
-                  // 🌟 標題加上時間
                   title: function(tooltipItems) {
                     const idx = tooltipItems[0].dataIndex;
                     const date = tooltipItems[0].label;
                     const time = tooltipItems[0].chart.data.times[idx] || '';
                     return `${date} ${time}`;
                   },
-                  // 🌟 移除 BP: 與 HR: 標籤，純數據展示
                   label: function(context) {
                     if (context.dataset.label === 'BP Range') {
                       return `${context.raw[1]}/${context.raw[0]} mmHg`;
@@ -572,27 +565,22 @@
           let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
           let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
 
-          // 🌟 加入早晨 (☀️) 與 睡前 (🌙) 判斷
-          if (timeParts) {
-            let h = parseInt(timeParts[1], 10);
-            if (h >= 5 && h <= 11) {
-              formattedTime += '<span class="time-icon">☀️</span>';
-            } else if (h >= 18 || h <= 4) {
-              formattedTime += '<span class="time-icon">🌙</span>';
-            }
-          }
-
           let sysNum = parseInt(item.systolic, 10);
           let sysHtml = (sysNum >= 130) ? `<span class="high-bp">${item.systolic}</span>` : (item.systolic || '');
 
           let displayDateText = (lastDate !== formattedDate) ? formattedDate : '';
 
-          // 🌟 移除粗重的 day-divider，統一使用細緻的 item-divider
           if (lastDate !== null) html += `<div class="item-divider"></div>`;
           
           lastDate = formattedDate;
 
-          let displayNote = (item.notes || '').replace(/🏥 院所/g, '🏥');
+          // 🌟 清除快速標籤中的中文，只保留 Emoji 以供清單呈現
+          let displayNote = (item.notes || '')
+            .replace(/☕ 咖啡/g, '☕')
+            .replace(/🏃 運動/g, '🏃')
+            .replace(/💊 吃藥/g, '💊')
+            .replace(/🤕 頭痛/g, '🤕')
+            .replace(/🏥 院所/g, '🏥');
 
           html += `
             <div class="record-row">
