@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=38">
+  <link rel="manifest" href="manifest.json?v=39">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -143,7 +143,6 @@
 
     .records-header {
       display: flex; justify-content: space-between; align-items: center;
-      /* 🌟 增加上下 padding，讓膠囊按鈕有更多呼吸空間 */
       padding: 18px 20px 12px 20px; 
       background-color: var(--bg-color);
       box-sizing: border-box; width: 100%;
@@ -163,7 +162,6 @@
       background-color: #E2E8F0; color: var(--primary-dark);
     }
 
-    /* 🌟 圖例與提示文字絕對定位，徹底分離不擠壓空間 */
     .legend-wrapper {
       position: relative;
       display: flex; flex-direction: column;
@@ -175,18 +173,15 @@
     }
     .legend-item { display: flex; align-items: center; gap: 4px; }
     
-    /* 🌟 BP 改成垂直棒 */
     .legend-bp-bar { width: 5px; height: 12px; background: #7895B2; border-radius: 2px; }
     .legend-hr-line { width: 14px; height: 2px; background: #CBD5E1; }
 
-    /* 🌟 提示字移到正下方，拿掉括號，絕對定位不吃空間 */
     .chart-tip {
       position: absolute; top: 100%; left: 0;
       font-size: 9px; color: #A0AAB5; font-weight: normal; 
       margin-top: 2px; white-space: nowrap;
     }
 
-    /* 🌟 鎖死膠囊群組，禁止折行與壓縮 */
     .capsule-group {
       display: flex; background-color: #E2E8F0; border-radius: 20px; padding: 3px;
       flex-shrink: 0; 
@@ -240,8 +235,12 @@
 
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; }
     .high-bp { color: var(--danger-color); font-weight: bold; }
-    .day-divider { border-top: 2px solid var(--primary-color); margin: 3px 0; }
+    
+    /* 🌟 移除 day-divider 粗線，統一使用精緻虛線 */
     .item-divider { border-top: 1px dashed #E2E8F0; margin: 3px 0; }
+    
+    /* 🌟 作息圖示樣式 */
+    .time-icon { font-size: 11px; margin-left: 2px; }
   </style>
 </head>
 <body>
@@ -280,7 +279,6 @@
           <button type="submit" id="submitBtn" class="primary-btn">Save</button>
         </div>
         
-        <!-- 🌟 更新排序與新增醫療院所標籤 -->
         <div class="quick-tags-container">
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('☕ 咖啡')">☕ 咖啡</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃 運動')">🏃 運動</button>
@@ -304,7 +302,6 @@
             <div class="legend-item"><div class="legend-bp-bar"></div> BP</div>
             <div class="legend-item"><div class="legend-hr-line"></div> HR</div>
           </div>
-          <!-- 🌟 無括號、絕對定位於圖例下方 -->
           <span class="chart-tip">Tap bar for details</span>
         </div>
       </div>
@@ -437,6 +434,12 @@
         let dateParts = d.date.split('/'); 
         return dateParts.length === 3 ? `${dateParts[1]}/${dateParts[2]}` : d.date; 
       });
+
+      // 🌟 提取時間供 Tooltip 使用
+      const times = displayData.map(d => {
+        let timeParts = d.time ? String(d.time).match(/(\d+):(\d+)/) : null;
+        return timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (d.time || '');
+      });
       
       const bpRangeData = displayData.map(d => [parseInt(d.diastolic), parseInt(d.systolic)]);
       const hrData = displayData.map(d => parseInt(d.heartRate));
@@ -444,6 +447,7 @@
 
       if (bpChartInstance) {
         bpChartInstance.data.labels = labels;
+        bpChartInstance.data.times = times; // 更新時間陣列
         bpChartInstance.data.datasets[0].data = bpRangeData;
         bpChartInstance.data.datasets[1].data = hrData;
         bpChartInstance.data.datasets[2].data = limit130Data;
@@ -452,6 +456,7 @@
         bpChartInstance = new Chart(ctx, {
           data: {
             labels: labels,
+            times: times, // 綁定時間陣列到 chart data 中
             datasets: [
               {
                 type: 'bar',
@@ -493,19 +498,25 @@
               intersect: false,
             },
             plugins: { 
-              legend: { 
-                display: false
-              },
+              legend: { display: false },
               tooltip: {
-                // 🌟 強制讓提示框顯示在柱狀體的正上方
                 yAlign: 'bottom',
+                displayColors: false, // 🌟 隱藏顏色方塊，達到極簡
                 callbacks: {
+                  // 🌟 標題加上時間
+                  title: function(tooltipItems) {
+                    const idx = tooltipItems[0].dataIndex;
+                    const date = tooltipItems[0].label;
+                    const time = tooltipItems[0].chart.data.times[idx] || '';
+                    return `${date} ${time}`;
+                  },
+                  // 🌟 移除 BP: 與 HR: 標籤，純數據展示
                   label: function(context) {
                     if (context.dataset.label === 'BP Range') {
-                      return `BP: ${context.raw[1]} / ${context.raw[0]} mmHg`;
+                      return `${context.raw[1]}/${context.raw[0]} mmHg`;
                     }
                     if (context.dataset.label === 'HR') {
-                      return `HR: ${context.raw} bpm`;
+                      return `${context.raw} bpm`;
                     }
                     return null;
                   }
@@ -561,17 +572,26 @@
           let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
           let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
 
+          // 🌟 加入早晨 (☀️) 與 睡前 (🌙) 判斷
+          if (timeParts) {
+            let h = parseInt(timeParts[1], 10);
+            if (h >= 5 && h <= 11) {
+              formattedTime += '<span class="time-icon">☀️</span>';
+            } else if (h >= 18 || h <= 4) {
+              formattedTime += '<span class="time-icon">🌙</span>';
+            }
+          }
+
           let sysNum = parseInt(item.systolic, 10);
           let sysHtml = (sysNum >= 130) ? `<span class="high-bp">${item.systolic}</span>` : (item.systolic || '');
 
           let displayDateText = (lastDate !== formattedDate) ? formattedDate : '';
 
-          if (lastDate !== null && lastDate !== formattedDate) html += `<div class="day-divider"></div>`;
-          else if (lastDate !== null) html += `<div class="item-divider"></div>`;
+          // 🌟 移除粗重的 day-divider，統一使用細緻的 item-divider
+          if (lastDate !== null) html += `<div class="item-divider"></div>`;
           
           lastDate = formattedDate;
 
-          // 🌟 若備註中包含「🏥 院所」，在記錄表中只保留 emoji
           let displayNote = (item.notes || '').replace(/🏥 院所/g, '🏥');
 
           html += `
@@ -584,7 +604,7 @@
               <div>${item.heartRate || ''}</div>
               <div class="note-col">${displayNote}</div>
               <div>
-                <button class="delete-btn" onclick="deleteRecord('${formattedDate}', '${formattedTime}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}')" title="Delete">
+                <button class="delete-btn" onclick="deleteRecord('${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}')" title="Delete">
                   <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
