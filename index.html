@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=40">
+  <link rel="manifest" href="manifest.json?v=41">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -34,63 +34,27 @@
     }
     
     .banner-container {
-      display: flex;
-      align-items: stretch; 
-      width: 100%;
-      height: 44px; 
-      box-sizing: border-box;
+      display: flex; align-items: stretch; width: 100%; height: 44px; box-sizing: border-box;
     }
-
-    .banner-left-bar {
-      width: 12px; 
-      background-color: var(--primary-dark);
-    }
-
-    .logo-box {
-      background-color: #FFFFFF;
-      padding: 0 4px; 
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .banner-logo {
-      width: 36px; 
-      height: 36px;
-      object-fit: contain;
-    }
-
+    .banner-left-bar { width: 12px; background-color: var(--primary-dark); }
+    .logo-box { background-color: #FFFFFF; padding: 0 4px; display: flex; align-items: center; justify-content: center; }
+    .banner-logo { width: 36px; height: 36px; object-fit: contain; }
     .banner-content {
-      background-color: var(--primary-dark);
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 16px 0 10px;
+      background-color: var(--primary-dark); flex: 1; display: flex; align-items: center;
+      justify-content: space-between; padding: 0 16px 0 10px;
     }
-    
-    .banner-text {
-      font-size: 20px;
-      font-weight: bold;
-      color: #FFFFFF;
-    }
+    .banner-text { font-size: 20px; font-weight: bold; color: #FFFFFF; }
 
-    .refresh-btn {
-      background: none; border: none; 
-      color: #FFFFFF; 
-      font-size: 20px; cursor: pointer; padding: 0; 
+    .header-actions { display: flex; gap: 15px; align-items: center; }
+    .header-btn {
+      background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer; padding: 0; 
       display: flex; align-items: center;
     }
 
-    .container {
-      width: 100%; max-width: 500px; margin: 0 auto; padding: 15px 20px; box-sizing: border-box;
-    }
-
+    .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 15px 20px; box-sizing: border-box; }
     .form-group { margin-bottom: 12px; }
     
-    .date-time-layout {
-      display: flex; justify-content: space-between; width: 100%;
-    }
+    .date-time-layout { display: flex; justify-content: space-between; width: 100%; }
     .date-time-layout .date-box { width: 56%; }
     .date-time-layout .time-box { width: 41%; }
     .date-time-layout input {
@@ -105,144 +69,127 @@
     }
     ::placeholder { color: #A0AAB5; }
 
-    .bp-hr-row {
-      display: flex; align-items: center; width: 100%;
-    }
-    .bp-hr-row input {
-      flex: 1; min-width: 0; text-align: center; padding: 12px 4px;
-    }
+    .bp-hr-row { display: flex; align-items: center; width: 100%; }
+    .bp-hr-row input { flex: 1; min-width: 0; text-align: center; padding: 12px 4px; }
     .symbol { font-size: 18px; color: #333; font-weight: bold; margin: 0 4px; }
     .unit { font-size: 13px; color: #333; font-weight: bold; margin: 0 4px; }
 
-    .notes-save-row {
-      display: flex; gap: 8px; width: 100%; align-items: center;
-    }
-    .notes-save-row input {
-      flex: 1; min-width: 0; 
-    }
+    .notes-save-row { display: flex; gap: 8px; width: 100%; align-items: center; }
+    .notes-save-row input { flex: 1; min-width: 0; }
     .notes-save-row button.primary-btn {
-      width: 105px; 
-      margin-top: 0; padding: 12px 0; background-color: var(--primary-color); color: white;
+      width: 105px; margin-top: 0; padding: 12px 0; background-color: var(--primary-color); color: white;
       border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer;
       transition: background-color 0.2s;
     }
-    .notes-save-row button.primary-btn:hover { background-color: #768B9E; }
     
     .quick-tags-container {
-      display: flex; gap: 8px; margin-top: 10px; margin-bottom: 2px;
-      overflow-x: auto; padding-bottom: 2px;
+      display: flex; gap: 8px; margin-top: 10px; margin-bottom: 2px; overflow-x: auto; padding-bottom: 2px;
     }
     .quick-tags-container::-webkit-scrollbar { display: none; } 
     .quick-tag-btn {
-      background-color: #E2E8F0; color: #495057; border: none;
-      padding: 6px 12px; font-size: 13px; font-weight: 500;
-      border-radius: 14px; cursor: pointer; white-space: nowrap;
-      transition: background-color 0.2s;
+      background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500;
+      border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s;
     }
-    .quick-tag-btn:active { background-color: #CBD5E1; }
 
     .records-header {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 18px 20px 12px 20px; 
-      background-color: var(--bg-color);
-      box-sizing: border-box; width: 100%;
+      padding: 18px 20px 12px 20px; background-color: var(--bg-color); box-sizing: border-box; width: 100%;
     }
 
-    .chart-controls-left {
-      display: flex; align-items: center; gap: 12px;
-    }
-
+    .chart-controls-left { display: flex; align-items: center; gap: 12px; }
     .chart-toggle-btn {
-      background: none; border: none; padding: 4px 8px; margin: 0;
-      color: var(--primary-color); cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 6px; transition: all 0.2s;
+      background: none; border: none; padding: 4px 8px; margin: 0; color: var(--primary-color); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s;
     }
-    .chart-toggle-btn.active {
-      background-color: #E2E8F0; color: var(--primary-dark);
-    }
+    .chart-toggle-btn.active { background-color: #E2E8F0; color: var(--primary-dark); }
 
-    .legend-wrapper {
-      position: relative;
-      display: flex; flex-direction: column;
-    }
-
-    .custom-legend {
-      display: flex; align-items: center; gap: 10px; font-size: 12px; 
-      color: #64748B; font-weight: bold;
-    }
+    .legend-wrapper { position: relative; display: flex; flex-direction: column; }
+    .custom-legend { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #64748B; font-weight: bold; }
     .legend-item { display: flex; align-items: center; gap: 4px; }
-    
     .legend-bp-bar { width: 5px; height: 12px; background: #7895B2; border-radius: 2px; }
     .legend-hr-line { width: 14px; height: 2px; background: #CBD5E1; }
-
     .chart-tip {
-      position: absolute; top: 100%; left: 0;
-      font-size: 9px; color: #A0AAB5; font-weight: normal; 
+      position: absolute; top: 100%; left: 0; font-size: 9px; color: #A0AAB5; font-weight: normal; 
       margin-top: 2px; white-space: nowrap;
     }
 
     .capsule-group {
-      display: flex; background-color: #E2E8F0; border-radius: 20px; padding: 3px;
-      flex-shrink: 0; 
+      display: flex; background-color: #E2E8F0; border-radius: 20px; padding: 3px; flex-shrink: 0; 
     }
     .capsule-btn {
-      background: transparent; color: #64748B; border: none; padding: 6px 12px;
-      font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 18px;
-      transition: all 0.2s; white-space: nowrap; line-height: 1.2;
+      background: transparent; color: #64748B; border: none; padding: 6px 12px; font-size: 13px; font-weight: bold; 
+      cursor: pointer; border-radius: 18px; transition: all 0.2s; white-space: nowrap; line-height: 1.2;
     }
-    .capsule-btn.active {
-      background-color: #FFFFFF; color: var(--primary-dark);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
-    }
+    .capsule-btn.active { background-color: #FFFFFF; color: var(--primary-dark); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
     .sticky-top-panel {
-      position: -webkit-sticky; position: sticky; top: 0; z-index: 100;
-      background-color: var(--bg-color); box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); 
-      padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto;
+      position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); 
+      box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); padding-top: max(env(safe-area-inset-top), 20px); 
+      max-width: 500px; margin: 0 auto;
+    }
+
+    .chart-container {
+      width: 100%; max-width: 500px; margin: 0 auto; padding: 5px 20px 10px 20px; box-sizing: border-box;
+      background-color: var(--bg-color); height: 190px; display: block; 
     }
 
     .list-header {
-      display: grid; grid-template-columns: 88px 48px 1.8fr 1fr 2fr 24px; 
-      gap: 6px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-dark);
-      font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center;
+      display: grid; grid-template-columns: 88px 48px 1.8fr 1fr 2fr 24px; gap: 6px; padding-bottom: 8px; 
+      border-bottom: 2px solid var(--primary-dark); font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center;
     }
     .list-header div:nth-child(4) { text-align: center; padding: 0; } 
     .list-header div:nth-child(5) { text-align: left; padding-left: 8px; }
 
     .record-row {
-      display: grid; grid-template-columns: 88px 48px 1.8fr 1fr 2fr 24px;
-      gap: 6px; align-items: center; padding: 4px 0; 
-      font-size: 15px; line-height: 1.1; color: var(--text-main); 
-      text-align: center; font-variant-numeric: tabular-nums; 
+      display: grid; grid-template-columns: 88px 48px 1.8fr 1fr 2fr 24px; gap: 6px; align-items: center; 
+      padding: 4px 0; font-size: 15px; line-height: 1.1; color: var(--text-main); text-align: center; font-variant-numeric: tabular-nums; 
     }
     .record-row div:nth-child(4) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:nth-child(5) { text-align: left; padding-left: 8px; }
     
     .delete-btn {
-      background: none; border: none; padding: 0; margin: 0;
-      color: #CBD5E1; cursor: pointer; display: flex; 
-      justify-content: center; align-items: center; transition: color 0.2s;
+      background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; 
+      display: flex; justify-content: center; align-items: center; transition: color 0.2s;
     }
-    .delete-btn:hover, .delete-btn:active { color: var(--danger-color); }
+    .delete-btn:hover { color: var(--danger-color); }
 
-    .bp-col-align {
-      display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center; justify-content: center;
-    }
+    .bp-col-align { display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center; justify-content: center; }
     .bp-sys { text-align: right; font-weight: bold; }
     .bp-slash { color: #888; font-weight: normal; } 
     .bp-dia { text-align: left; font-weight: bold; }
 
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; }
     .high-bp { color: var(--danger-color); font-weight: bold; }
-    
     .item-divider { border-top: 1px dashed #E2E8F0; margin: 3px 0; }
+
+    /* 🌟 列印專用 CSS 排版引擎 (完全模擬醫院 A4 記錄表) */
+    #printArea { display: none; }
+    @media print {
+      @page { margin: 10mm; size: A4 portrait; }
+      body * { visibility: hidden; }
+      .sticky-top-panel, .container { display: none !important; }
+      
+      #printArea {
+        display: block !important; visibility: visible; position: absolute; left: 0; top: 0; width: 100%;
+        font-family: "DFKai-SB", "BiauKai", serif; /* 模擬醫院常用標楷體 */
+        color: #000;
+      }
+      #printArea * { visibility: visible; }
+      
+      .print-title { text-align: center; font-size: 28px; margin-bottom: 20px; letter-spacing: 5px; }
+      .print-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 12px; }
+      .print-table th, .print-table td { border: 1px solid #000; padding: 6px 2px; }
+      .print-table th { font-weight: normal; background-color: #f2f2f2; }
+      .month-title { text-align: left; padding-left: 8px !important; font-weight: bold; }
+      .day-col { width: 5%; }
+      .sys-col, .dia-col, .hr-col { width: 8.3%; }
+    }
   </style>
 </head>
 <body>
 
+  <!-- 主畫面 -->
   <div class="sticky-top-panel">
-    
     <div class="banner-container">
       <div class="banner-left-bar"></div> 
       <div class="logo-box"> 
@@ -250,7 +197,11 @@
       </div>
       <div class="banner-content"> 
         <span class="banner-text">BP Tracker</span>
-        <button class="refresh-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
+        <div class="header-actions">
+          <!-- 🌟 列印報表按鈕 -->
+          <button class="header-btn" onclick="generatePDF()" title="Export PDF">🖨️</button>
+          <button class="header-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
+        </div>
       </div>
     </div>
     
@@ -260,7 +211,6 @@
           <div class="date-box"><input type="date" id="date" required></div>
           <div class="time-box"><input type="time" id="time" required></div>
         </div>
-        
         <div class="form-group bp-hr-row">
           <input type="number" id="systolic" placeholder="SBP" inputmode="numeric" pattern="[0-9]*" required>
           <span class="symbol">/</span>
@@ -269,18 +219,18 @@
           <input type="number" id="heartRate" placeholder="HR" inputmode="numeric" pattern="[0-9]*" required>
           <span class="unit" style="margin-right:0;">bpm</span>
         </div>
-        
         <div class="form-group notes-save-row" style="margin-bottom: 0;">
           <input type="text" id="notes" placeholder="Notes (e.g., dizzy...)">
           <button type="submit" id="submitBtn" class="primary-btn">Save</button>
         </div>
-        
         <div class="quick-tags-container">
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('☕ 咖啡')">☕ 咖啡</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃 運動')">🏃 運動</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('💊 吃藥')">💊 吃藥</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕 頭痛')">🤕 頭痛</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏥 院所')">🏥 院所</button>
+          <!-- 🌟 新增報表專用標記標籤 -->
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🎯 報表')" style="background-color: #E2E8F0; border: 1px solid #8FA3B8;">🎯 報表</button>
         </div>
       </form>
     </div>
@@ -292,7 +242,6 @@
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
           </svg>
         </button>
-        
         <div id="customLegend" class="legend-wrapper">
           <div class="custom-legend">
             <div class="legend-item"><div class="legend-bp-bar"></div> BP</div>
@@ -301,7 +250,6 @@
           <span class="chart-tip">Tap bar for details</span>
         </div>
       </div>
-
       <div class="capsule-group">
         <button class="capsule-btn" data-val="7days">7 days</button>
         <button class="capsule-btn active" data-val="30days">30 days</button>
@@ -318,13 +266,18 @@
         <div>Date</div><div>Time</div><div>BP</div><div>HR</div><div>Notes</div><div></div>
       </div>
     </div>
-
   </div> 
 
   <div class="container" style="padding-top: 5px; padding-bottom: 40px;">
-    <div id="recordsList">
-      <div style="text-align:center; padding: 20px; color: #888;">Loading...</div>
-    </div>
+    <div id="recordsList"><div style="text-align:center; padding: 20px; color: #888;">Loading...</div></div>
+  </div>
+
+  <!-- 🌟 列印區塊 (僅在列印時顯示，完全還原醫院格式) -->
+  <div id="printArea">
+    <h1 class="print-title">血壓記錄表</h1>
+    <table class="print-table" id="printTable">
+      <!-- 內容將由 JS 動態生成 -->
+    </table>
   </div>
 
   <script>
@@ -339,13 +292,8 @@
 
     function addQuickTag(tagText) {
       const notesInput = document.getElementById('notes');
-      if (notesInput.value.trim() === '') {
-        notesInput.value = tagText;
-      } else {
-        if (!notesInput.value.includes(tagText)) {
-          notesInput.value += `, ${tagText}`;
-        }
-      }
+      if (notesInput.value.trim() === '') notesInput.value = tagText;
+      else if (!notesInput.value.includes(tagText)) notesInput.value += `, ${tagText}`;
     }
 
     const toggleChartBtn = document.getElementById('toggleChartBtn');
@@ -354,13 +302,9 @@
     
     toggleChartBtn.addEventListener('click', () => {
       if (chartContainer.style.display === 'block') {
-        chartContainer.style.display = 'none';
-        customLegend.style.display = 'none';
-        toggleChartBtn.classList.remove('active');
+        chartContainer.style.display = 'none'; customLegend.style.display = 'none'; toggleChartBtn.classList.remove('active');
       } else {
-        chartContainer.style.display = 'block';
-        customLegend.style.display = 'flex';
-        toggleChartBtn.classList.add('active');
+        chartContainer.style.display = 'block'; customLegend.style.display = 'flex'; toggleChartBtn.classList.add('active');
         if (bpChartInstance) bpChartInstance.update(); 
       }
     });
@@ -368,9 +312,7 @@
     document.addEventListener('click', (e) => {
       if (bpChartInstance && chartContainer.style.display === 'block') {
         if (!chartContainer.contains(e.target) && !toggleChartBtn.contains(e.target)) {
-          bpChartInstance.setActiveElements([]);
-          bpChartInstance.tooltip.setActiveElements([], {x: 0, y: 0});
-          bpChartInstance.update();
+          bpChartInstance.setActiveElements([]); bpChartInstance.tooltip.setActiveElements([], {x: 0, y: 0}); bpChartInstance.update();
         }
       }
     });
@@ -378,152 +320,68 @@
     document.querySelectorAll('.capsule-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.capsule-btn').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-        currentFilter = e.target.getAttribute('data-val');
-        renderList();
+        e.target.classList.add('active'); currentFilter = e.target.getAttribute('data-val'); renderList();
       });
     });
 
     function syncToCloud(payload) {
-      fetch(API_URL, {
-        method: 'POST',
-        redirect: 'follow',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      }).catch(err => {
-        console.warn('Network offline or fetch failed. Saving to sync queue.', err);
-        let queue = JSON.parse(localStorage.getItem('bpSyncQueue') || '[]');
-        queue.push(payload);
-        localStorage.setItem('bpSyncQueue', JSON.stringify(queue));
+      fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
+      .catch(err => {
+        let queue = JSON.parse(localStorage.getItem('bpSyncQueue') || '[]'); queue.push(payload); localStorage.setItem('bpSyncQueue', JSON.stringify(queue));
       });
     }
 
     window.addEventListener('online', () => {
       let queue = JSON.parse(localStorage.getItem('bpSyncQueue') || '[]');
       if (queue.length > 0) {
-        queue.forEach(payload => {
-          fetch(API_URL, {
-            method: 'POST',
-            redirect: 'follow',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payload)
-          });
-        });
+        queue.forEach(payload => { fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }); });
         localStorage.removeItem('bpSyncQueue');
       }
     });
 
     function deleteRecord(formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime) {
-      const msg = `${formattedDate} ${formattedTime} ${sys}/${dia} mmHg  ${hr} bpm\n確定刪除？`;
-      if (!confirm(msg)) return;
-
+      if (!confirm(`${formattedDate} ${formattedTime} ${sys}/${dia} mmHg  ${hr} bpm\n確定刪除？`)) return;
       allRecords = allRecords.filter(r => !(r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr));
       renderList();
-
       syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr });
     }
 
     function updateChart(displayData) {
       const ctx = document.getElementById('bpChart').getContext('2d');
-      
-      const labels = displayData.map(d => {
-        let dateParts = d.date.split('/'); 
-        return dateParts.length === 3 ? `${dateParts[1]}/${dateParts[2]}` : d.date; 
-      });
-
-      const times = displayData.map(d => {
-        let timeParts = d.time ? String(d.time).match(/(\d+):(\d+)/) : null;
-        return timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (d.time || '');
-      });
-      
+      const labels = displayData.map(d => { let p = d.date.split('/'); return p.length === 3 ? `${p[1]}/${p[2]}` : d.date; });
+      const times = displayData.map(d => { let t = d.time ? String(d.time).match(/(\d+):(\d+)/) : null; return t ? `${t[1].padStart(2, '0')}:${t[2].padStart(2, '0')}` : (d.time || ''); });
       const bpRangeData = displayData.map(d => [parseInt(d.diastolic), parseInt(d.systolic)]);
       const hrData = displayData.map(d => parseInt(d.heartRate));
       const limit130Data = displayData.map(() => 130);
 
       if (bpChartInstance) {
-        bpChartInstance.data.labels = labels;
-        bpChartInstance.data.times = times; 
-        bpChartInstance.data.datasets[0].data = bpRangeData;
-        bpChartInstance.data.datasets[1].data = hrData;
-        bpChartInstance.data.datasets[2].data = limit130Data;
-        bpChartInstance.update();
+        bpChartInstance.data.labels = labels; bpChartInstance.data.times = times; bpChartInstance.data.datasets[0].data = bpRangeData;
+        bpChartInstance.data.datasets[1].data = hrData; bpChartInstance.data.datasets[2].data = limit130Data; bpChartInstance.update();
       } else {
         bpChartInstance = new Chart(ctx, {
           data: {
-            labels: labels,
-            times: times, 
+            labels: labels, times: times, 
             datasets: [
-              {
-                type: 'bar',
-                label: 'BP Range',
-                data: bpRangeData,
-                backgroundColor: '#7895B2', 
-                borderRadius: 100,          
-                barThickness: 6,            
-                order: 2                    
-              },
-              {
-                type: 'line',
-                label: 'HR',
-                data: hrData,
-                borderColor: '#CBD5E1',     
-                borderWidth: 1.5,
-                tension: 0,               
-                pointRadius: 1.5,             
-                order: 3
-              },
-              {
-                type: 'line',
-                label: '130 Limit',
-                data: limit130Data,
-                borderColor: 'rgba(211, 47, 47, 0.4)', 
-                borderWidth: 1,
-                borderDash: [4, 4],         
-                pointRadius: 0,             
-                fill: false,
-                order: 1                    
-              }
+              { type: 'bar', label: 'BP Range', data: bpRangeData, backgroundColor: '#7895B2', borderRadius: 100, barThickness: 6, order: 2 },
+              { type: 'line', label: 'HR', data: hrData, borderColor: '#CBD5E1', borderWidth: 1.5, tension: 0, pointRadius: 1.5, order: 3 },
+              { type: 'line', label: '130 Limit', data: limit130Data, borderColor: 'rgba(211, 47, 47, 0.4)', borderWidth: 1, borderDash: [4, 4], pointRadius: 0, fill: false, order: 1 }
             ]
           },
           options: {
-            responsive: true, 
-            maintainAspectRatio: false,
-            interaction: {
-              mode: 'index',
-              intersect: false,
-            },
+            responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
             plugins: { 
               legend: { display: false },
               tooltip: {
-                yAlign: 'bottom',
-                displayColors: false,
+                yAlign: 'bottom', displayColors: false,
                 callbacks: {
-                  title: function(tooltipItems) {
-                    const idx = tooltipItems[0].dataIndex;
-                    const date = tooltipItems[0].label;
-                    const time = tooltipItems[0].chart.data.times[idx] || '';
-                    return `${date} ${time}`;
-                  },
-                  label: function(context) {
-                    if (context.dataset.label === 'BP Range') {
-                      return `${context.raw[1]}/${context.raw[0]} mmHg`;
-                    }
-                    if (context.dataset.label === 'HR') {
-                      return `${context.raw} bpm`;
-                    }
-                    return null;
-                  }
+                  title: function(items) { return `${items[0].label} ${items[0].chart.data.times[items[0].dataIndex]}`; },
+                  label: function(ctx) { return ctx.dataset.label === 'BP Range' ? `${ctx.raw[1]}/${ctx.raw[0]} mmHg` : (ctx.dataset.label === 'HR' ? `${ctx.raw} bpm` : null); }
                 }
               }
             },
             scales: {
               x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 10 } } },
-              y: { 
-                grid: { color: '#E2E8F0' }, 
-                beginAtZero: false,
-                suggestedMin: 40, 
-                suggestedMax: 160 
-              }
+              y: { grid: { color: '#E2E8F0' }, beginAtZero: false, suggestedMin: 40, suggestedMax: 160 }
             }
           }
         });
@@ -532,9 +390,7 @@
 
     function renderList() {
       localStorage.setItem('bpCacheRecords', JSON.stringify(allRecords));
-
-      let displayData = [...allRecords];
-      displayData = displayData.filter(r => r && r.date && String(r.date).trim() !== '');
+      let displayData = [...allRecords].filter(r => r && r.date && String(r.date).trim() !== '');
 
       if (currentFilter === '7days') {
         let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
@@ -558,118 +414,134 @@
       } else {
         let lastDate = null;
         displayData.forEach(item => {
-          let rawDate = item.date ? String(item.date) : '';
-          let dateObj = new Date(rawDate);
+          let rawDate = item.date ? String(item.date) : ''; let dateObj = new Date(rawDate);
           let formattedDate = (!isNaN(dateObj) && rawDate !== '') ? `${dateObj.getFullYear()}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${String(dateObj.getDate()).padStart(2, '0')}` : rawDate.replace(/-/g, '/');
-          
           let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
           let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
-
-          let sysNum = parseInt(item.systolic, 10);
-          let sysHtml = (sysNum >= 130) ? `<span class="high-bp">${item.systolic}</span>` : (item.systolic || '');
-
-          let displayDateText = (lastDate !== formattedDate) ? formattedDate : '';
-
-          if (lastDate !== null) html += `<div class="item-divider"></div>`;
+          let sysHtml = (item.systolic >= 130) ? `<span class="high-bp">${item.systolic}</span>` : (item.systolic || '');
           
+          if (lastDate !== null) html += `<div class="item-divider"></div>`;
           lastDate = formattedDate;
 
-          // 🌟 清除快速標籤中的中文，只保留 Emoji 以供清單呈現
           let displayNote = (item.notes || '')
-            .replace(/☕ 咖啡/g, '☕')
-            .replace(/🏃 運動/g, '🏃')
-            .replace(/💊 吃藥/g, '💊')
-            .replace(/🤕 頭痛/g, '🤕')
-            .replace(/🏥 院所/g, '🏥');
+            .replace(/☕ 咖啡/g, '☕').replace(/🏃 運動/g, '🏃')
+            .replace(/💊 吃藥/g, '💊').replace(/🤕 頭痛/g, '🤕')
+            .replace(/🏥 院所/g, '🏥').replace(/🎯 報表/g, '🎯');
 
           html += `
             <div class="record-row">
-              <div>${displayDateText}</div>
-              <div>${formattedTime}</div>
-              <div class="bp-col-align">
-                <span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${item.diastolic || ''}</span>
-              </div>
-              <div>${item.heartRate || ''}</div>
-              <div class="note-col">${displayNote}</div>
+              <div>${formattedDate}</div><div>${formattedTime}</div>
+              <div class="bp-col-align"><span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${item.diastolic || ''}</span></div>
+              <div>${item.heartRate || ''}</div><div class="note-col">${displayNote}</div>
               <div>
                 <button class="delete-btn" onclick="deleteRecord('${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}')" title="Delete">
-                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                  </svg>
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 </button>
               </div>
-            </div>
-          `;
+            </div>`;
         });
       }
       document.getElementById('recordsList').innerHTML = html;
     }
 
-    async function loadData() {
-      const cachedData = localStorage.getItem('bpCacheRecords');
-      if (cachedData) {
-        try {
-          allRecords = JSON.parse(cachedData);
-          renderList();
-        } catch(e) { console.error('Cache parsing error'); }
+    // 🌟 PDF 生成引擎：篩選有 "🎯" 的數據，動態排版成三個月並呼叫列印
+    function generatePDF() {
+      // 1. 抓出有標籤「🎯」的有效資料，按時間排序
+      let reportData = [...allRecords]
+        .filter(r => r && r.date && r.notes && r.notes.includes('🎯'))
+        .sort((a, b) => new Date(a.date.replace(/-/g, '/')).getTime() - new Date(b.date.replace(/-/g, '/')).getTime());
+      
+      if (reportData.length === 0) {
+        alert("目前沒有包含「🎯 報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return;
       }
 
-      try {
-        let response = await fetch(API_URL);
-        let rawText = await response.text(); 
-        allRecords = JSON.parse(rawText);
-        if (!Array.isArray(allRecords)) allRecords = [];
-        renderList(); 
-      } catch (err) {
-        console.warn('Load from cloud failed. Working offline mode.', err);
-        if (allRecords.length === 0) {
-          document.getElementById('recordsList').innerHTML = `<div style="text-align:center; color:red; padding:20px;">[請檢查網路連線]<br>${err.message}</div>`;
+      // 2. 找出資料涵蓋的「月份」集合 (YYYY/MM)
+      let monthMap = {}; // { '2026/09': { 1: record, 2: record... }, '2026/10': {...} }
+      reportData.forEach(r => {
+        let dateObj = new Date(r.date.replace(/-/g, '/'));
+        if (isNaN(dateObj)) return;
+        let yyyy_mm = `${dateObj.getFullYear()}/${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
+        let day = dateObj.getDate();
+        if (!monthMap[yyyy_mm]) monthMap[yyyy_mm] = {};
+        // 若同一天有多筆🎯，保留第一筆 (通常是早晨)
+        if (!monthMap[yyyy_mm][day]) monthMap[yyyy_mm][day] = r; 
+      });
+
+      // 3. 取最新涵蓋的三個月份
+      let availableMonths = Object.keys(monthMap).sort();
+      let targetMonths = availableMonths.slice(-3); // 最多取 3 個月
+
+      // 4. 動態組合 Table HTML (完全符合 IMG_2710.jpg 的並排格式)
+      let tableHtml = `
+        <thead>
+          <tr>
+      `;
+      // 畫 3 欄的「月份標題」
+      for (let i = 0; i < 3; i++) {
+        let mTitle = targetMonths[i] ? `月份： ${targetMonths[i]}` : `月份：________`;
+        tableHtml += `<th colspan="4" class="month-title">${mTitle}</th>`;
+      }
+      tableHtml += `</tr><tr>`;
+      // 畫 3 欄的「次標題 (日期/收/舒/脈)」
+      for (let i = 0; i < 3; i++) {
+        tableHtml += `<th class="day-col">日期</th><th class="sys-col">收縮壓</th><th class="dia-col">舒張壓</th><th class="hr-col">脈搏</th>`;
+      }
+      tableHtml += `</tr></thead><tbody>`;
+
+      // 畫 31 天的格子
+      for (let day = 1; day <= 31; day++) {
+        tableHtml += `<tr>`;
+        for (let m = 0; m < 3; m++) {
+          let monthKey = targetMonths[m];
+          let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null;
+          
+          tableHtml += `<td>${day}</td>`;
+          tableHtml += `<td>${record ? record.systolic : ''}</td>`;
+          tableHtml += `<td>${record ? record.diastolic : ''}</td>`;
+          tableHtml += `<td>${record ? record.heartRate : ''}</td>`;
         }
+        tableHtml += `</tr>`;
+      }
+      tableHtml += `</tbody>`;
+
+      // 5. 渲染隱藏區塊，並呼叫瀏覽器原生列印
+      document.getElementById('printTable').innerHTML = tableHtml;
+      
+      // 延遲一下確保渲染完成再呼叫列印
+      setTimeout(() => {
+        window.print();
+      }, 300);
+    }
+
+    async function loadData() {
+      const cachedData = localStorage.getItem('bpCacheRecords');
+      if (cachedData) { try { allRecords = JSON.parse(cachedData); renderList(); } catch(e){} }
+      try {
+        let response = await fetch(API_URL); let rawText = await response.text(); 
+        allRecords = JSON.parse(rawText); if (!Array.isArray(allRecords)) allRecords = []; renderList(); 
+      } catch (err) {
+        if (allRecords.length === 0) document.getElementById('recordsList').innerHTML = `<div style="text-align:center; color:red; padding:20px;">[請檢查網路連線]<br>${err.message}</div>`;
       }
     }
 
     document.getElementById('bpForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const btn = document.getElementById('submitBtn');
-      btn.disabled = true;
-
+      e.preventDefault(); const btn = document.getElementById('submitBtn'); btn.disabled = true;
       const payload = {
-        action: 'add',
-        date: document.getElementById('date').value,
-        time: document.getElementById('time').value,
-        systolic: document.getElementById('systolic').value,
-        diastolic: document.getElementById('diastolic').value,
-        heartRate: document.getElementById('heartRate').value,
-        notes: document.getElementById('notes').value
+        action: 'add', date: document.getElementById('date').value, time: document.getElementById('time').value,
+        systolic: document.getElementById('systolic').value, diastolic: document.getElementById('diastolic').value,
+        heartRate: document.getElementById('heartRate').value, notes: document.getElementById('notes').value
       };
-
-      allRecords.push(payload); 
-      renderList();
-
-      document.getElementById('bpForm').reset();
+      allRecords.push(payload); renderList(); document.getElementById('bpForm').reset();
       let curr = new Date();
       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
-
-      const originalColor = btn.style.backgroundColor;
-      btn.innerText = '✅ Saved!';
-      btn.style.backgroundColor = '#4CAF50';
-      
-      setTimeout(() => { 
-        btn.innerText = 'Save';
-        btn.style.backgroundColor = originalColor;
-        btn.disabled = false;
-      }, 2000);
-
+      const originalColor = btn.style.backgroundColor; btn.innerText = '✅ Saved!'; btn.style.backgroundColor = '#4CAF50';
+      setTimeout(() => { btn.innerText = 'Save'; btn.style.backgroundColor = originalColor; btn.disabled = false; }, 2000);
       syncToCloud(payload);
     });
 
     loadData();
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
   </script>
 </body>
 </html>
