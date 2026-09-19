@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=52">
+  <link rel="manifest" href="manifest.json?v=53">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -117,66 +117,69 @@
       padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px;
     }
 
-    /* 🌟 PDF 列印專用排版引擎 - 極限邊距突破版 */
-    #printArea, #printFooterCover { display: none; }
+    /* 🌟 PDF 列印專用排版引擎 - 回歸標準與精準高度版 */
+    #printArea { display: none; }
     @media print {
       @page { margin: 0; size: A4 portrait; }
-      body { margin: 0; padding: 0; background: #FFF; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      .sticky-top-panel, .container { display: none !important; }
       
-      /* 🌟 物理白屏覆蓋術：用一塊白底蓋住下方的系統網址 */
-      #printFooterCover {
-        display: block !important;
-        position: fixed;
-        bottom: 0; left: 0; right: 0;
-        height: 12mm; 
-        background: #FFF !important;
-        z-index: 999999;
+      /* 🌟 強制整個列印頁面為純白色，消除灰底魔咒 */
+      html, body { 
+        margin: 0 !important; padding: 0 !important; 
+        background-color: #FFFFFF !important; 
+        -webkit-print-color-adjust: exact; print-color-adjust: exact; 
       }
       
+      .sticky-top-panel, .container { display: none !important; }
+      
       #printArea {
-        display: block !important; visibility: visible; 
-        position: absolute;
-        /* 🌟 利用負邊界強迫表格往四周撐開，吃掉系統硬留的白邊 */
-        top: -5mm; 
-        left: -8mm; 
-        width: calc(100% + 16mm); /* 補償左右推掉的 8mm */
-        box-sizing: border-box; 
-        padding: 0 !important; 
-        color: #000; 
+        display: block !important; visibility: visible; width: 100%; box-sizing: border-box; 
+        /* 恢復標準安全邊界，讓系統自然排列 */
+        padding: 10mm 12mm 10mm 12mm !important; 
+        background-color: #FFFFFF !important; 
+        color: #000; page-break-after: avoid;
       }
       
       .print-title { 
-        text-align: center; font-size: 26px !important; margin: 0 0 10px 0 !important; 
+        text-align: center; font-size: 22px !important; margin: 0 0 8px 0 !important; 
         letter-spacing: 5px; font-family: "DFKai-SB", "BiauKai", serif; font-weight: bold; 
+        background-color: #FFFFFF !important;
       }
       
       .print-table { 
         width: 100%; border-collapse: collapse; text-align: center; 
         font-family: -apple-system, Arial, Helvetica, sans-serif; table-layout: fixed; 
+        background-color: #FFFFFF !important;
+        page-break-inside: avoid;
       }
       
-      /* 🌟 列高大幅解放至 28px，視覺非常舒適且保證填滿一頁 */
+      /* 🌟 精確定位 25px 列高，保證 31 天絕對不會跨頁 */
       .print-table th, .print-table td { 
-        border: 1px solid #000; padding: 0 !important; height: 28px !important; 
-        line-height: 28px !important; box-sizing: border-box; overflow: hidden;
+        border: 1px solid #000; padding: 0 !important; 
+        height: 25px !important; line-height: 25px !important; 
+        box-sizing: border-box; overflow: hidden;
+        background-color: #FFFFFF !important;
       }
       
-      .print-table th { font-weight: normal; background-color: #f2f2f2; font-size: 14px !important; font-family: "DFKai-SB", "BiauKai", serif; }
-      .print-table td { font-size: 15px !important; }
+      /* 表頭保留淺灰背景 */
+      .print-table th { 
+        font-weight: normal; background-color: #f2f2f2 !important; 
+        font-size: 13px !important; font-family: "DFKai-SB", "BiauKai", serif; 
+      }
       
-      .print-table th.month-label { width: 6%; border-right: none; text-align: center; white-space: nowrap; }
+      .print-table td { font-size: 14px !important; color: #000 !important; }
+      
+      .print-table th.month-label { width: 6.5%; border-right: none; text-align: center; white-space: nowrap; }
       .print-table th.month-val { border-left: none; text-align: left; padding-left: 2px !important; font-family: -apple-system, Arial, sans-serif; font-weight: bold; white-space: nowrap; }
       
-      .print-table td:nth-child(4n+1) { color: #888888 !important; font-weight: 500; font-size: 12px !important; }
-      .day-col { width: 6%; } 
-      .sys-col, .dia-col, .hr-col { width: 9%; } 
+      /* 日期欄位獨立設定灰色 */
+      .print-table td:nth-child(4n+1) { color: #888888 !important; font-weight: 500; font-size: 11px !important; }
+      .day-col { width: 6.5%; } 
+      .sys-col, .dia-col, .hr-col { width: 8.9%; } 
     }
   </style>
 </head>
 <body>
 
-  <!-- 主畫面 -->
   <div class="sticky-top-panel">
     <div class="banner-container">
       <div class="banner-left-bar"></div> 
@@ -271,9 +274,6 @@
   <div class="container" style="padding-top: 5px; padding-bottom: 40px;">
     <div id="recordsList"><div style="text-align:center; padding: 20px; color: #888;">Loading...</div></div>
   </div>
-
-  <!-- 🌟 新增：覆蓋列印頁尾的實體物理白屏 -->
-  <div id="printFooterCover"></div>
 
   <div id="printArea">
     <h1 class="print-title">血壓記錄表</h1>
@@ -461,17 +461,7 @@
           if (timeParts) {
             let h = parseInt(timeParts[1], 10);
             if (h >= 4 && h < 10) { 
-              sunSvgHtml = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="#495057" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="5"></circle>
-                <line x1="12" y1="1" x2="12" y2="3"></line>
-                <line x1="12" y1="21" x2="12" y2="23"></line>
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                <line x1="1" y1="12" x2="3" y2="12"></line>
-                <line x1="21" y1="12" x2="23" y2="12"></line>
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-              </svg>`;
+              sunSvgHtml = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="#495057" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
             }
           }
 
