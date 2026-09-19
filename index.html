@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=61">
+  <link rel="manifest" href="manifest.json?v=62">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -117,7 +117,7 @@
       padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px;
     }
 
-    /* 🌟 PDF 列印排版 - 終極字體與邊界優化版 */
+    /* 🌟 PDF 列印專用排版引擎 - 最高優先級大字版 */
     #printArea { display: none; }
     @media print {
       @page { margin: 0; size: A4 portrait; }
@@ -132,23 +132,34 @@
       
       #printArea {
         display: block !important; visibility: visible; width: 100%; box-sizing: border-box; 
-        /* 🌟 精確邊界：上下 12mm，左右 10mm */
-        padding: 12mm 10mm 12mm 10mm !important; 
+        /* 🌟 邊界加寬：上下 15mm，左右 12mm，留白更舒適 */
+        padding: 15mm 12mm 15mm 12mm !important; 
         background-color: #FFFFFF !important; 
         color: #000; page-break-after: avoid;
       }
       
-      /* 🌟 數字指定使用 Arial，中文使用黑體 (PingFang TC / Microsoft JhengHei) */
       .print-table { 
         width: 100%; border-collapse: collapse; text-align: center; 
         font-family: Arial, "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif !important; 
         table-layout: fixed; 
         background-color: #FFFFFF !important;
         page-break-inside: avoid;
-        border: 2px solid #000 !important; /* 最外圍粗框 */
+        border: 2px solid #000 !important; 
       }
       
-      /* 🌟 統一黃金列高 28px */
+      /* 🌟 標題獨立最高優先權：超大字體、極粗體 */
+      .print-table th.print-title { 
+        font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif !important;
+        font-size: 32px !important; 
+        letter-spacing: 15px !important; 
+        font-weight: 900 !important; 
+        background-color: #FFFFFF !important; 
+        border-bottom: 2px solid #000 !important;
+        height: 60px !important; /* 獨立挑高 */
+        line-height: 60px !important; 
+      }
+
+      /* 通用的列高與框線設定 */
       .print-table th, .print-table td { 
         border: 1px solid #000; padding: 0 !important; 
         height: 28px !important; line-height: 28px !important; 
@@ -156,38 +167,32 @@
         background-color: #FFFFFF !important;
       }
       
-      /* 🌟 標題：極致放大 (36px)、超級粗體 (900)、中文黑體 */
-      .print-title { 
-        font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif !important;
-        font-size: 36px !important; letter-spacing: 15px !important; font-weight: 900 !important; 
-        background-color: #FFFFFF !important; border-bottom: 2px solid #000 !important;
-        height: 50px !important; line-height: 50px !important; 
-      }
-      
       .month-row-thick th { border-bottom: 2px solid #000 !important; }
       .thick-right { border-right: 2px solid #000 !important; }
       
-      /* 🌟 表頭：中文黑體、粗體、字體適度放大 */
+      /* 表頭 (日期/收縮壓/舒張壓) */
       .print-table th { 
         font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif !important;
-        font-weight: bold !important; background-color: #FFFFFF !important; 
-        font-size: 15px !important; 
-      }
-      
-      /* 🌟 數據字型：Arial (極度清晰) */
-      .print-table td { 
-        font-family: Arial, Helvetica, sans-serif !important;
-        font-size: 15px !important; color: #000 !important; 
-      }
-      
-      .print-table th.month-label { width: 6.5%; border-right: none; text-align: center; white-space: nowrap; font-weight: bold; }
-      .print-table th.month-val { border-left: none; text-align: left; padding-left: 2px !important; font-weight: bold; white-space: nowrap; }
-      
-      /* 🌟 日期大小改為 15px (和數據等大)，維持灰色與粗體 */
-      .print-table td:nth-child(4n+1) { 
-        color: #777777 !important; 
         font-weight: bold !important; 
         font-size: 15px !important; 
+      }
+      
+      /* 🌟 數據字體加大至 16px */
+      .print-table td { 
+        font-family: Arial, Helvetica, sans-serif !important;
+        font-size: 16px !important; 
+        color: #000 !important; 
+      }
+      
+      /* 月份標題文字加大 */
+      .print-table th.month-label { width: 6.5%; border-right: none; text-align: center; white-space: nowrap; font-size: 16px !important; font-weight: bold !important; }
+      .print-table th.month-val { border-left: none; text-align: left; padding-left: 2px !important; font-size: 16px !important; font-weight: bold !important; white-space: nowrap; }
+      
+      /* 🌟 日期數字：大小與數據相同 (16px)，但移除粗體 (normal) */
+      .print-table td:nth-child(4n+1) { 
+        color: #777777 !important; 
+        font-weight: normal !important; 
+        font-size: 16px !important; 
       }
       
       .day-col { width: 6.5%; font-weight: bold !important; } 
@@ -558,6 +563,7 @@
       }
 
       let tableHtml = `<thead>`;
+      // 🌟 將大標題設定為 th.print-title
       tableHtml += `<tr><th colspan="12" class="print-title">血壓記錄表</th></tr>`;
       
       tableHtml += `<tr class="month-row-thick">`;
