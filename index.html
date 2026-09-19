@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=64">
+  <link rel="manifest" href="manifest.json?v=65">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -117,7 +117,7 @@
       padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px;
     }
 
-    /* 🌟 PDF 列印專用排版引擎 - 極致微調版 */
+    /* 🌟 PDF 列印專用排版引擎 */
     #printArea { display: none; }
     @media print {
       @page { margin: 0; size: A4 portrait; }
@@ -132,8 +132,8 @@
       
       #printArea {
         display: block !important; visibility: visible; width: 100%; box-sizing: border-box; 
-        /* 🌟 上 12mm, 右 10mm, 下 5mm, 左 10mm */
-        padding: 12mm 10mm 5mm 10mm !important; 
+        /* 🌟 邊界調整：上 16mm, 右 12mm, 下 5mm, 左 12mm */
+        padding: 16mm 12mm 5mm 12mm !important; 
         background-color: #FFFFFF !important; 
         color: #000; page-break-after: avoid;
       }
@@ -147,7 +147,7 @@
         border: 2px solid #000 !important; 
       }
       
-      /* 🌟 統一列高調整至 28px */
+      /* 列高：維持完美 28px */
       .print-table th, .print-table td { 
         border: 1px solid #000; padding: 0 !important; 
         height: 28px !important; line-height: 28px !important; 
@@ -155,7 +155,7 @@
         background-color: #FFFFFF !important;
       }
       
-      /* 🌟 標題：字體改為 30px，高度維持 50px */
+      /* 標題：字體 30px，高度 50px */
       .print-table th.print-title { 
         font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif !important;
         font-size: 30px !important; 
@@ -177,7 +177,7 @@
         font-size: 15px !important; 
       }
       
-      /* 數據：維持霸氣 18px (Arial) */
+      /* 數據：維持 18px (Arial) */
       .print-table td { 
         font-family: Arial, Helvetica, sans-serif !important;
         font-size: 18px !important; 
@@ -187,7 +187,7 @@
       .print-table th.month-label { width: 6.5%; border-right: none; text-align: center; white-space: nowrap; font-size: 16px !important; font-weight: bold !important; }
       .print-table th.month-val { border-left: none; text-align: left; padding-left: 2px !important; font-size: 16px !important; font-weight: bold !important; white-space: nowrap; }
       
-      /* 🌟 日期數字：18px，非粗體 (normal)，顏色改為更淡的銀灰色 (#999999) */
+      /* 日期數字：維持 18px, normal, 銀灰色 (#999999) */
       .print-table td:nth-child(4n+1) { 
         color: #999999 !important; 
         font-weight: normal !important; 
