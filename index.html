@@ -4,107 +4,75 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>BP Tracker</title>
-  
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
-
-  <link rel="manifest" href="manifest.json?v=68">
+  <link rel="manifest" href="manifest.json?v=69">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
-  <!-- 引入 Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- 🌟 新增：引入 html2canvas 與 jsPDF 用於原生 PDF 生成 -->
+  <!-- 引入原生 PDF 生成套件 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   
   <style>
-    :root {
-      --primary-color: #8FA3B8;
-      --primary-dark: #495057; 
-      --bg-color: #F4F6F8;
-      --text-main: #333333;
-      --border-color: #CED4DA;
-      --danger-color: #D32F2F; 
-    }
-    
-    html, body {
-      font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg-color); color: var(--text-main);
-      margin: 0; padding: 0; 
-    }
-    
+    :root { --primary-color: #8FA3B8; --primary-dark: #495057; --bg-color: #F4F6F8; --text-main: #333333; --border-color: #CED4DA; --danger-color: #D32F2F; }
+    html, body { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; }
     .banner-container { display: flex; align-items: stretch; width: 100%; height: 44px; box-sizing: border-box; }
     .banner-left-bar { width: 12px; background-color: var(--primary-dark); }
     .logo-box { background-color: #FFFFFF; padding: 0 4px; display: flex; align-items: center; justify-content: center; }
     .banner-logo { width: 36px; height: 36px; object-fit: contain; }
     .banner-content { background-color: var(--primary-dark); flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 10px; }
     .banner-text { font-size: 20px; font-weight: bold; color: #FFFFFF; }
-
     .header-actions { display: flex; gap: 26px; align-items: center; }
     .header-btn { background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center; }
-
     .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 15px 20px; box-sizing: border-box; }
     .form-group { margin-bottom: 12px; }
-    
     .date-time-layout { display: flex; justify-content: space-between; width: 100%; }
     .date-time-layout .date-box { width: 56%; }
     .date-time-layout .time-box { width: 41%; }
     .date-time-layout input { width: 100%; padding: 12px 2px; font-size: 16px; text-align: center; box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); background: #FFFFFF; -webkit-appearance: none; }
-    
     input[type="number"], input[type="text"] { width: 100%; padding: 12px 8px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-size: 16px; color: var(--text-main); background: #FFFFFF; }
     ::placeholder { color: #A0AAB5; }
-
     .bp-hr-row { display: flex; align-items: center; width: 100%; }
     .bp-hr-row input { flex: 1; min-width: 0; text-align: center; padding: 12px 4px; }
     .symbol { font-size: 18px; color: #333; font-weight: bold; margin: 0 4px; }
     .unit { font-size: 13px; color: #333; font-weight: bold; margin: 0 4px; }
-
     .notes-save-row { display: flex; gap: 8px; width: 100%; align-items: center; }
     .notes-save-row input { flex: 1; min-width: 0; }
     .notes-save-row button.primary-btn { width: 105px; margin-top: 0; padding: 12px 0; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
-    
     .quick-tags-container { display: flex; gap: 8px; margin-top: 10px; margin-bottom: 2px; overflow-x: auto; padding-bottom: 2px; }
     .quick-tags-container::-webkit-scrollbar { display: none; } 
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; }
     .quick-tag-btn:active { background-color: #CBD5E1; }
-
     .records-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 12px 20px; background-color: var(--bg-color); box-sizing: border-box; width: 100%; }
-
     .chart-controls-left { display: flex; align-items: center; gap: 12px; }
     .chart-toggle-btn { background: none; border: none; padding: 4px 8px; margin: 0; color: var(--primary-color); cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
     .chart-toggle-btn.active { background-color: #E2E8F0; color: var(--primary-dark); }
-
     .legend-wrapper { position: relative; display: flex; flex-direction: column; }
     .custom-legend { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #64748B; font-weight: bold; }
     .legend-item { display: flex; align-items: center; gap: 4px; }
     .legend-bp-bar { width: 5px; height: 12px; background: #7895B2; border-radius: 2px; }
     .legend-hr-line { width: 14px; height: 2px; background: #CBD5E1; }
     .chart-tip { position: absolute; top: 100%; left: 0; font-size: 9px; color: #A0AAB5; font-weight: normal; margin-top: 2px; white-space: nowrap; }
-
     .capsule-group { display: flex; background-color: #E2E8F0; border-radius: 20px; padding: 3px; flex-shrink: 0; }
     .capsule-btn { background: transparent; color: #64748B; border: none; padding: 6px 12px; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 18px; transition: all 0.2s; white-space: nowrap; line-height: 1.2; display: flex; align-items: center; justify-content: center; }
     .capsule-btn.active { background-color: #FFFFFF; color: var(--primary-dark); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     .chart-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 5px 20px 10px 20px; box-sizing: border-box; background-color: var(--bg-color); height: 190px; display: block; }
-
     .list-header { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-dark); font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center; }
     .list-header div:nth-child(5) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 8px; }
-
     .record-row { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; align-items: center; padding: 4px 0; font-size: 15px; line-height: 1.1; color: var(--text-main); text-align: center; font-variant-numeric: tabular-nums; transition: background-color 0.2s; }
     .record-row.highlight-delete { background-color: rgba(211, 47, 47, 0.2); border-radius: 6px; }
     .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:nth-child(6) { text-align: left; padding-left: 8px; }
     .record-row div:last-child { display: flex; justify-content: flex-end; }
-    
     .delete-btn { background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; display: flex; justify-content: flex-end; align-items: center; transition: color 0.2s; }
     .delete-btn:hover { color: var(--danger-color); }
-    
     .sun-col { display: flex; align-items: center; justify-content: center; }
     .bp-col-align { display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center; justify-content: center; }
     .bp-sys { text-align: right; font-weight: bold; }
@@ -113,275 +81,41 @@
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
     .high-bp { color: var(--danger-color); font-weight: bold; }
     .item-divider { border-top: 1px dashed #E2E8F0; margin: 3px 0; }
-
     .month-row { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding: 10px 0 4px 0; }
-    .month-box {
-      grid-column: 1 / 3; width: 100%; box-sizing: border-box;
-      background-color: #E2E8F0; color: var(--primary-dark); font-weight: bold; font-size: 12px;
-      padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px;
-    }
+    .month-box { grid-column: 1 / 3; width: 100%; box-sizing: border-box; background-color: #E2E8F0; color: var(--primary-dark); font-weight: bold; font-size: 12px; padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px; }
 
-    /* 🌟 改用實體 CSS 取代 @media print，確保 html2canvas 能 100% 正確擷取 */
+    /* =========================================
+       🌟 原生 PDF 排版引擎 (高畫質精細框線版)
+       ========================================= */
     #printArea { 
       display: none; 
-      /* 強制寫死 A4 尺寸 (210mm x 297mm) */
       width: 210mm; 
       height: 297mm; 
       box-sizing: border-box; 
-      /* 🌟 您的完美邊界設定：上16 右12 下5 左12 */
       padding: 16mm 12mm 5mm 12mm; 
       background-color: #FFFFFF; 
       color: #000; 
     }
     
-    #printArea .print-table { 
-      width: 100%; border-collapse: collapse; text-align: center; 
-      font-family: Arial, "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; 
-      table-layout: fixed; 
-      background-color: #FFFFFF;
-      border: 2px solid #000; 
-    }
-    
-    #printArea .print-table th, #printArea .print-table td { 
-      border: 1px solid #000; padding: 0; 
-      height: 28px; line-height: 28px; 
-      box-sizing: border-box; overflow: hidden;
-      background-color: #FFFFFF;
-    }
-    
-    #printArea .print-table th.print-title { 
-      font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
-      font-size: 30px; letter-spacing: 15px; font-weight: 900; 
-      background-color: #FFFFFF; border-bottom: 2px solid #000;
-      height: 50px; line-height: 50px; 
-    }
-
-    #printArea .month-row-thick th { border-bottom: 2px solid #000; }
-    #printArea .thick-right { border-right: 2px solid #000; }
-    
-    #printArea .print-table th { 
-      font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
-      font-weight: bold; font-size: 15px; 
-    }
-    
-    #printArea .print-table td { 
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 18px; color: #000; 
-    }
-    
-    #printArea .print-table th.month-label { width: 6.5%; border-right: none; text-align: center; white-space: nowrap; font-size: 16px; font-weight: bold; }
-    #printArea .print-table th.month-val { border-left: none; text-align: left; padding-left: 2px; font-size: 16px; font-weight: bold; white-space: nowrap; }
-    
-    #printArea .print-table td:nth-child(4n+1) { 
-      color: #999999; font-weight: normal; font-size: 18px; 
-    }
-    
-    #printArea .day-col { width: 6.5%; font-weight: bold; } 
-    #printArea .sys-col, #printArea .dia-col, #printArea .hr-col { width: 8.9%; font-weight: bold; } 
-  </style>
-</head>
-<body>
-
-  <div class="sticky-top-panel">
-    <div class="banner-container">
-      <div class="banner-left-bar"></div> 
-      <div class="logo-box"> 
-        <img src="./icon.png" alt="Logo" class="banner-logo">
-      </div>
-      <div class="banner-content"> 
-        <span class="banner-text">BP Tracker</span>
-        <div class="header-actions">
-          <button class="header-btn" onclick="generatePDF()" id="pdfExportBtn" title="Export PDF">🖨️</button>
-          <button class="header-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
-        </div>
-      </div>
-    </div>
-    
-    <div class="container" style="padding-bottom: 5px; padding-top: 16px;">
-      <form id="bpForm">
-        <div class="form-group date-time-layout">
-          <div class="date-box"><input type="date" id="date" required></div>
-          <div class="time-box"><input type="time" id="time" required></div>
-        </div>
-        <div class="form-group bp-hr-row">
-          <input type="number" id="systolic" placeholder="SBP" inputmode="numeric" pattern="[0-9]*" required>
-          <span class="symbol">/</span>
-          <input type="number" id="diastolic" placeholder="DBP" inputmode="numeric" pattern="[0-9]*" required>
-          <span class="unit">mmHg</span>
-          <input type="number" id="heartRate" placeholder="HR" inputmode="numeric" pattern="[0-9]*" required>
-          <span class="unit" style="margin-right:0;">bpm</span>
-        </div>
-        <div class="form-group notes-save-row" style="margin-bottom: 0;">
-          <input type="text" id="notes" placeholder="Notes (e.g., dizzy...)">
-          <button type="submit" id="submitBtn" class="primary-btn">Save</button>
-        </div>
-        
-        <div class="quick-tags-container">
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('[報表]')" style="background-color: #E2E8F0; border: 1px solid #8FA3B8; color: var(--primary-dark); padding: 6px 10px;">
-            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line><polyline太棒了！這真的是最治本、最一勞永逸的終極解決方案。
-
-我們現在就正式**「把 PDF 生成權從 iOS Safari 手上拿回來」**！
-
-透過導入 `jsPDF` 和 `html2canvas` 這兩個業界標準的套件，我們將在背景建立一個完全不受瀏覽器干擾的「隱藏版 A4 畫布」。把剛剛調整得完美無瑕的表格畫在上面，截取成高解析度圖片後，直接包裝成原生的 PDF 檔案下載。
-
-**這個版本 (v68) 將會帶給您前所未有的穩定體驗：**
-1. **100% 絕對完美比例**：不再依賴 `@media print`，我們直接用 CSS 鎖定實體物理尺寸 `210mm x 297mm`。之前設定的上下左右黃金邊界、字體大小，產出將「分毫不差」。
-2. **消滅系統干擾**：那些揮之不去的網址、日期、頁碼、強制縮放全部消失，表格絕對不會再被無緣無故擠到第二頁。
-3. **三端統一**：不管是從桌上型電腦的 Chrome、iPhone 的 Safari、還是 iPad 點擊，產出來的 PDF 檔案長得一模一樣！
-
-請將程式碼替換為這個 **跨平台絕對純淨原生 PDF 版 (v68)**：
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>BP Tracker</title>
-  
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <meta http-equiv="Pragma" content="no-cache">
-  <meta http-equiv="Expires" content="0">  
-
-  <link rel="manifest" href="manifest.json?v=68">
-  <link rel="icon" type="image/png" href="./icon.png">
-  <link rel="apple-touch-icon" href="./icon.png">
-  
-  <script src="[https://cdn.jsdelivr.net/npm/chart.js](https://cdn.jsdelivr.net/npm/chart.js)"></script>
-  <!-- 🌟 引入 PDF 與 畫布套件 -->
-  <script src="[https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js](https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js)"></script>
-  <script src="[https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js](https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js)"></script>
-  
-  <style>
-    :root {
-      --primary-color: #8FA3B8;
-      --primary-dark: #495057; 
-      --bg-color: #F4F6F8;
-      --text-main: #333333;
-      --border-color: #CED4DA;
-      --danger-color: #D32F2F; 
-    }
-    
-    html, body {
-      font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg-color); color: var(--text-main);
-      margin: 0; padding: 0; 
-    }
-    
-    .banner-container { display: flex; align-items: stretch; width: 100%; height: 44px; box-sizing: border-box; }
-    .banner-left-bar { width: 12px; background-color: var(--primary-dark); }
-    .logo-box { background-color: #FFFFFF; padding: 0 4px; display: flex; align-items: center; justify-content: center; }
-    .banner-logo { width: 36px; height: 36px; object-fit: contain; }
-    .banner-content { background-color: var(--primary-dark); flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 10px; }
-    .banner-text { font-size: 20px; font-weight: bold; color: #FFFFFF; }
-
-    .header-actions { display: flex; gap: 26px; align-items: center; }
-    .header-btn { background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center; }
-
-    .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 15px 20px; box-sizing: border-box; }
-    .form-group { margin-bottom: 12px; }
-    
-    .date-time-layout { display: flex; justify-content: space-between; width: 100%; }
-    .date-time-layout .date-box { width: 56%; }
-    .date-time-layout .time-box { width: 41%; }
-    .date-time-layout input { width: 100%; padding: 12px 2px; font-size: 16px; text-align: center; box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); background: #FFFFFF; -webkit-appearance: none; }
-    
-    input[type="number"], input[type="text"] { width: 100%; padding: 12px 8px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-size: 16px; color: var(--text-main); background: #FFFFFF; }
-    ::placeholder { color: #A0AAB5; }
-
-    .bp-hr-row { display: flex; align-items: center; width: 100%; }
-    .bp-hr-row input { flex: 1; min-width: 0; text-align: center; padding: 12px 4px; }
-    .symbol { font-size: 18px; color: #333; font-weight: bold; margin: 0 4px; }
-    .unit { font-size: 13px; color: #333; font-weight: bold; margin: 0 4px; }
-
-    .notes-save-row { display: flex; gap: 8px; width: 100%; align-items: center; }
-    .notes-save-row input { flex: 1; min-width: 0; }
-    .notes-save-row button.primary-btn { width: 105px; margin-top: 0; padding: 12px 0; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
-    
-    .quick-tags-container { display: flex; gap: 8px; margin-top: 10px; margin-bottom: 2px; overflow-x: auto; padding-bottom: 2px; }
-    .quick-tags-container::-webkit-scrollbar { display: none; } 
-    .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; }
-    .quick-tag-btn:active { background-color: #CBD5E1; }
-
-    .records-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 12px 20px; background-color: var(--bg-color); box-sizing: border-box; width: 100%; }
-
-    .chart-controls-left { display: flex; align-items: center; gap: 12px; }
-    .chart-toggle-btn { background: none; border: none; padding: 4px 8px; margin: 0; color: var(--primary-color); cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
-    .chart-toggle-btn.active { background-color: #E2E8F0; color: var(--primary-dark); }
-
-    .legend-wrapper { position: relative; display: flex; flex-direction: column; }
-    .custom-legend { display: flex; align-items: center; gap: 10px; font-size: 12px; color: #64748B; font-weight: bold; }
-    .legend-item { display: flex; align-items: center; gap: 4px; }
-    .legend-bp-bar { width: 5px; height: 12px; background: #7895B2; border-radius: 2px; }
-    .legend-hr-line { width: 14px; height: 2px; background: #CBD5E1; }
-    .chart-tip { position: absolute; top: 100%; left: 0; font-size: 9px; color: #A0AAB5; font-weight: normal; margin-top: 2px; white-space: nowrap; }
-
-    .capsule-group { display: flex; background-color: #E2E8F0; border-radius: 20px; padding: 3px; flex-shrink: 0; }
-    .capsule-btn { background: transparent; color: #64748B; border: none; padding: 6px 12px; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 18px; transition: all 0.2s; white-space: nowrap; line-height: 1.2; display: flex; align-items: center; justify-content: center; }
-    .capsule-btn.active { background-color: #FFFFFF; color: var(--primary-dark); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-
-    .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
-    .chart-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 5px 20px 10px 20px; box-sizing: border-box; background-color: var(--bg-color); height: 190px; display: block; }
-
-    .list-header { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-dark); font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center; }
-    .list-header div:nth-child(5) { text-align: center; padding: 0; } 
-    .list-header div:nth-child(6) { text-align: left; padding-left: 8px; }
-
-    .record-row { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; align-items: center; padding: 4px 0; font-size: 15px; line-height: 1.1; color: var(--text-main); text-align: center; font-variant-numeric: tabular-nums; transition: background-color 0.2s; }
-    .record-row.highlight-delete { background-color: rgba(211, 47, 47, 0.2); border-radius: 6px; }
-    .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
-    .record-row div:nth-child(6) { text-align: left; padding-left: 8px; }
-    .record-row div:last-child { display: flex; justify-content: flex-end; }
-    
-    .delete-btn { background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; display: flex; justify-content: flex-end; align-items: center; transition: color 0.2s; }
-    .delete-btn:hover { color: var(--danger-color); }
-    
-    .sun-col { display: flex; align-items: center; justify-content: center; }
-    .bp-col-align { display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center; justify-content: center; }
-    .bp-sys { text-align: right; font-weight: bold; }
-    .bp-slash { color: #888; font-weight: normal; } 
-    .bp-dia { text-align: left; font-weight: bold; }
-    .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
-    .high-bp { color: var(--danger-color); font-weight: bold; }
-    .item-divider { border-top: 1px dashed #E2E8F0; margin: 3px 0; }
-
-    .month-row { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding: 10px 0 4px 0; }
-    .month-box {
-      grid-column: 1 / 3; width: 100%; box-sizing: border-box;
-      background-color: #E2E8F0; color: var(--primary-dark); font-weight: bold; font-size: 12px;
-      padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px;
-    }
-
-    /* =========================================
-       🌟 終極 PDF 排版引擎 (完全脫離瀏覽器限制) 
-       ========================================= */
-    #printArea {
-      display: none; 
-      width: 210mm; 
-      height: 297mm; 
-      box-sizing: border-box; 
-      padding: 16mm 12mm 5mm 12mm; 
-      background-color: #FFFFFF; 
-      color: #000;
-    }
-
     .print-table { 
-      width: 100%; border-collapse: collapse; text-align: center; 
+      width: 100%; 
+      border-collapse: collapse; 
+      text-align: center; 
       font-family: Arial, "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; 
       table-layout: fixed; 
       background-color: #FFFFFF;
+      /* 🌟 1. 最外框：稍微粗一點 (2px) */
       border: 2px solid #000; 
     }
     
     .print-table th, .print-table td { 
-      border: 1px solid #000; padding: 0; 
-      height: 28px; line-height: 28px; 
-      box-sizing: border-box; overflow: hidden;
+      /* 🌟 內部一般框線：極細線 (1px) */
+      border: 1px solid #000; 
+      padding: 0; 
+      height: 28px; 
+      line-height: 28px; 
+      box-sizing: border-box; 
+      overflow: hidden;
       background-color: #FFFFFF;
     }
     
@@ -391,13 +125,17 @@
       letter-spacing: 15px; 
       font-weight: 900; 
       background-color: #FFFFFF; 
+      /* 🌟 2. 血壓記錄表下框線：稍微粗一點 (2px) */
       border-bottom: 2px solid #000;
       height: 50px; 
       line-height: 50px; 
     }
 
-    .month-row-thick th { border-bottom: 2px solid #000; }
-    .thick-right { border-right: 2px solid #000; }
+    /* 🌟 3. 月份列下框線：稍微粗一點 (2px) */
+    .month-row-thick th { border-bottom: 2px solid #000 !important; }
+    
+    /* 🌟 4. 月份之間的直框線：稍微粗一點 (2px) */
+    .thick-right { border-right: 2px solid #000 !important; }
     
     .print-table th { 
       font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
@@ -429,9 +167,7 @@
   <div class="sticky-top-panel">
     <div class="banner-container">
       <div class="banner-left-bar"></div> 
-      <div class="logo-box"> 
-        <img src="./icon.png" alt="Logo" class="banner-logo">
-      </div>
+      <div class="logo-box"><img src="./icon.png" alt="Logo" class="banner-logo"></div>
       <div class="banner-content"> 
         <span class="banner-text">BP Tracker</span>
         <div class="header-actions">
@@ -461,12 +197,8 @@
         </div>
         
         <div class="quick-tags-container">
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('[報表]')" style="background-color: #E2E8F0; border: 1px solid #8FA3B8; color: var(--primary-dark); padding: 6px 10px;">
-            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('[報表]')">
+            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
           </button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏥 院所')">🏥 院所</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('☕ 咖啡')">☕ 咖啡</button>
@@ -480,15 +212,10 @@
     <div class="records-header">
       <div class="chart-controls-left">
         <button id="toggleChartBtn" class="chart-toggle-btn active" title="Toggle Trend Chart">
-          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-          </svg>
+          <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
         </button>
         <div id="customLegend" class="legend-wrapper">
-          <div class="custom-legend">
-            <div class="legend-item"><div class="legend-bp-bar"></div> BP</div>
-            <div class="legend-item"><div class="legend-hr-line"></div> HR</div>
-          </div>
+          <div class="custom-legend"><div class="legend-item"><div class="legend-bp-bar"></div> BP</div><div class="legend-item"><div class="legend-hr-line"></div> HR</div></div>
           <span class="chart-tip">Tap bar for details</span>
         </div>
       </div>
@@ -497,23 +224,13 @@
         <button class="capsule-btn active" data-val="30days">30 days</button>
         <button class="capsule-btn" data-val="all">All</button>
         <button class="capsule-btn" data-val="report" title="Report Filter">
-          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
-          </svg>
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
         </button>
       </div>
     </div>
-
-    <div id="chartContainer" class="chart-container">
-      <canvas id="bpChart"></canvas>
-    </div>
-    
+    <div id="chartContainer" class="chart-container"><canvas id="bpChart"></canvas></div>
     <div class="container" style="padding-top: 5px; padding-bottom: 0;">
-      <div class="list-header">
-        <div>Date</div><div>Time</div><div></div><div>BP</div><div>HR</div><div>Notes</div><div></div>
-      </div>
+      <div class="list-header"><div>Date</div><div>Time</div><div></div><div>BP</div><div>HR</div><div>Notes</div><div></div></div>
     </div>
   </div> 
 
@@ -521,15 +238,13 @@
     <div id="recordsList"><div style="text-align:center; padding: 20px; color: #888;">Loading...</div></div>
   </div>
 
-  <!-- 🌟 這就是我們的新畫布：永遠保持 A4 比例，不會受螢幕或 iOS 印表機影響 -->
+  <!-- 🌟 隱藏的 A4 PDF 畫布區域 -->
   <div id="printArea">
-    <table class="print-table" id="printTable">
-      <!-- 標題與動態內容生成於此 -->
-    </table>
+    <table class="print-table" id="printTable"></table>
   </div>
 
   <script>
-    const API_URL = '[https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec](https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec)';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
     let allRecords = [];
     let currentFilter = '30days'; 
     let bpChartInstance = null; 
@@ -607,7 +322,6 @@
     function confirmDelete(btn, formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime) {
       const row = btn.closest('.record-row');
       row.classList.add('highlight-delete');
-      
       setTimeout(() => {
         if (confirm(`${formattedDate} ${formattedTime}${sys}/${dia} mmHg${hr} bpm\n確定刪除？`)) {
           allRecords = allRecords.filter(r => !(r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr));
@@ -661,10 +375,7 @@
                 }
               }
             },
-            scales: {
-              x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 10 } } },
-              y: { grid: { color: '#E2E8F0' }, beginAtZero: false, suggestedMin: 40, suggestedMax: 160 }
-            }
+            scales: { x: { grid: { display: false }, ticks: { maxTicksLimit: 6, font: { size: 10 } } }, y: { grid: { color: '#E2E8F0' }, beginAtZero: false, suggestedMin: 40, suggestedMax: 160 } }
           }
         });
       }
@@ -673,16 +384,9 @@
     function renderList() {
       localStorage.setItem('bpCacheRecords', JSON.stringify(allRecords));
       let displayData = [...allRecords].filter(r => r && r.date && String(r.date).trim() !== '');
-
-      if (currentFilter === 'report') {
-        displayData = displayData.filter(r => r.notes && r.notes.includes('[報表]'));
-      } else if (currentFilter === '7days') {
-        let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
-        displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff);
-      } else if (currentFilter === '30days') {
-        let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30);
-        displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff);
-      }
+      if (currentFilter === 'report') { displayData = displayData.filter(r => r.notes && r.notes.includes('[報表]')); } 
+      else if (currentFilter === '7days') { let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7); displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff); } 
+      else if (currentFilter === '30days') { let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30); displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff); }
 
       displayData.sort((a, b) => {
         let dtA = new Date(`${a.date ? String(a.date).replace(/-/g, '/') : ''} ${a.time ? String(a.time) : ''}`);
@@ -696,18 +400,14 @@
       if (displayData.length === 0) {
         html = `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
       } else {
-        let lastDate = null;
-        let lastMonthStr = null;
-        
+        let lastDate = null; let lastMonthStr = null;
         const reportSvg = `<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color:#495057; display:inline-block;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`;
 
         displayData.forEach(item => {
           let rawDate = item.date ? String(item.date) : ''; let dateObj = new Date(rawDate);
           let formattedDate = (!isNaN(dateObj) && rawDate !== '') ? `${dateObj.getFullYear()}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${String(dateObj.getDate()).padStart(2, '0')}` : rawDate.replace(/-/g, '/');
-          
           let currMonthStr = (!isNaN(dateObj) && rawDate !== '') ? `${dateObj.getFullYear()} /${String(dateObj.getMonth() + 1).padStart(2, '0')}` : '';
           let currDayStr = (!isNaN(dateObj) && rawDate !== '') ? String(dateObj.getDate()).padStart(2, '0') : formattedDate;
-
           let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
           let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
           let sysHtml = (item.systolic >= 130) ? `<span class="high-bp">${item.systolic}</span>` : (item.systolic || '');
@@ -731,28 +431,16 @@
           let displayDateText = (lastDate !== formattedDate) ? currDayStr : '';
           lastDate = formattedDate;
 
-          let displayNote = (item.notes || '')
-            .replace(/☕ 咖啡/g, '☕').replace(/🏃 運動/g, '🏃')
-            .replace(/💊 吃藥/g, '💊').replace(/🤕 頭痛/g, '🤕')
-            .replace(/🏥 院所/g, '🏥')
-            .replace(/\[報表\]/g, reportSvg);
+          let displayNote = (item.notes || '').replace(/☕ 咖啡/g, '☕').replace(/🏃 運動/g, '🏃').replace(/💊 吃藥/g, '💊').replace(/🤕 頭痛/g, '🤕').replace(/🏥 院所/g, '🏥').replace(/\[報表\]/g, reportSvg);
 
           html += `
             <div class="record-row">
-              <div>${displayDateText}</div>
-              <div>${formattedTime}</div>
-              <div class="sun-col">${sunSvgHtml}</div>
+              <div>${displayDateText}</div><div>${formattedTime}</div><div class="sun-col">${sunSvgHtml}</div>
               <div class="bp-col-align"><span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${item.diastolic || ''}</span></div>
-              <div>${item.heartRate || ''}</div>
-              <div class="note-col">${displayNote}</div>
+              <div>${item.heartRate || ''}</div><div class="note-col">${displayNote}</div>
               <div>
                 <button class="delete-btn" onclick="confirmDelete(this, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}')" title="Delete">
-                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                  </svg>
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                 </button>
               </div>
             </div>`;
@@ -761,7 +449,7 @@
       document.getElementById('recordsList').innerHTML = html;
     }
 
-    // 🌟 全新原生 PDF 生成函數
+    // 🌟 原生 PDF 生成引擎 (高解析度版) 🌟
     async function generatePDF() {
       let reportData = [...allRecords]
         .filter(r => r && r.date && r.notes && r.notes.includes('[報表]'))
@@ -771,7 +459,6 @@
         alert("目前沒有包含「報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return;
       }
 
-      // 替換按鈕圖示，提示使用者正在處理中
       const btn = document.getElementById('exportPdfBtn');
       const originalBtnHtml = btn.innerHTML;
       btn.innerHTML = '⏳';
@@ -794,7 +481,6 @@
         let firstMDate = new Date(firstMonthStr + '/01');
         let lastMDate = new Date(lastMonthStr + '/01');
         let monthDiff = (lastMDate.getFullYear() - firstMDate.getFullYear()) * 12 + (lastMDate.getMonth() - firstMDate.getMonth());
-        
         let startMDate = (monthDiff <= 2) ? new Date(firstMDate) : new Date(lastMDate.getFullYear(), lastMDate.getMonth() - 2, 1);
         
         let targetMonths = [];
@@ -805,16 +491,13 @@
 
         let tableHtml = `<thead>`;
         tableHtml += `<tr><th colspan="12" class="print-title">血壓記錄表</th></tr>`;
-        
         tableHtml += `<tr class="month-row-thick">`;
         for (let i = 0; i < 3; i++) {
           let mVal = targetMonths[i] ? targetMonths[i] : ``;
           let rightThickClass = (i < 2) ? ' thick-right' : '';
           tableHtml += `<th class="month-label">月份:</th><th colspan="3" class="month-val${rightThickClass}">${mVal}</th>`;
         }
-        tableHtml += `</tr>`;
-        
-        tableHtml += `<tr>`;
+        tableHtml += `</tr><tr>`;
         for (let i = 0; i < 3; i++) {
           let rightThickClass = (i < 2) ? ' thick-right' : '';
           tableHtml += `<th class="day-col">日期</th><th class="sys-col">收縮壓</th><th class="dia-col">舒張壓</th><th class="hr-col${rightThickClass}">脈搏</th>`;
@@ -827,7 +510,6 @@
             let monthKey = targetMonths[m];
             let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null;
             let rightThickClass = (m < 2) ? ' thick-right' : '';
-            
             tableHtml += `<td>${day}</td>`;
             tableHtml += `<td>${record ? record.systolic : ''}</td>`;
             tableHtml += `<td>${record ? record.diastolic : ''}</td>`;
@@ -839,51 +521,39 @@
 
         document.getElementById('printTable').innerHTML = tableHtml;
         
-        // 🌟 啟動魔法：將隱藏的表格放置到畫面上方邊緣外
         const printArea = document.getElementById('printArea');
         printArea.style.display = 'block';
         printArea.style.position = 'absolute';
         printArea.style.left = '-9999px';
         printArea.style.top = '0';
 
-        // 給予瀏覽器極短暫的時間將 DOM 繪製完成
         await new Promise(resolve => setTimeout(resolve, 300));
 
-        // 🌟 透過 html2canvas 將表格轉為高解析度視網膜圖片 (scale: 2)
-        const canvas = await html2canvas(printArea, {
-            scale: 2, 
-            backgroundColor: '#ffffff',
-            useCORS: true
+        // 🌟 解析度大躍進：將 scale 提升至 4，達到印刷級清晰度
+        const canvas = await html2canvas(printArea, { 
+            scale: 4, 
+            backgroundColor: '#ffffff', 
+            useCORS: true 
         });
 
-        // 🌟 初始化 jsPDF 建立 A4 空白文件
         const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'mm',
-            format: 'a4',
-            compress: true
-        });
-
-        // 將圖片無縫貼上 A4 畫布 (210 x 297 mm)
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
         pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);
 
-        // 下載 PDF
         const today = new Date();
         const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
         pdf.save(`血壓記錄表_${dateStr}.pdf`);
 
-        // 清理現場，把表格藏回暗處
         printArea.style.display = 'none';
         printArea.style.position = '';
         printArea.style.left = '';
         printArea.style.top = '';
 
       } catch (err) {
-        console.error("PDF Generate Error", err);
-        alert("產生 PDF 時發生問題，請確保網路暢通並重試。");
+        console.error("PDF 產生失敗", err);
+        alert("產生 PDF 時發生錯誤，請稍後再試。");
       } finally {
-        btn.innerHTML = originalBtnHtml; // 恢復按鈕圖示
+        btn.innerHTML = originalBtnHtml;
       }
     }
 
