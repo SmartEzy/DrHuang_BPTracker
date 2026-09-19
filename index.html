@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=58">
+  <link rel="manifest" href="manifest.json?v=59">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -117,7 +117,7 @@
       padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px;
     }
 
-    /* 🌟 PDF 列印專用排版引擎 - 電腦版最佳化 */
+    /* 🌟 PDF 列印專用排版引擎 - 字型、白底、粗框線優化版 */
     #printArea { display: none; }
     @media print {
       @page { margin: 0; size: A4 portrait; }
@@ -132,46 +132,56 @@
       
       #printArea {
         display: block !important; visibility: visible; width: 100%; box-sizing: border-box; 
-        /* 🌟 設定完美的電腦版內距留白 */
         padding: 12mm 15mm 12mm 15mm !important; 
         background-color: #FFFFFF !important; 
         color: #000; page-break-after: avoid;
       }
       
-      .print-title { 
-        text-align: center; font-size: 26px !important; margin: 0 0 12px 0 !important; 
-        letter-spacing: 5px; font-family: "DFKai-SB", "BiauKai", serif; font-weight: bold; 
-        background-color: #FFFFFF !important;
-      }
-      
+      /* 🌟 將字型指定為 Calibri (數字) 優先，接著是各種黑體 (中文) */
       .print-table { 
         width: 100%; border-collapse: collapse; text-align: center; 
-        font-family: -apple-system, Arial, Helvetica, sans-serif; table-layout: fixed; 
+        font-family: "Calibri", "PingFang TC", "Heiti TC", "Microsoft JhengHei", "Helvetica Neue", sans-serif !important; 
+        table-layout: fixed; 
         background-color: #FFFFFF !important;
         page-break-inside: avoid;
+        /* 🌟 最外圍粗框線 */
+        border: 2px solid #000 !important; 
       }
       
-      /* 🌟 列高加長至 28px，完美撐滿 A4 */
       .print-table th, .print-table td { 
         border: 1px solid #000; padding: 0 !important; 
-        height: 28px !important; line-height: 28px !important; 
+        height: 27px !important; line-height: 27px !important; /* 確保在粗框線下仍能單頁容納 */
         box-sizing: border-box; overflow: hidden;
         background-color: #FFFFFF !important;
       }
       
+      /* 🌟 標題整合進表格，設定下方粗框線 */
+      .print-title { 
+        font-size: 26px !important; letter-spacing: 5px; font-weight: bold; 
+        background-color: #FFFFFF !important; border-bottom: 2px solid #000 !important;
+        height: 42px !important; line-height: 42px !important; /* 標題高一點 */
+      }
+      
+      /* 🌟 月份列下方粗框線 */
+      .month-row-thick th { border-bottom: 2px solid #000 !important; }
+      
+      /* 🌟 三個月交界的垂直粗框線 */
+      .thick-right { border-right: 2px solid #000 !important; }
+      
+      /* 🌟 灰底全改為白底 */
       .print-table th { 
-        font-weight: normal; background-color: #f2f2f2 !important; 
-        font-size: 14px !important; font-family: "DFKai-SB", "BiauKai", serif; 
+        font-weight: normal; background-color: #FFFFFF !important; 
+        font-size: 14px !important; 
       }
       
       .print-table td { font-size: 15px !important; color: #000 !important; }
       
-      .print-table th.month-label { width: 6.5%; border-right: none; text-align: center; white-space: nowrap; }
-      .print-table th.month-val { border-left: none; text-align: left; padding-left: 2px !important; font-family: -apple-system, Arial, sans-serif; font-weight: bold; white-space: nowrap; }
+      .print-table th.month-label { width: 6.5%; border-right: none; text-align: center; white-space: nowrap; font-weight: bold; }
+      .print-table th.month-val { border-left: none; text-align: left; padding-left: 2px !important; font-weight: bold; white-space: nowrap; }
       
-      .print-table td:nth-child(4n+1) { color: #888888 !important; font-weight: 500; font-size: 12px !important; }
-      .day-col { width: 6.5%; } 
-      .sys-col, .dia-col, .hr-col { width: 8.9%; } 
+      .print-table td:nth-child(4n+1) { color: #888888 !important; font-weight: bold; font-size: 12px !important; }
+      .day-col { width: 6.5%; font-weight: bold !important; } 
+      .sys-col, .dia-col, .hr-col { width: 8.9%; font-weight: bold !important; } 
     }
   </style>
 </head>
@@ -273,9 +283,8 @@
   </div>
 
   <div id="printArea">
-    <h1 class="print-title">血壓記錄表</h1>
     <table class="print-table" id="printTable">
-      <!-- 動態生成 -->
+      <!-- 標題與動態內容生成於此 -->
     </table>
   </div>
 
@@ -538,27 +547,39 @@
         targetMonths.push(`${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}`);
       }
 
-      let tableHtml = `<thead><tr>`;
+      // 🌟 將大標題整合進 Thead 確保被粗外框包覆
+      let tableHtml = `<thead>`;
+      tableHtml += `<tr><th colspan="12" class="print-title">血壓記錄表</th></tr>`;
+      
+      // 🌟 月份列
+      tableHtml += `<tr class="month-row-thick">`;
       for (let i = 0; i < 3; i++) {
         let mVal = targetMonths[i] ? targetMonths[i] : ``;
-        tableHtml += `<th class="month-label">月份:</th><th colspan="3" class="month-val">${mVal}</th>`;
+        let rightThickClass = (i < 2) ? ' thick-right' : '';
+        tableHtml += `<th class="month-label">月份:</th><th colspan="3" class="month-val${rightThickClass}">${mVal}</th>`;
       }
-      tableHtml += `</tr><tr>`;
+      tableHtml += `</tr>`;
+      
+      // 🌟 欄位標題列
+      tableHtml += `<tr>`;
       for (let i = 0; i < 3; i++) {
-        tableHtml += `<th class="day-col">日期</th><th class="sys-col">收縮壓</th><th class="dia-col">舒張壓</th><th class="hr-col">脈搏</th>`;
+        let rightThickClass = (i < 2) ? ' thick-right' : '';
+        tableHtml += `<th class="day-col">日期</th><th class="sys-col">收縮壓</th><th class="dia-col">舒張壓</th><th class="hr-col${rightThickClass}">脈搏</th>`;
       }
       tableHtml += `</tr></thead><tbody>`;
 
+      // 🌟 數據列
       for (let day = 1; day <= 31; day++) {
         tableHtml += `<tr>`;
         for (let m = 0; m < 3; m++) {
           let monthKey = targetMonths[m];
           let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null;
+          let rightThickClass = (m < 2) ? ' thick-right' : '';
           
           tableHtml += `<td>${day}</td>`;
           tableHtml += `<td>${record ? record.systolic : ''}</td>`;
           tableHtml += `<td>${record ? record.diastolic : ''}</td>`;
-          tableHtml += `<td>${record ? record.heartRate : ''}</td>`;
+          tableHtml += `<td class="${rightThickClass}">${record ? record.heartRate : ''}</td>`;
         }
         tableHtml += `</tr>`;
       }
