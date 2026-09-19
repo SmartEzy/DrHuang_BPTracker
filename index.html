@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=59">
+  <link rel="manifest" href="manifest.json?v=60">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -117,7 +117,7 @@
       padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px;
     }
 
-    /* 🌟 PDF 列印專用排版引擎 - 字型、白底、粗框線優化版 */
+    /* 🌟 PDF 列印專用排版引擎 - 滿版與大字體優化版 (v60) */
     #printArea { display: none; }
     @media print {
       @page { margin: 0; size: A4 portrait; }
@@ -132,54 +132,53 @@
       
       #printArea {
         display: block !important; visibility: visible; width: 100%; box-sizing: border-box; 
-        padding: 12mm 15mm 12mm 15mm !important; 
+        /* 🌟 縮小左右邊界到 6mm，上下邊界 8mm，把空間全留給表格延展 */
+        padding: 8mm 6mm 8mm 6mm !important; 
         background-color: #FFFFFF !important; 
         color: #000; page-break-after: avoid;
       }
       
-      /* 🌟 將字型指定為 Calibri (數字) 優先，接著是各種黑體 (中文) */
       .print-table { 
         width: 100%; border-collapse: collapse; text-align: center; 
         font-family: "Calibri", "PingFang TC", "Heiti TC", "Microsoft JhengHei", "Helvetica Neue", sans-serif !important; 
         table-layout: fixed; 
         background-color: #FFFFFF !important;
         page-break-inside: avoid;
-        /* 🌟 最外圍粗框線 */
         border: 2px solid #000 !important; 
       }
       
+      /* 🌟 列高加大至 30px */
       .print-table th, .print-table td { 
         border: 1px solid #000; padding: 0 !important; 
-        height: 27px !important; line-height: 27px !important; /* 確保在粗框線下仍能單頁容納 */
+        height: 30px !important; line-height: 30px !important; 
         box-sizing: border-box; overflow: hidden;
         background-color: #FFFFFF !important;
       }
       
-      /* 🌟 標題整合進表格，設定下方粗框線 */
+      /* 🌟 標題大升級 (36px)，高度調高以容納霸氣大字 */
       .print-title { 
-        font-size: 26px !important; letter-spacing: 5px; font-weight: bold; 
+        font-size: 36px !important; letter-spacing: 8px; font-weight: bold; 
         background-color: #FFFFFF !important; border-bottom: 2px solid #000 !important;
-        height: 42px !important; line-height: 42px !important; /* 標題高一點 */
+        height: 52px !important; line-height: 52px !important; 
       }
       
-      /* 🌟 月份列下方粗框線 */
       .month-row-thick th { border-bottom: 2px solid #000 !important; }
-      
-      /* 🌟 三個月交界的垂直粗框線 */
       .thick-right { border-right: 2px solid #000 !important; }
       
-      /* 🌟 灰底全改為白底 */
+      /* 🌟 月份/日期/血壓表頭文字同步加大至 16px */
       .print-table th { 
         font-weight: normal; background-color: #FFFFFF !important; 
-        font-size: 14px !important; 
+        font-size: 16px !important; 
       }
       
-      .print-table td { font-size: 15px !important; color: #000 !important; }
+      /* 🌟 數據與日期統一放大至 16px */
+      .print-table td { font-size: 16px !important; color: #000 !important; font-weight: 500; }
       
       .print-table th.month-label { width: 6.5%; border-right: none; text-align: center; white-space: nowrap; font-weight: bold; }
       .print-table th.month-val { border-left: none; text-align: left; padding-left: 2px !important; font-weight: bold; white-space: nowrap; }
       
-      .print-table td:nth-child(4n+1) { color: #888888 !important; font-weight: bold; font-size: 12px !important; }
+      /* 🌟 日期大小改為和數據一樣大 (16px)，維持灰色 */
+      .print-table td:nth-child(4n+1) { color: #888888 !important; font-weight: bold; font-size: 16px !important; }
       .day-col { width: 6.5%; font-weight: bold !important; } 
       .sys-col, .dia-col, .hr-col { width: 8.9%; font-weight: bold !important; } 
     }
@@ -547,11 +546,9 @@
         targetMonths.push(`${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}`);
       }
 
-      // 🌟 將大標題整合進 Thead 確保被粗外框包覆
       let tableHtml = `<thead>`;
       tableHtml += `<tr><th colspan="12" class="print-title">血壓記錄表</th></tr>`;
       
-      // 🌟 月份列
       tableHtml += `<tr class="month-row-thick">`;
       for (let i = 0; i < 3; i++) {
         let mVal = targetMonths[i] ? targetMonths[i] : ``;
@@ -560,7 +557,6 @@
       }
       tableHtml += `</tr>`;
       
-      // 🌟 欄位標題列
       tableHtml += `<tr>`;
       for (let i = 0; i < 3; i++) {
         let rightThickClass = (i < 2) ? ' thick-right' : '';
@@ -568,7 +564,6 @@
       }
       tableHtml += `</tr></thead><tbody>`;
 
-      // 🌟 數據列
       for (let day = 1; day <= 31; day++) {
         tableHtml += `<tr>`;
         for (let m = 0; m < 3; m++) {
