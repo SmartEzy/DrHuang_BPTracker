@@ -9,7 +9,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
-  <link rel="manifest" href="manifest.json?v=69">
+  <link rel="manifest" href="manifest.json?v=70">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -28,7 +28,7 @@
     .banner-content { background-color: var(--primary-dark); flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 10px; }
     .banner-text { font-size: 20px; font-weight: bold; color: #FFFFFF; }
     .header-actions { display: flex; gap: 26px; align-items: center; }
-    .header-btn { background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center; }
+    .header-btn { background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center; transition: opacity 0.2s; }
     .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 15px 20px; box-sizing: border-box; }
     .form-group { margin-bottom: 12px; }
     .date-time-layout { display: flex; justify-content: space-between; width: 100%; }
@@ -85,7 +85,7 @@
     .month-box { grid-column: 1 / 3; width: 100%; box-sizing: border-box; background-color: #E2E8F0; color: var(--primary-dark); font-weight: bold; font-size: 12px; padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px; }
 
     /* =========================================
-       🌟 原生 PDF 排版引擎 (高畫質精細框線版)
+       🌟 原生 PDF 排版引擎 (極細網格與粗細對比版)
        ========================================= */
     #printArea { 
       display: none; 
@@ -104,13 +104,13 @@
       font-family: Arial, "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; 
       table-layout: fixed; 
       background-color: #FFFFFF;
-      /* 🌟 1. 最外框：稍微粗一點 (2px) */
-      border: 2px solid #000; 
+      /* 🌟 1. 最外框：略粗 (1.5px) */
+      border: 1.5px solid #000; 
     }
     
     .print-table th, .print-table td { 
-      /* 🌟 內部一般框線：極細線 (1px) */
-      border: 1px solid #000; 
+      /* 🌟 內部一般框線：整體變極細 (0.5px) */
+      border: 0.5px solid #000; 
       padding: 0; 
       height: 28px; 
       line-height: 28px; 
@@ -125,17 +125,17 @@
       letter-spacing: 15px; 
       font-weight: 900; 
       background-color: #FFFFFF; 
-      /* 🌟 2. 血壓記錄表下框線：稍微粗一點 (2px) */
-      border-bottom: 2px solid #000;
+      /* 🌟 2. 血壓記錄表下框線：略粗 (1.5px) */
+      border-bottom: 1.5px solid #000;
       height: 50px; 
       line-height: 50px; 
     }
 
-    /* 🌟 3. 月份列下框線：稍微粗一點 (2px) */
-    .month-row-thick th { border-bottom: 2px solid #000 !important; }
+    /* 🌟 3. 月份列下框線：略粗 (1.5px) */
+    .month-row-thick th { border-bottom: 1.5px solid #000 !important; }
     
-    /* 🌟 4. 月份之間的直框線：稍微粗一點 (2px) */
-    .thick-right { border-right: 2px solid #000 !important; }
+    /* 🌟 4. 月份之間的直框線：略粗 (1.5px) */
+    .thick-right { border-right: 1.5px solid #000 !important; }
     
     .print-table th { 
       font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
@@ -428,9 +428,6 @@
             html += `<div class="item-divider"></div>`;
           }
 
-          let displayDateText = (lastDate !== formattedDate) ? currDayStr : '';
-          lastDate = formattedDate;
-
           let displayNote = (item.notes || '').replace(/☕ 咖啡/g, '☕').replace(/🏃 運動/g, '🏃').replace(/💊 吃藥/g, '💊').replace(/🤕 頭痛/g, '🤕').replace(/🏥 院所/g, '🏥').replace(/\[報表\]/g, reportSvg);
 
           html += `
@@ -449,7 +446,7 @@
       document.getElementById('recordsList').innerHTML = html;
     }
 
-    // 🌟 原生 PDF 生成引擎 (高解析度版) 🌟
+    // 🌟 原生 PDF 生成引擎 (取消沙漏版) 🌟
     async function generatePDF() {
       let reportData = [...allRecords]
         .filter(r => r && r.date && r.notes && r.notes.includes('[報表]'))
@@ -460,8 +457,9 @@
       }
 
       const btn = document.getElementById('exportPdfBtn');
-      const originalBtnHtml = btn.innerHTML;
-      btn.innerHTML = '⏳';
+      // 🌟 取消沙漏圖示，改為暫停按鈕且稍微變半透明，不干擾畫面佈局
+      btn.disabled = true;
+      btn.style.opacity = '0.5';
 
       try {
         let monthMap = {}; 
@@ -529,12 +527,7 @@
 
         await new Promise(resolve => setTimeout(resolve, 300));
 
-        // 🌟 解析度大躍進：將 scale 提升至 4，達到印刷級清晰度
-        const canvas = await html2canvas(printArea, { 
-            scale: 4, 
-            backgroundColor: '#ffffff', 
-            useCORS: true 
-        });
+        const canvas = await html2canvas(printArea, { scale: 4, backgroundColor: '#ffffff', useCORS: true });
 
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
@@ -553,7 +546,9 @@
         console.error("PDF 產生失敗", err);
         alert("產生 PDF 時發生錯誤，請稍後再試。");
       } finally {
-        btn.innerHTML = originalBtnHtml;
+        // 恢復按鈕狀態
+        btn.disabled = false;
+        btn.style.opacity = '1';
       }
     }
 
