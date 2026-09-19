@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=55">
+  <link rel="manifest" href="manifest.json?v=56">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -117,7 +117,7 @@
       padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px;
     }
 
-    /* 🌟 PDF 列印專用排版引擎 - 滿版大氣版 */
+    /* 🌟 PDF 列印排版 - 絕對純白、邊界全 0 乾淨版 */
     #printArea { display: none; }
     @media print {
       @page { margin: 0; size: A4 portrait; }
@@ -132,42 +132,38 @@
       
       #printArea {
         display: block !important; visibility: visible; width: 100%; box-sizing: border-box; 
-        /* 🌟 將人工 Padding 歸零，完全釋放空間給表格伸展，只靠系統 Margin 防裁切 */
-        padding: 0 !important; 
-        margin-top: 5mm !important; /* 標題稍微往下壓一點防裁掉 */
+        /* 🌟 所有邊界與內距全部歸零！完全順應 iOS 原生安全區 */
+        padding: 0 !important; margin: 0 !important;
         background-color: #FFFFFF !important; 
         color: #000; page-break-after: avoid;
       }
       
       .print-title { 
-        text-align: center; font-size: 24px !important; margin: 0 0 10px 0 !important; 
+        text-align: center; font-size: 24px !important; margin: 8mm 0 5mm 0 !important; 
         letter-spacing: 5px; font-family: "DFKai-SB", "BiauKai", serif; font-weight: bold; 
         background-color: #FFFFFF !important;
       }
       
       .print-table { 
-        /* 🌟 使用 calc 微幅向左右擴展，吃掉系統死板的白邊 */
-        width: calc(100% + 10mm); margin-left: -5mm;
-        border-collapse: collapse; text-align: center; 
+        width: 100%; border-collapse: collapse; text-align: center; 
         font-family: -apple-system, Arial, Helvetica, sans-serif; table-layout: fixed; 
         background-color: #FFFFFF !important;
         page-break-inside: avoid;
       }
       
-      /* 🌟 將列高從憋屈的 24px 一口氣解放至 29px，完美填滿 A4 高度 */
+      /* 🌟 27px 黃金高度：填滿 A4 空間且保證絕對不跨頁！ */
       .print-table th, .print-table td { 
         border: 1px solid #000; padding: 0 !important; 
-        height: 29px !important; line-height: 29px !important; 
+        height: 27px !important; line-height: 27px !important; 
         box-sizing: border-box; overflow: hidden;
         background-color: #FFFFFF !important;
       }
       
       .print-table th { 
         font-weight: normal; background-color: #f2f2f2 !important; 
-        font-size: 14px !important; font-family: "DFKai-SB", "BiauKai", serif; 
+        font-size: 13px !important; font-family: "DFKai-SB", "BiauKai", serif; 
       }
       
-      /* 數據字型微微放大 */
       .print-table td { font-size: 15px !important; color: #000 !important; }
       
       .print-table th.month-label { width: 6.5%; border-right: none; text-align: center; white-space: nowrap; }
