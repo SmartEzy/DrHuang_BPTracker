@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=42">
+  <link rel="manifest" href="manifest.json?v=44">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -162,24 +162,35 @@
     .high-bp { color: var(--danger-color); font-weight: bold; }
     .item-divider { border-top: 1px dashed #E2E8F0; margin: 3px 0; }
 
-    /* 🌟 列印專用 CSS 排版引擎 */
     #printArea { display: none; }
     @media print {
-      @page { margin: 10mm; size: A4 portrait; }
-      body * { visibility: hidden; }
+      @page { margin: 0; size: A4 portrait; }
+      body { margin: 0; padding: 0; background: #FFF; }
       .sticky-top-panel, .container { display: none !important; }
       
       #printArea {
-        display: block !important; visibility: visible; position: absolute; left: 0; top: 0; width: 100%;
-        font-family: "DFKai-SB", "BiauKai", serif; 
+        display: block !important; visibility: visible; 
+        width: 100%; box-sizing: border-box; 
+        padding: 12mm 15mm; 
         color: #000;
       }
-      #printArea * { visibility: visible; }
       
-      .print-title { text-align: center; font-size: 28px; margin-bottom: 20px; letter-spacing: 5px; }
-      .print-table { width: 100%; border-collapse: collapse; text-align: center; font-size: 12px; }
-      .print-table th, .print-table td { border: 1px solid #000; padding: 6px 2px; }
-      .print-table th { font-weight: normal; background-color: #f2f2f2; }
+      .print-title { 
+        text-align: center; font-size: 26px; margin-top: 0; margin-bottom: 12px; 
+        letter-spacing: 5px; font-family: "DFKai-SB", "BiauKai", serif; font-weight: bold; 
+      }
+      
+      .print-table { 
+        width: 100%; border-collapse: collapse; text-align: center; 
+        font-family: -apple-system, Arial, Helvetica, sans-serif; 
+      }
+      .print-table th, .print-table td { 
+        border: 1px solid #000; padding: 4px 0; font-size: 15px; 
+      }
+      .print-table th { 
+        font-weight: normal; background-color: #f2f2f2; font-size: 14px; 
+        font-family: "DFKai-SB", "BiauKai", serif; 
+      }
       .month-title { text-align: left; padding-left: 8px !important; font-weight: bold; }
       .day-col { width: 5%; }
       .sys-col, .dia-col, .hr-col { width: 8.3%; }
@@ -188,7 +199,6 @@
 </head>
 <body>
 
-  <!-- 主畫面 -->
   <div class="sticky-top-panel">
     <div class="banner-container">
       <div class="banner-left-bar"></div> 
@@ -228,7 +238,7 @@
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('💊 吃藥')">💊 吃藥</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕 頭痛')">🤕 頭痛</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏥 院所')">🏥 院所</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🎯 報表')" style="background-color: #E2E8F0; border: 1px solid #8FA3B8;">🎯 報表</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('📄')" style="background-color: #E2E8F0; border: 1px solid #8FA3B8;">📄</button>
         </div>
       </form>
     </div>
@@ -252,6 +262,7 @@
         <button class="capsule-btn" data-val="7days">7 days</button>
         <button class="capsule-btn active" data-val="30days">30 days</button>
         <button class="capsule-btn" data-val="all">All</button>
+        <button class="capsule-btn" data-val="report" title="Report Filter">📄</button>
       </div>
     </div>
 
@@ -270,11 +281,10 @@
     <div id="recordsList"><div style="text-align:center; padding: 20px; color: #888;">Loading...</div></div>
   </div>
 
-  <!-- 列印區塊 -->
   <div id="printArea">
     <h1 class="print-title">血壓記錄表</h1>
     <table class="print-table" id="printTable">
-      <!-- 內容將由 JS 動態生成 -->
+      <!-- 動態生成 -->
     </table>
   </div>
 
@@ -390,7 +400,9 @@
       localStorage.setItem('bpCacheRecords', JSON.stringify(allRecords));
       let displayData = [...allRecords].filter(r => r && r.date && String(r.date).trim() !== '');
 
-      if (currentFilter === '7days') {
+      if (currentFilter === 'report') {
+        displayData = displayData.filter(r => r.notes && r.notes.includes('📄'));
+      } else if (currentFilter === '7days') {
         let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
         displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff);
       } else if (currentFilter === '30days') {
@@ -419,17 +431,13 @@
           let sysHtml = (item.systolic >= 130) ? `<span class="high-bp">${item.systolic}</span>` : (item.systolic || '');
           
           let displayDateText = (lastDate !== formattedDate) ? formattedDate : '';
-
-          if (lastDate !== null && lastDate !== formattedDate) {
-             html += `<div class="item-divider"></div>`;
-          }
-          
+          if (lastDate !== null && lastDate !== formattedDate) html += `<div class="item-divider"></div>`;
           lastDate = formattedDate;
 
           let displayNote = (item.notes || '')
             .replace(/☕ 咖啡/g, '☕').replace(/🏃 運動/g, '🏃')
             .replace(/💊 吃藥/g, '💊').replace(/🤕 頭痛/g, '🤕')
-            .replace(/🏥 院所/g, '🏥').replace(/🎯 報表/g, '🎯');
+            .replace(/🏥 院所/g, '🏥'); 
 
           html += `
             <div class="record-row">
@@ -449,11 +457,11 @@
 
     function generatePDF() {
       let reportData = [...allRecords]
-        .filter(r => r && r.date && r.notes && r.notes.includes('🎯'))
+        .filter(r => r && r.date && r.notes && r.notes.includes('📄'))
         .sort((a, b) => new Date(a.date.replace(/-/g, '/')).getTime() - new Date(b.date.replace(/-/g, '/')).getTime());
       
       if (reportData.length === 0) {
-        alert("目前沒有包含「🎯 報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return;
+        alert("目前沒有包含「📄」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return;
       }
 
       let monthMap = {}; 
@@ -467,7 +475,30 @@
       });
 
       let availableMonths = Object.keys(monthMap).sort();
-      let targetMonths = availableMonths.slice(-3); 
+      
+      // 🌟 核心邏輯：計算完美的「連續 3 個月份」
+      let firstMonthStr = availableMonths[0]; 
+      let lastMonthStr = availableMonths[availableMonths.length - 1];
+      
+      let firstMDate = new Date(firstMonthStr + '/01');
+      let lastMDate = new Date(lastMonthStr + '/01');
+      
+      let monthDiff = (lastMDate.getFullYear() - firstMDate.getFullYear()) * 12 + (lastMDate.getMonth() - firstMDate.getMonth());
+      
+      let startMDate;
+      // 如果跨度小於等於 2 (例如 9月~11月)，就從第一筆開始往後推 3 個月
+      if (monthDiff <= 2) {
+        startMDate = new Date(firstMDate);
+      } else {
+        // 如果跨度超過 3 個月(忘記清資料)，則強迫抓取最後 3 個月
+        startMDate = new Date(lastMDate.getFullYear(), lastMDate.getMonth() - 2, 1);
+      }
+      
+      let targetMonths = [];
+      for (let i = 0; i < 3; i++) {
+        let d = new Date(startMDate.getFullYear(), startMDate.getMonth() + i, 1);
+        targetMonths.push(`${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}`);
+      }
 
       let tableHtml = `<thead><tr>`;
       for (let i = 0; i < 3; i++) {
@@ -496,7 +527,16 @@
       tableHtml += `</tbody>`;
 
       document.getElementById('printTable').innerHTML = tableHtml;
-      setTimeout(() => { window.print(); }, 300);
+      
+      const originalTitle = document.title;
+      const today = new Date();
+      const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
+      document.title = `血壓記錄表_${dateStr}`;
+      
+      setTimeout(() => { 
+        window.print(); 
+        document.title = originalTitle;
+      }, 300);
     }
 
     async function loadData() {
