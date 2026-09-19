@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=46">
+  <link rel="manifest" href="manifest.json?v=47">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -33,23 +33,15 @@
       margin: 0; padding: 0; 
     }
     
-    .banner-container {
-      display: flex; align-items: stretch; width: 100%; height: 44px; box-sizing: border-box;
-    }
+    .banner-container { display: flex; align-items: stretch; width: 100%; height: 44px; box-sizing: border-box; }
     .banner-left-bar { width: 12px; background-color: var(--primary-dark); }
     .logo-box { background-color: #FFFFFF; padding: 0 4px; display: flex; align-items: center; justify-content: center; }
     .banner-logo { width: 36px; height: 36px; object-fit: contain; }
-    .banner-content {
-      background-color: var(--primary-dark); flex: 1; display: flex; align-items: center;
-      justify-content: space-between; padding: 0 16px 0 10px;
-    }
+    .banner-content { background-color: var(--primary-dark); flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 10px; }
     .banner-text { font-size: 20px; font-weight: bold; color: #FFFFFF; }
 
     .header-actions { display: flex; gap: 15px; align-items: center; }
-    .header-btn {
-      background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer; padding: 0; 
-      display: flex; align-items: center;
-    }
+    .header-btn { background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center; }
 
     .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 15px 20px; box-sizing: border-box; }
     .form-group { margin-bottom: 12px; }
@@ -57,16 +49,9 @@
     .date-time-layout { display: flex; justify-content: space-between; width: 100%; }
     .date-time-layout .date-box { width: 56%; }
     .date-time-layout .time-box { width: 41%; }
-    .date-time-layout input {
-      width: 100%; padding: 12px 2px; font-size: 16px; text-align: center;
-      box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 6px; 
-      color: var(--text-main); background: #FFFFFF; -webkit-appearance: none;
-    }
+    .date-time-layout input { width: 100%; padding: 12px 2px; font-size: 16px; text-align: center; box-sizing: border-box; border: 1px solid var(--border-color); border-radius: 6px; color: var(--text-main); background: #FFFFFF; -webkit-appearance: none; }
     
-    input[type="number"], input[type="text"] {
-      width: 100%; padding: 12px 8px; border: 1px solid var(--border-color); border-radius: 6px;
-      box-sizing: border-box; font-size: 16px; color: var(--text-main); background: #FFFFFF;
-    }
+    input[type="number"], input[type="text"] { width: 100%; padding: 12px 8px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; font-size: 16px; color: var(--text-main); background: #FFFFFF; }
     ::placeholder { color: #A0AAB5; }
 
     .bp-hr-row { display: flex; align-items: center; width: 100%; }
@@ -76,33 +61,16 @@
 
     .notes-save-row { display: flex; gap: 8px; width: 100%; align-items: center; }
     .notes-save-row input { flex: 1; min-width: 0; }
-    .notes-save-row button.primary-btn {
-      width: 105px; margin-top: 0; padding: 12px 0; background-color: var(--primary-color); color: white;
-      border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer;
-      transition: background-color 0.2s;
-    }
+    .notes-save-row button.primary-btn { width: 105px; margin-top: 0; padding: 12px 0; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
     
-    .quick-tags-container {
-      display: flex; gap: 8px; margin-top: 10px; margin-bottom: 2px; overflow-x: auto; padding-bottom: 2px;
-    }
+    .quick-tags-container { display: flex; gap: 8px; margin-top: 10px; margin-bottom: 2px; overflow-x: auto; padding-bottom: 2px; }
     .quick-tags-container::-webkit-scrollbar { display: none; } 
-    .quick-tag-btn {
-      background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500;
-      border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s;
-      display: flex; align-items: center; gap: 4px;
-    }
-    .quick-tag-btn:active { background-color: #CBD5E1; }
-
-    .records-header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 18px 20px 12px 20px; background-color: var(--bg-color); box-sizing: border-box; width: 100%;
-    }
+    .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; }
+    
+    .records-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 12px 20px; background-color: var(--bg-color); box-sizing: border-box; width: 100%; }
 
     .chart-controls-left { display: flex; align-items: center; gap: 12px; }
-    .chart-toggle-btn {
-      background: none; border: none; padding: 4px 8px; margin: 0; color: var(--primary-color); cursor: pointer;
-      display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s;
-    }
+    .chart-toggle-btn { background: none; border: none; padding: 4px 8px; margin: 0; color: var(--primary-color); cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
     .chart-toggle-btn.active { background-color: #E2E8F0; color: var(--primary-dark); }
 
     .legend-wrapper { position: relative; display: flex; flex-direction: column; }
@@ -110,66 +78,42 @@
     .legend-item { display: flex; align-items: center; gap: 4px; }
     .legend-bp-bar { width: 5px; height: 12px; background: #7895B2; border-radius: 2px; }
     .legend-hr-line { width: 14px; height: 2px; background: #CBD5E1; }
-    .chart-tip {
-      position: absolute; top: 100%; left: 0; font-size: 9px; color: #A0AAB5; font-weight: normal; 
-      margin-top: 2px; white-space: nowrap;
-    }
+    .chart-tip { position: absolute; top: 100%; left: 0; font-size: 9px; color: #A0AAB5; font-weight: normal; margin-top: 2px; white-space: nowrap; }
 
-    .capsule-group {
-      display: flex; background-color: #E2E8F0; border-radius: 20px; padding: 3px; flex-shrink: 0; 
-    }
-    .capsule-btn {
-      background: transparent; color: #64748B; border: none; padding: 6px 12px; font-size: 13px; font-weight: bold; 
-      cursor: pointer; border-radius: 18px; transition: all 0.2s; white-space: nowrap; line-height: 1.2;
-      display: flex; align-items: center; justify-content: center;
-    }
+    .capsule-group { display: flex; background-color: #E2E8F0; border-radius: 20px; padding: 3px; flex-shrink: 0; }
+    .capsule-btn { background: transparent; color: #64748B; border: none; padding: 6px 12px; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 18px; transition: all 0.2s; white-space: nowrap; line-height: 1.2; display: flex; align-items: center; justify-content: center; }
     .capsule-btn.active { background-color: #FFFFFF; color: var(--primary-dark); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
-    .sticky-top-panel {
-      position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); 
-      box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); padding-top: max(env(safe-area-inset-top), 20px); 
-      max-width: 500px; margin: 0 auto;
-    }
+    .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
+    .chart-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 5px 20px 10px 20px; box-sizing: border-box; background-color: var(--bg-color); height: 190px; display: block; }
 
-    .chart-container {
-      width: 100%; max-width: 500px; margin: 0 auto; padding: 5px 20px 10px 20px; box-sizing: border-box;
-      background-color: var(--bg-color); height: 190px; display: block; 
-    }
-
-    /* 🌟 重構網格：縮減 Date 寬度，並確保最後一欄垃圾桶向右對齊 */
-    .list-header {
-      display: grid; grid-template-columns: 65px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding-bottom: 8px; 
-      border-bottom: 2px solid var(--primary-dark); font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center;
-    }
+    /* 🌟 網格重構：Date 寬度縮小，只需容納兩位數的日期 */
+    .list-header { display: grid; grid-template-columns: 36px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-dark); font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center; }
     .list-header div:nth-child(5) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 8px; }
 
-    .record-row {
-      display: grid; grid-template-columns: 65px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; align-items: center; 
-      padding: 4px 0; font-size: 15px; line-height: 1.1; color: var(--text-main); text-align: center; font-variant-numeric: tabular-nums; 
-    }
+    .record-row { display: grid; grid-template-columns: 36px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; align-items: center; padding: 4px 0; font-size: 15px; line-height: 1.1; color: var(--text-main); text-align: center; font-variant-numeric: tabular-nums; }
     .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:nth-child(6) { text-align: left; padding-left: 8px; }
-    /* 🌟 垃圾桶靠右對齊 */
     .record-row div:last-child { display: flex; justify-content: flex-end; }
     
-    .delete-btn {
-      background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; 
-      display: flex; justify-content: flex-end; align-items: center; transition: color 0.2s;
-    }
-    .delete-btn:hover { color: var(--danger-color); }
+    .delete-btn { background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; display: flex; justify-content: flex-end; align-items: center; transition: color 0.2s; }
+    
     .sun-col { display: flex; align-items: center; justify-content: center; }
-
     .bp-col-align { display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center; justify-content: center; }
     .bp-sys { text-align: right; font-weight: bold; }
     .bp-slash { color: #888; font-weight: normal; } 
     .bp-dia { text-align: left; font-weight: bold; }
-
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
     .high-bp { color: var(--danger-color); font-weight: bold; }
     .item-divider { border-top: 1px dashed #E2E8F0; margin: 3px 0; }
 
-    /* 🌟 列印專用 CSS排版引擎 (消除跨頁、移除多餘資訊、最佳化字型與顏色) */
+    /* 🌟 全新的獨立月份標題列設計 */
+    .month-separator {
+      background-color: #E2E8F0; color: var(--primary-dark); font-weight: bold; font-size: 13px;
+      padding: 4px 12px; border-radius: 6px; margin: 8px 0 4px 0; text-align: left; letter-spacing: 1px;
+    }
+
     #printArea { display: none; }
     @media print {
       @page { margin: 0 !important; size: A4 portrait; }
@@ -177,35 +121,22 @@
       .sticky-top-panel, .container { display: none !important; }
       
       #printArea {
-        display: block !important; visibility: visible; 
-        width: 100%; box-sizing: border-box; 
-        padding: 5mm 10mm 0 10mm !important; /* 極度縮小上下邊界以防跨頁 */
-        color: #000;
-        page-break-after: avoid;
+        display: block !important; visibility: visible; width: 100%; box-sizing: border-box; 
+        padding: 5mm 10mm 0 10mm !important; color: #000; page-break-after: avoid;
       }
       
-      .print-title { 
-        text-align: center; font-size: 24px !important; margin: 0 0 8px 0 !important; 
-        letter-spacing: 5px; font-family: "DFKai-SB", "BiauKai", serif; font-weight: bold; 
-      }
+      .print-title { text-align: center; font-size: 24px !important; margin: 0 0 8px 0 !important; letter-spacing: 5px; font-family: "DFKai-SB", "BiauKai", serif; font-weight: bold; }
       
-      .print-table { 
-        width: 100%; border-collapse: collapse; text-align: center; 
-        font-family: -apple-system, Arial, Helvetica, sans-serif; 
-        page-break-inside: avoid;
-      }
-      .print-table th, .print-table td { 
-        border: 1px solid #000; 
-        padding: 1.5px 0 !important; /* 🌟 極限壓縮行高，確保塞進單頁 */
-        font-size: 13px !important; 
-        line-height: 1.2 !important;
-      }
-      .print-table th { 
-        font-weight: normal; background-color: #f2f2f2; font-size: 13px !important; 
-        font-family: "DFKai-SB", "BiauKai", serif; 
-      }
-      /* 🌟 日期欄位指定為純灰色 */
-      .print-table td:nth-child(4n+1) { color: #888888 !important; font-weight: 500; }
+      .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: -apple-system, Arial, Helvetica, sans-serif; page-break-inside: avoid; }
+      
+      /* 🌟 將行高拉寬，恢復適當的空間感 */
+      .print-table th, .print-table td { border: 1px solid #000; padding: 4px 0 !important; font-size: 14px !important; line-height: 1.2 !important; }
+      
+      .print-table th { font-weight: normal; background-color: #f2f2f2; font-size: 14px !important; font-family: "DFKai-SB", "BiauKai", serif; }
+      
+      /* 🌟 日期字型縮小至 11px，讓數據 (14px) 成為視覺焦點 */
+      .print-table td:nth-child(4n+1) { color: #888888 !important; font-weight: 500; font-size: 11px !important; }
+      
       .month-title { text-align: left; padding-left: 8px !important; font-weight: bold; }
       .month-title span { font-family: -apple-system, Arial, sans-serif; } 
       .day-col { width: 5%; }
@@ -215,7 +146,6 @@
 </head>
 <body>
 
-  <!-- 主畫面 -->
   <div class="sticky-top-panel">
     <div class="banner-container">
       <div class="banner-left-bar"></div> 
@@ -250,7 +180,6 @@
           <button type="submit" id="submitBtn" class="primary-btn">Save</button>
         </div>
         
-        <!-- 🌟 更新排序與按鈕設計 (拔除文字，純圖示) -->
         <div class="quick-tags-container">
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('[報表]')" style="background-color: #E2E8F0; border: 1px solid #8FA3B8; color: var(--primary-dark); padding: 6px 10px;">
             <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -479,7 +408,7 @@
           let rawDate = item.date ? String(item.date) : ''; let dateObj = new Date(rawDate);
           let formattedDate = (!isNaN(dateObj) && rawDate !== '') ? `${dateObj.getFullYear()}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${String(dateObj.getDate()).padStart(2, '0')}` : rawDate.replace(/-/g, '/');
           
-          let currMonthStr = (!isNaN(dateObj) && rawDate !== '') ? `${dateObj.getFullYear()}/${String(dateObj.getMonth() + 1).padStart(2, '0')}` : '';
+          let currMonthStr = (!isNaN(dateObj) && rawDate !== '') ? `${dateObj.getFullYear()} / ${String(dateObj.getMonth() + 1).padStart(2, '0')}` : '';
           let currDayStr = (!isNaN(dateObj) && rawDate !== '') ? String(dateObj.getDate()).padStart(2, '0') : formattedDate;
 
           let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
@@ -494,23 +423,16 @@
             }
           }
 
-          // 🌟 核心：全新月份膠囊邏輯
-          let displayDateHtml = '';
-          if (lastDate !== formattedDate) {
-            if (lastMonthStr !== currMonthStr) {
-              // 換月的第一筆：顯示 [YYYY/MM] 方塊 + DD
-              displayDateHtml = `<div style="display:flex; flex-direction:column; align-items:center; gap:3px;">
-                                   <div style="background:#E2E8F0; border-radius:4px; padding:2px 4px; font-size:10px; font-weight:bold; color:#495057; line-height:1;">${currMonthStr}</div>
-                                   <div style="font-size:15px;">${currDayStr}</div>
-                                 </div>`;
-              lastMonthStr = currMonthStr;
-            } else {
-              // 同月份的新的一天：只顯示 DD
-              displayDateHtml = `<div style="font-size:15px;">${currDayStr}</div>`;
-            }
-            if (lastDate !== null) html += `<div class="item-divider"></div>`;
+          // 🌟 獨立月份橫幅邏輯
+          if (lastMonthStr !== currMonthStr) {
+            html += `<div class="month-separator">${currMonthStr}</div>`;
+            lastMonthStr = currMonthStr;
+            lastDate = null; // 換月後強制不顯示頂部虛線
+          } else if (lastDate !== null && lastDate !== formattedDate) {
+            html += `<div class="item-divider"></div>`;
           }
-          
+
+          let displayDateText = (lastDate !== formattedDate) ? currDayStr : '';
           lastDate = formattedDate;
 
           let displayNote = (item.notes || '')
@@ -521,7 +443,7 @@
 
           html += `
             <div class="record-row">
-              <div>${displayDateHtml}</div>
+              <div>${displayDateText}</div>
               <div>${formattedTime}</div>
               <div class="sun-col">${sunSvgHtml}</div>
               <div class="bp-col-align"><span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${item.diastolic || ''}</span></div>
@@ -549,7 +471,7 @@
         .sort((a, b) => new Date(a.date.replace(/-/g, '/')).getTime() - new Date(b.date.replace(/-/g, '/')).getTime());
       
       if (reportData.length === 0) {
-        alert("目前沒有包含「報表」標籤的紀錄喔！"); return;
+        alert("目前沒有包含「報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return;
       }
 
       let monthMap = {}; 
