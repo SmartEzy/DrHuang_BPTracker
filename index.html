@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=44">
+  <link rel="manifest" href="manifest.json?v=45">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -89,7 +89,9 @@
     .quick-tag-btn {
       background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500;
       border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s;
+      display: flex; align-items: center; gap: 4px;
     }
+    .quick-tag-btn:active { background-color: #CBD5E1; }
 
     .records-header {
       display: flex; justify-content: space-between; align-items: center;
@@ -119,6 +121,7 @@
     .capsule-btn {
       background: transparent; color: #64748B; border: none; padding: 6px 12px; font-size: 13px; font-weight: bold; 
       cursor: pointer; border-radius: 18px; transition: all 0.2s; white-space: nowrap; line-height: 1.2;
+      display: flex; align-items: center; justify-content: center;
     }
     .capsule-btn.active { background-color: #FFFFFF; color: var(--primary-dark); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
 
@@ -133,45 +136,49 @@
       background-color: var(--bg-color); height: 190px; display: block; 
     }
 
+    /* 🌟 調整網格結構：在 Time 旁邊為「太陽」專門保留 20px 空間 */
     .list-header {
-      display: grid; grid-template-columns: 88px 48px 1.8fr 1fr 2fr 24px; gap: 6px; padding-bottom: 8px; 
+      display: grid; grid-template-columns: 88px 48px 20px 1.8fr 1fr 2fr 24px; gap: 4px; padding-bottom: 8px; 
       border-bottom: 2px solid var(--primary-dark); font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center;
     }
-    .list-header div:nth-child(4) { text-align: center; padding: 0; } 
-    .list-header div:nth-child(5) { text-align: left; padding-left: 8px; }
+    .list-header div:nth-child(5) { text-align: center; padding: 0; } 
+    .list-header div:nth-child(6) { text-align: left; padding-left: 8px; }
 
     .record-row {
-      display: grid; grid-template-columns: 88px 48px 1.8fr 1fr 2fr 24px; gap: 6px; align-items: center; 
+      display: grid; grid-template-columns: 88px 48px 20px 1.8fr 1fr 2fr 24px; gap: 4px; align-items: center; 
       padding: 4px 0; font-size: 15px; line-height: 1.1; color: var(--text-main); text-align: center; font-variant-numeric: tabular-nums; 
     }
-    .record-row div:nth-child(4) { text-align: center; padding: 0; font-weight: bold; } 
-    .record-row div:nth-child(5) { text-align: left; padding-left: 8px; }
+    .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
+    .record-row div:nth-child(6) { text-align: left; padding-left: 8px; }
     
     .delete-btn {
       background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; 
       display: flex; justify-content: center; align-items: center; transition: color 0.2s;
     }
     .delete-btn:hover { color: var(--danger-color); }
+    .sun-col { display: flex; align-items: center; justify-content: center; }
 
     .bp-col-align { display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center; justify-content: center; }
     .bp-sys { text-align: right; font-weight: bold; }
     .bp-slash { color: #888; font-weight: normal; } 
     .bp-dia { text-align: left; font-weight: bold; }
 
-    .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; }
+    .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
     .high-bp { color: var(--danger-color); font-weight: bold; }
     .item-divider { border-top: 1px dashed #E2E8F0; margin: 3px 0; }
 
+    /* 🌟 列印專用 CSS排版引擎 (消除跨頁、移除多餘資訊、最佳化字型) */
     #printArea { display: none; }
     @media print {
+      /* 強制移除網頁預設頁首/頁尾 (網址、時間、頁碼) */
       @page { margin: 0; size: A4 portrait; }
-      body { margin: 0; padding: 0; background: #FFF; }
+      body { margin: 0; padding: 0; background: #FFF; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .sticky-top-panel, .container { display: none !important; }
       
       #printArea {
         display: block !important; visibility: visible; 
-        width: 100%; box-sizing: border-box; 
-        padding: 12mm 15mm; 
+        width: 100%; height: 100vh; overflow: hidden; /* 強制綁定在一頁內 */
+        box-sizing: border-box; padding: 8mm 12mm; /* 極度縮小的完美邊界 */
         color: #000;
       }
       
@@ -182,16 +189,18 @@
       
       .print-table { 
         width: 100%; border-collapse: collapse; text-align: center; 
-        font-family: -apple-system, Arial, Helvetica, sans-serif; 
+        font-family: -apple-system, Arial, Helvetica, sans-serif; /* 數據全面使用俐落的現代字體 */
       }
       .print-table th, .print-table td { 
-        border: 1px solid #000; padding: 4px 0; font-size: 15px; 
+        border: 1px solid #000; padding: 3px 0; font-size: 14px; /* 行高精準微調，容納 31 天 */
       }
       .print-table th { 
         font-weight: normal; background-color: #f2f2f2; font-size: 14px; 
-        font-family: "DFKai-SB", "BiauKai", serif; 
+        font-family: "DFKai-SB", "BiauKai", serif; /* 欄位名稱保留標楷體 */
       }
+      .print-table td:nth-child(4n+1) { color: #8FA3B8; font-weight: 500; } /* 日期欄位顏色稍淡 */
       .month-title { text-align: left; padding-left: 8px !important; font-weight: bold; }
+      .month-title span { font-family: -apple-system, Arial, sans-serif; } /* 月份數字字型與數據統一 */
       .day-col { width: 5%; }
       .sys-col, .dia-col, .hr-col { width: 8.3%; }
     }
@@ -199,6 +208,7 @@
 </head>
 <body>
 
+  <!-- 主畫面 -->
   <div class="sticky-top-panel">
     <div class="banner-container">
       <div class="banner-left-bar"></div> 
@@ -232,13 +242,21 @@
           <input type="text" id="notes" placeholder="Notes (e.g., dizzy...)">
           <button type="submit" id="submitBtn" class="primary-btn">Save</button>
         </div>
+        
+        <!-- 🌟 更新排序，且報表按鈕改為純 SVG 文件圖示 -->
         <div class="quick-tags-container">
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('[報表]')" style="background-color: #E2E8F0; border: 1px solid #8FA3B8; color: var(--primary-dark);">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
+            </svg> 報表
+          </button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏥 院所')">🏥 院所</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('☕ 咖啡')">☕ 咖啡</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃 運動')">🏃 運動</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('💊 吃藥')">💊 吃藥</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕 頭痛')">🤕 頭痛</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏥 院所')">🏥 院所</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('📄')" style="background-color: #E2E8F0; border: 1px solid #8FA3B8;">📄</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('💊 吃藥')">💊 吃藥</button>
         </div>
       </form>
     </div>
@@ -262,7 +280,14 @@
         <button class="capsule-btn" data-val="7days">7 days</button>
         <button class="capsule-btn active" data-val="30days">30 days</button>
         <button class="capsule-btn" data-val="all">All</button>
-        <button class="capsule-btn" data-val="report" title="Report Filter">📄</button>
+        <!-- 🌟 膠囊列的報表篩選按鈕同步改為 SVG 圖示 -->
+        <button class="capsule-btn" data-val="report" title="Report Filter">
+          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </button>
       </div>
     </div>
 
@@ -271,8 +296,9 @@
     </div>
     
     <div class="container" style="padding-top: 5px; padding-bottom: 0;">
+      <!-- 🌟 表頭加入空白格給太陽圖示使用 -->
       <div class="list-header">
-        <div>Date</div><div>Time</div><div>BP</div><div>HR</div><div>Notes</div><div></div>
+        <div>Date</div><div>Time</div><div></div><div>BP</div><div>HR</div><div>Notes</div><div></div>
       </div>
     </div>
   </div> 
@@ -294,9 +320,28 @@
     let currentFilter = '30days'; 
     let bpChartInstance = null; 
 
+    // 初始化時間
     const now = new Date();
     document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    // 🌟 核心新功能：監控時間，早晨自動帶入 [報表] 標籤
+    function checkMorningTag() {
+      const timeVal = document.getElementById('time').value;
+      if (!timeVal) return;
+      const h = parseInt(timeVal.split(':')[0], 10);
+      const notesInput = document.getElementById('notes');
+      // 4:00 - 10:59
+      if (h >= 4 && h <= 10) {
+        if (!notesInput.value.includes('[報表]')) {
+          if (notesInput.value.trim() !== '') notesInput.value += ', ';
+          notesInput.value += '[報表]';
+        }
+      }
+    }
+    // 綁定事件並在初始載入時執行一次
+    document.getElementById('time').addEventListener('change', checkMorningTag);
+    checkMorningTag();
 
     function addQuickTag(tagText) {
       const notesInput = document.getElementById('notes');
@@ -328,7 +373,9 @@
     document.querySelectorAll('.capsule-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.capsule-btn').forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active'); currentFilter = e.target.getAttribute('data-val'); renderList();
+        e.target.closest('.capsule-btn').classList.add('active'); 
+        currentFilter = e.target.closest('.capsule-btn').getAttribute('data-val'); 
+        renderList();
       });
     });
 
@@ -401,7 +448,8 @@
       let displayData = [...allRecords].filter(r => r && r.date && String(r.date).trim() !== '');
 
       if (currentFilter === 'report') {
-        displayData = displayData.filter(r => r.notes && r.notes.includes('📄'));
+        // 篩選有包含 `[報表]` 的紀錄
+        displayData = displayData.filter(r => r.notes && r.notes.includes('[報表]'));
       } else if (currentFilter === '7days') {
         let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7);
         displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff);
@@ -423,6 +471,10 @@
         html = `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
       } else {
         let lastDate = null;
+        
+        // 🌟 準備用來替換 `[報表]` 的 SVG 圖示
+        const reportSvg = `<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color:#495057; display:inline-block;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`;
+
         displayData.forEach(item => {
           let rawDate = item.date ? String(item.date) : ''; let dateObj = new Date(rawDate);
           let formattedDate = (!isNaN(dateObj) && rawDate !== '') ? `${dateObj.getFullYear()}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${String(dateObj.getDate()).padStart(2, '0')}` : rawDate.replace(/-/g, '/');
@@ -430,6 +482,21 @@
           let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
           let sysHtml = (item.systolic >= 130) ? `<span class="high-bp">${item.systolic}</span>` : (item.systolic || '');
           
+          // 🌟 判斷早晨時間 (4:00~10:59)，畫出專屬無底線手繪太陽
+          let sunSvgHtml = '';
+          if (timeParts) {
+            let h = parseInt(timeParts[1], 10);
+            if (h >= 4 && h <= 10) {
+              sunSvgHtml = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="#495057" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="4" y1="16" x2="20" y2="16"></line>
+                <path d="M8 16a4 4 0 0 1 8 0"></path>
+                <line x1="12" y1="8" x2="12" y2="4"></line>
+                <line x1="17.66" y1="10.34" x2="19.78" y2="8.22"></line>
+                <line x1="6.34" y1="10.34" x2="4.22" y2="8.22"></line>
+              </svg>`;
+            }
+          }
+
           let displayDateText = (lastDate !== formattedDate) ? formattedDate : '';
           if (lastDate !== null && lastDate !== formattedDate) html += `<div class="item-divider"></div>`;
           lastDate = formattedDate;
@@ -437,16 +504,26 @@
           let displayNote = (item.notes || '')
             .replace(/☕ 咖啡/g, '☕').replace(/🏃 運動/g, '🏃')
             .replace(/💊 吃藥/g, '💊').replace(/🤕 頭痛/g, '🤕')
-            .replace(/🏥 院所/g, '🏥'); 
+            .replace(/🏥 院所/g, '🏥')
+            .replace(/\[報表\]/g, reportSvg);
 
+          // 🌟 垃圾桶加入桶身線條
           html += `
             <div class="record-row">
-              <div>${displayDateText}</div><div>${formattedTime}</div>
+              <div>${displayDateText}</div>
+              <div>${formattedTime}</div>
+              <div class="sun-col">${sunSvgHtml}</div>
               <div class="bp-col-align"><span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${item.diastolic || ''}</span></div>
-              <div>${item.heartRate || ''}</div><div class="note-col">${displayNote}</div>
+              <div>${item.heartRate || ''}</div>
+              <div class="note-col">${displayNote}</div>
               <div>
                 <button class="delete-btn" onclick="deleteRecord('${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}')" title="Delete">
-                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                  </svg>
                 </button>
               </div>
             </div>`;
@@ -457,11 +534,11 @@
 
     function generatePDF() {
       let reportData = [...allRecords]
-        .filter(r => r && r.date && r.notes && r.notes.includes('📄'))
+        .filter(r => r && r.date && r.notes && r.notes.includes('[報表]'))
         .sort((a, b) => new Date(a.date.replace(/-/g, '/')).getTime() - new Date(b.date.replace(/-/g, '/')).getTime());
       
       if (reportData.length === 0) {
-        alert("目前沒有包含「📄」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return;
+        alert("目前沒有包含「報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return;
       }
 
       let monthMap = {}; 
@@ -475,24 +552,14 @@
       });
 
       let availableMonths = Object.keys(monthMap).sort();
-      
-      // 🌟 核心邏輯：計算完美的「連續 3 個月份」
       let firstMonthStr = availableMonths[0]; 
       let lastMonthStr = availableMonths[availableMonths.length - 1];
       
       let firstMDate = new Date(firstMonthStr + '/01');
       let lastMDate = new Date(lastMonthStr + '/01');
-      
       let monthDiff = (lastMDate.getFullYear() - firstMDate.getFullYear()) * 12 + (lastMDate.getMonth() - firstMDate.getMonth());
       
-      let startMDate;
-      // 如果跨度小於等於 2 (例如 9月~11月)，就從第一筆開始往後推 3 個月
-      if (monthDiff <= 2) {
-        startMDate = new Date(firstMDate);
-      } else {
-        // 如果跨度超過 3 個月(忘記清資料)，則強迫抓取最後 3 個月
-        startMDate = new Date(lastMDate.getFullYear(), lastMDate.getMonth() - 2, 1);
-      }
+      let startMDate = (monthDiff <= 2) ? new Date(firstMDate) : new Date(lastMDate.getFullYear(), lastMDate.getMonth() - 2, 1);
       
       let targetMonths = [];
       for (let i = 0; i < 3; i++) {
@@ -502,7 +569,7 @@
 
       let tableHtml = `<thead><tr>`;
       for (let i = 0; i < 3; i++) {
-        let mTitle = targetMonths[i] ? `月份： ${targetMonths[i]}` : `月份：________`;
+        let mTitle = targetMonths[i] ? `月份： <span>${targetMonths[i]}</span>` : `月份：________`;
         tableHtml += `<th colspan="4" class="month-title">${mTitle}</th>`;
       }
       tableHtml += `</tr><tr>`;
@@ -558,9 +625,14 @@
         heartRate: document.getElementById('heartRate').value, notes: document.getElementById('notes').value
       };
       allRecords.push(payload); renderList(); document.getElementById('bpForm').reset();
+      
       let curr = new Date();
       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
+      
+      // 🌟 表單重置後，重新偵測時間看是否需要帶入報表標籤
+      checkMorningTag();
+
       const originalColor = btn.style.backgroundColor; btn.innerText = '✅ Saved!'; btn.style.backgroundColor = '#4CAF50';
       setTimeout(() => { btn.innerText = 'Save'; btn.style.backgroundColor = originalColor; btn.disabled = false; }, 2000);
       syncToCloud(payload);
