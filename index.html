@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=47">
+  <link rel="manifest" href="manifest.json?v=48">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -66,7 +66,8 @@
     .quick-tags-container { display: flex; gap: 8px; margin-top: 10px; margin-bottom: 2px; overflow-x: auto; padding-bottom: 2px; }
     .quick-tags-container::-webkit-scrollbar { display: none; } 
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; }
-    
+    .quick-tag-btn:active { background-color: #CBD5E1; }
+
     .records-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 12px 20px; background-color: var(--bg-color); box-sizing: border-box; width: 100%; }
 
     .chart-controls-left { display: flex; align-items: center; gap: 12px; }
@@ -87,12 +88,16 @@
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     .chart-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 5px 20px 10px 20px; box-sizing: border-box; background-color: var(--bg-color); height: 190px; display: block; }
 
-    /* 🌟 網格重構：Date 寬度縮小，只需容納兩位數的日期 */
-    .list-header { display: grid; grid-template-columns: 36px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-dark); font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center; }
+    /* 🌟 網格重構：加大 Date (46px)，讓日期更寬裕 */
+    .list-header { display: grid; grid-template-columns: 46px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-dark); font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center; }
     .list-header div:nth-child(5) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 8px; }
 
-    .record-row { display: grid; grid-template-columns: 36px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; align-items: center; padding: 4px 0; font-size: 15px; line-height: 1.1; color: var(--text-main); text-align: center; font-variant-numeric: tabular-nums; }
+    .record-row { display: grid; grid-template-columns: 46px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; align-items: center; padding: 4px 0; font-size: 15px; line-height: 1.1; color: var(--text-main); text-align: center; font-variant-numeric: tabular-nums; transition: background-color 0.3s; }
+    
+    /* 🌟 點擊垃圾桶時的高亮特效 */
+    .record-row.highlight-delete { background-color: rgba(211, 47, 47, 0.12); border-radius: 6px; }
+
     .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:nth-child(6) { text-align: left; padding-left: 8px; }
     .record-row div:last-child { display: flex; justify-content: flex-end; }
@@ -108,33 +113,45 @@
     .high-bp { color: var(--danger-color); font-weight: bold; }
     .item-divider { border-top: 1px dashed #E2E8F0; margin: 3px 0; }
 
-    /* 🌟 全新的獨立月份標題列設計 */
-    .month-separator {
+    /* 🌟 月份標題列，佔據 Date 和 Time 兩欄寬度 */
+    .month-row {
+      display: grid; grid-template-columns: 46px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding: 8px 0 4px 0;
+    }
+    .month-box {
+      grid-column: 1 / 3; /* 精準跨越 Date 與 Time 兩欄 */
       background-color: #E2E8F0; color: var(--primary-dark); font-weight: bold; font-size: 13px;
-      padding: 4px 12px; border-radius: 6px; margin: 8px 0 4px 0; text-align: left; letter-spacing: 1px;
+      padding: 4px 0; border-radius: 6px; text-align: center; letter-spacing: 1px;
     }
 
+    /* 🌟 PDF 列印專用排版引擎 */
     #printArea { display: none; }
     @media print {
-      @page { margin: 0 !important; size: A4 portrait; }
-      body { margin: 0 !important; padding: 0 !important; background: #FFF; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      /* 🌟 移除 !important，iOS Safari 才會正確執行 margin: 0 從而消除頁首頁尾 */
+      @page { margin: 0; size: A4 portrait; }
+      body { margin: 0; padding: 0; background: #FFF; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .sticky-top-panel, .container { display: none !important; }
       
       #printArea {
         display: block !important; visibility: visible; width: 100%; box-sizing: border-box; 
-        padding: 5mm 10mm 0 10mm !important; color: #000; page-break-after: avoid;
+        padding: 10mm 15mm 0 15mm !important; /* 修正邊界留白 */
+        color: #000; page-break-after: avoid;
       }
       
-      .print-title { text-align: center; font-size: 24px !important; margin: 0 0 8px 0 !important; letter-spacing: 5px; font-family: "DFKai-SB", "BiauKai", serif; font-weight: bold; }
+      .print-title { text-align: center; font-size: 24px !important; margin: 0 0 10px 0 !important; letter-spacing: 5px; font-family: "DFKai-SB", "BiauKai", serif; font-weight: bold; }
       
-      .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: -apple-system, Arial, Helvetica, sans-serif; page-break-inside: avoid; }
+      /* 🌟 table-layout: fixed 強制鎖死寬高，不再隨內容忽大忽小 */
+      .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: -apple-system, Arial, Helvetica, sans-serif; page-break-inside: avoid; table-layout: fixed; }
       
-      /* 🌟 將行高拉寬，恢復適當的空間感 */
-      .print-table th, .print-table td { border: 1px solid #000; padding: 4px 0 !important; font-size: 14px !important; line-height: 1.2 !important; }
+      /* 🌟 高度強制鎖死 24px，消除空列與數據列的高度差異 */
+      .print-table th, .print-table td { 
+        border: 1px solid #000; padding: 0 !important; height: 24px !important; 
+        line-height: 24px !important; box-sizing: border-box; overflow: hidden;
+      }
       
-      .print-table th { font-weight: normal; background-color: #f2f2f2; font-size: 14px !important; font-family: "DFKai-SB", "BiauKai", serif; }
+      .print-table th { font-weight: normal; background-color: #f2f2f2; font-size: 13px !important; font-family: "DFKai-SB", "BiauKai", serif; }
+      .print-table td { font-size: 14px !important; }
       
-      /* 🌟 日期字型縮小至 11px，讓數據 (14px) 成為視覺焦點 */
+      /* 日期字型縮小至 11px 且改為純灰色 */
       .print-table td:nth-child(4n+1) { color: #888888 !important; font-weight: 500; font-size: 11px !important; }
       
       .month-title { text-align: left; padding-left: 8px !important; font-weight: bold; }
@@ -324,11 +341,21 @@
       }
     });
 
-    function deleteRecord(formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime) {
-      if (!confirm(`${formattedDate} ${formattedTime} ${sys}/${dia} mmHg  ${hr} bpm\n確定刪除？`)) return;
-      allRecords = allRecords.filter(r => !(r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr));
-      renderList();
-      syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr });
+    // 🌟 全新防呆刪除邏輯：先亮紅底，再跳確認框
+    function confirmDelete(btn, formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime) {
+      const row = btn.closest('.record-row');
+      row.classList.add('highlight-delete');
+      
+      // 給予極短的延遲，讓畫面先渲染出紅底，再跳出原生的 confirm 視窗
+      setTimeout(() => {
+        if (confirm(`${formattedDate} ${formattedTime} ${sys}/${dia} mmHg  ${hr} bpm\n確定刪除？`)) {
+          allRecords = allRecords.filter(r => !(r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr));
+          renderList();
+          syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr });
+        } else {
+          row.classList.remove('highlight-delete'); // 取消刪除則恢復原狀
+        }
+      }, 50);
     }
 
     function updateChart(displayData) {
@@ -423,11 +450,11 @@
             }
           }
 
-          // 🌟 獨立月份橫幅邏輯
+          // 🌟 月份分隔列 (佔滿兩欄)
           if (lastMonthStr !== currMonthStr) {
-            html += `<div class="month-separator">${currMonthStr}</div>`;
+            html += `<div class="month-row"><div class="month-box">${currMonthStr}</div></div>`;
             lastMonthStr = currMonthStr;
-            lastDate = null; // 換月後強制不顯示頂部虛線
+            lastDate = null; 
           } else if (lastDate !== null && lastDate !== formattedDate) {
             html += `<div class="item-divider"></div>`;
           }
@@ -441,6 +468,7 @@
             .replace(/🏥 院所/g, '🏥')
             .replace(/\[報表\]/g, reportSvg);
 
+          // 🌟 刪除按鈕改綁定 confirmDelete 函式
           html += `
             <div class="record-row">
               <div>${displayDateText}</div>
@@ -450,7 +478,7 @@
               <div>${item.heartRate || ''}</div>
               <div class="note-col">${displayNote}</div>
               <div>
-                <button class="delete-btn" onclick="deleteRecord('${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}')" title="Delete">
+                <button class="delete-btn" onclick="confirmDelete(this, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}')" title="Delete">
                   <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
