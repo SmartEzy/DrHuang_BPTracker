@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=65">
+  <link rel="manifest" href="manifest.json?v=66">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -117,7 +117,7 @@
       padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px;
     }
 
-    /* 🌟 PDF 列印專用排版引擎 */
+    /* 🌟 PDF 列印專用排版引擎 - 維持 v65 的黃金比例 */
     #printArea { display: none; }
     @media print {
       @page { margin: 0; size: A4 portrait; }
@@ -132,7 +132,6 @@
       
       #printArea {
         display: block !important; visibility: visible; width: 100%; box-sizing: border-box; 
-        /* 🌟 邊界調整：上 16mm, 右 12mm, 下 5mm, 左 12mm */
         padding: 16mm 12mm 5mm 12mm !important; 
         background-color: #FFFFFF !important; 
         color: #000; page-break-after: avoid;
@@ -147,7 +146,6 @@
         border: 2px solid #000 !important; 
       }
       
-      /* 列高：維持完美 28px */
       .print-table th, .print-table td { 
         border: 1px solid #000; padding: 0 !important; 
         height: 28px !important; line-height: 28px !important; 
@@ -155,7 +153,6 @@
         background-color: #FFFFFF !important;
       }
       
-      /* 標題：字體 30px，高度 50px */
       .print-table th.print-title { 
         font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif !important;
         font-size: 30px !important; 
@@ -170,14 +167,12 @@
       .month-row-thick th { border-bottom: 2px solid #000 !important; }
       .thick-right { border-right: 2px solid #000 !important; }
       
-      /* 表頭 */
       .print-table th { 
         font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif !important;
         font-weight: bold !important; 
         font-size: 15px !important; 
       }
       
-      /* 數據：維持 18px (Arial) */
       .print-table td { 
         font-family: Arial, Helvetica, sans-serif !important;
         font-size: 18px !important; 
@@ -187,7 +182,6 @@
       .print-table th.month-label { width: 6.5%; border-right: none; text-align: center; white-space: nowrap; font-size: 16px !important; font-weight: bold !important; }
       .print-table th.month-val { border-left: none; text-align: left; padding-left: 2px !important; font-size: 16px !important; font-weight: bold !important; white-space: nowrap; }
       
-      /* 日期數字：維持 18px, normal, 銀灰色 (#999999) */
       .print-table td:nth-child(4n+1) { 
         color: #999999 !important; 
         font-weight: normal !important; 
@@ -421,8 +415,18 @@
               tooltip: {
                 yAlign: 'bottom', displayColors: false,
                 callbacks: {
-                  title: function(items) { return `${items[0].label}${items[0].chart.data.times[items[0].dataIndex]}`; },
-                  label: function(ctx) { return ctx.dataset.label === 'BP Range' ? `${ctx.raw[1]}/${ctx.raw[0]} mmHg` : (ctx.dataset.label === 'HR' ? `${ctx.raw} bpm` : null); }
+                  // 🌟 修正1：標題強制拉開日期與時間的間距
+                  title: function(items) { 
+                    return items[0].label + '   ' + (items[0].chart.data.times[items[0].dataIndex] || ''); 
+                  },
+                  // 🌟 修正2：攔截並整合血壓與脈搏在同一行，且無單位
+                  label: function(ctx) { 
+                    if (ctx.datasetIndex === 0) {
+                      let hrVal = ctx.chart.data.datasets[1].data[ctx.dataIndex];
+                      return `${ctx.raw[1]}/${ctx.raw[0]}${hrVal ? hrVal : ''}`; 
+                    }
+                    return null; // 其他資料集不顯示額外行
+                  }
                 }
               }
             },
@@ -514,7 +518,7 @@
                 <button class="delete-btn" onclick="confirmDelete(this, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}')" title="Delete">
                   <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2-2v2"></path>
                     <line x1="10" y1="11" x2="10" y2="17"></line>
                     <line x1="14" y1="11" x2="14" y2="17"></line>
                   </svg>
