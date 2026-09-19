@@ -88,15 +88,15 @@
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     .chart-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 5px 20px 10px 20px; box-sizing: border-box; background-color: var(--bg-color); height: 190px; display: block; }
 
-    /* 🌟 網格重構：加大 Date (46px)，讓日期更寬裕 */
-    .list-header { display: grid; grid-template-columns: 46px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-dark); font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center; }
+    /* 🌟 網格重構：Date 加寬至 55px */
+    .list-header { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-dark); font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center; }
     .list-header div:nth-child(5) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 8px; }
 
-    .record-row { display: grid; grid-template-columns: 46px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; align-items: center; padding: 4px 0; font-size: 15px; line-height: 1.1; color: var(--text-main); text-align: center; font-variant-numeric: tabular-nums; transition: background-color 0.3s; }
+    .record-row { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; align-items: center; padding: 4px 0; font-size: 15px; line-height: 1.1; color: var(--text-main); text-align: center; font-variant-numeric: tabular-nums; transition: background-color 0.2s; }
     
-    /* 🌟 點擊垃圾桶時的高亮特效 */
-    .record-row.highlight-delete { background-color: rgba(211, 47, 47, 0.12); border-radius: 6px; }
+    /* 🌟 更明顯的淡紅色警告背景 */
+    .record-row.highlight-delete { background-color: rgba(211, 47, 47, 0.2); border-radius: 6px; }
 
     .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:nth-child(6) { text-align: left; padding-left: 8px; }
@@ -113,49 +113,49 @@
     .high-bp { color: var(--danger-color); font-weight: bold; }
     .item-divider { border-top: 1px dashed #E2E8F0; margin: 3px 0; }
 
-    /* 🌟 月份標題列，佔據 Date 和 Time 兩欄寬度 */
+    /* 🌟 全新的年月獨立膠囊列 */
     .month-row {
-      display: grid; grid-template-columns: 46px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding: 8px 0 4px 0;
+      display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding: 10px 0 4px 0;
     }
     .month-box {
       grid-column: 1 / 3; /* 精準跨越 Date 與 Time 兩欄 */
-      background-color: #E2E8F0; color: var(--primary-dark); font-weight: bold; font-size: 13px;
-      padding: 4px 0; border-radius: 6px; text-align: center; letter-spacing: 1px;
+      justify-self: center; /* 置中對齊 */
+      background-color: #E2E8F0; color: var(--primary-dark); font-weight: bold; font-size: 12px;
+      padding: 4px 14px; border-radius: 20px; text-align: center; letter-spacing: 1px;
     }
 
     /* 🌟 PDF 列印專用排版引擎 */
     #printArea { display: none; }
     @media print {
-      /* 🌟 移除 !important，iOS Safari 才會正確執行 margin: 0 從而消除頁首頁尾 */
       @page { margin: 0; size: A4 portrait; }
       body { margin: 0; padding: 0; background: #FFF; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
       .sticky-top-panel, .container { display: none !important; }
       
       #printArea {
         display: block !important; visibility: visible; width: 100%; box-sizing: border-box; 
-        padding: 10mm 15mm 0 15mm !important; /* 修正邊界留白 */
+        padding: 8mm 10mm 0 10mm !important; /* 修正邊界留白，避免跨頁 */
         color: #000; page-break-after: avoid;
       }
       
       .print-title { text-align: center; font-size: 24px !important; margin: 0 0 10px 0 !important; letter-spacing: 5px; font-family: "DFKai-SB", "BiauKai", serif; font-weight: bold; }
       
-      /* 🌟 table-layout: fixed 強制鎖死寬高，不再隨內容忽大忽小 */
+      /* 強制鎖定表格與欄高 */
       .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: -apple-system, Arial, Helvetica, sans-serif; page-break-inside: avoid; table-layout: fixed; }
       
-      /* 🌟 高度強制鎖死 24px，消除空列與數據列的高度差異 */
+      /* 🌟 高度強制鎖死 26px，消除空列與數據列的高度差異，保證塞在同一頁 */
       .print-table th, .print-table td { 
-        border: 1px solid #000; padding: 0 !important; height: 24px !important; 
-        line-height: 24px !important; box-sizing: border-box; overflow: hidden;
+        border: 1px solid #000; padding: 0 !important; height: 26px !important; 
+        line-height: 26px !important; box-sizing: border-box; overflow: hidden;
       }
       
       .print-table th { font-weight: normal; background-color: #f2f2f2; font-size: 13px !important; font-family: "DFKai-SB", "BiauKai", serif; }
       .print-table td { font-size: 14px !important; }
       
-      /* 日期字型縮小至 11px 且改為純灰色 */
-      .print-table td:nth-child(4n+1) { color: #888888 !important; font-weight: 500; font-size: 11px !important; }
+      /* 🌟 巧妙拆分 Month Label，讓「月份:」完美對齊下方的「日期」 */
+      .print-table th.month-label { width: 5%; border-right: none; text-align: center; }
+      .print-table th.month-val { border-left: none; text-align: left; padding-left: 2px !important; font-family: -apple-system, Arial, sans-serif; font-weight: bold;}
       
-      .month-title { text-align: left; padding-left: 8px !important; font-weight: bold; }
-      .month-title span { font-family: -apple-system, Arial, sans-serif; } 
+      .print-table td:nth-child(4n+1) { color: #888888 !important; font-weight: 500; font-size: 11px !important; }
       .day-col { width: 5%; }
       .sys-col, .dia-col, .hr-col { width: 8.3%; }
     }
@@ -341,21 +341,20 @@
       }
     });
 
-    // 🌟 全新防呆刪除邏輯：先亮紅底，再跳確認框
+    // 🌟 延遲加長至 300ms，讓您清楚看見紅色警告
     function confirmDelete(btn, formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime) {
       const row = btn.closest('.record-row');
       row.classList.add('highlight-delete');
       
-      // 給予極短的延遲，讓畫面先渲染出紅底，再跳出原生的 confirm 視窗
       setTimeout(() => {
-        if (confirm(`${formattedDate} ${formattedTime} ${sys}/${dia} mmHg  ${hr} bpm\n確定刪除？`)) {
+        if (confirm(`${formattedDate} ${formattedTime}${sys}/${dia} mmHg${hr} bpm\n確定刪除？`)) {
           allRecords = allRecords.filter(r => !(r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr));
           renderList();
           syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr });
         } else {
-          row.classList.remove('highlight-delete'); // 取消刪除則恢復原狀
+          row.classList.remove('highlight-delete');
         }
-      }, 50);
+      }, 300);
     }
 
     function updateChart(displayData) {
@@ -386,7 +385,7 @@
               tooltip: {
                 yAlign: 'bottom', displayColors: false,
                 callbacks: {
-                  title: function(items) { return `${items[0].label} ${items[0].chart.data.times[items[0].dataIndex]}`; },
+                  title: function(items) { return `${items[0].label}${items[0].chart.data.times[items[0].dataIndex]}`; },
                   label: function(ctx) { return ctx.dataset.label === 'BP Range' ? `${ctx.raw[1]}/${ctx.raw[0]} mmHg` : (ctx.dataset.label === 'HR' ? `${ctx.raw} bpm` : null); }
                 }
               }
@@ -435,7 +434,7 @@
           let rawDate = item.date ? String(item.date) : ''; let dateObj = new Date(rawDate);
           let formattedDate = (!isNaN(dateObj) && rawDate !== '') ? `${dateObj.getFullYear()}/${String(dateObj.getMonth() + 1).padStart(2, '0')}/${String(dateObj.getDate()).padStart(2, '0')}` : rawDate.replace(/-/g, '/');
           
-          let currMonthStr = (!isNaN(dateObj) && rawDate !== '') ? `${dateObj.getFullYear()} / ${String(dateObj.getMonth() + 1).padStart(2, '0')}` : '';
+          let currMonthStr = (!isNaN(dateObj) && rawDate !== '') ? `${dateObj.getFullYear()} /${String(dateObj.getMonth() + 1).padStart(2, '0')}` : '';
           let currDayStr = (!isNaN(dateObj) && rawDate !== '') ? String(dateObj.getDate()).padStart(2, '0') : formattedDate;
 
           let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
@@ -450,7 +449,7 @@
             }
           }
 
-          // 🌟 月份分隔列 (佔滿兩欄)
+          // 🌟 獨立的年月膠囊行
           if (lastMonthStr !== currMonthStr) {
             html += `<div class="month-row"><div class="month-box">${currMonthStr}</div></div>`;
             lastMonthStr = currMonthStr;
@@ -468,7 +467,7 @@
             .replace(/🏥 院所/g, '🏥')
             .replace(/\[報表\]/g, reportSvg);
 
-          // 🌟 刪除按鈕改綁定 confirmDelete 函式
+          // 🌟 刪除按鈕呼叫防呆 confirmDelete
           html += `
             <div class="record-row">
               <div>${displayDateText}</div>
@@ -528,10 +527,11 @@
         targetMonths.push(`${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}`);
       }
 
+      // 🌟 將 th 拆分，讓「月份:」完美對齊「日期」
       let tableHtml = `<thead><tr>`;
       for (let i = 0; i < 3; i++) {
-        let mTitle = targetMonths[i] ? `月份： <span>${targetMonths[i]}</span>` : `月份：________`;
-        tableHtml += `<th colspan="4" class="month-title">${mTitle}</th>`;
+        let mVal = targetMonths[i] ? targetMonths[i] : ``;
+        tableHtml += `<th class="month-label">月份:</th><th colspan="3" class="month-val">${mVal}</th>`;
       }
       tableHtml += `</tr><tr>`;
       for (let i = 0; i < 3; i++) {
