@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=56">
+  <link rel="manifest" href="manifest.json?v=57">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -117,9 +117,10 @@
       padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px;
     }
 
-    /* 🌟 PDF 列印排版 - 絕對純白、邊界全 0 乾淨版 */
+    /* 🌟 PDF 列印專用排版引擎 - 精算極限防斷頁版 */
     #printArea { display: none; }
     @media print {
+      /* 設定無邊界，雖然 iOS 會硬塞，但至少我們不加碼 */
       @page { margin: 0; size: A4 portrait; }
       
       html, body { 
@@ -132,14 +133,14 @@
       
       #printArea {
         display: block !important; visibility: visible; width: 100%; box-sizing: border-box; 
-        /* 🌟 所有邊界與內距全部歸零！完全順應 iOS 原生安全區 */
-        padding: 0 !important; margin: 0 !important;
+        /* 🌟 只保留上方 3mm 以防標題碰到硬體邊緣，其他方向 0，把空間逼到極限 */
+        padding: 3mm 0 0 0 !important; margin: 0 !important;
         background-color: #FFFFFF !important; 
         color: #000; page-break-after: avoid;
       }
       
       .print-title { 
-        text-align: center; font-size: 24px !important; margin: 8mm 0 5mm 0 !important; 
+        text-align: center; font-size: 22px !important; margin: 0 0 6px 0 !important; 
         letter-spacing: 5px; font-family: "DFKai-SB", "BiauKai", serif; font-weight: bold; 
         background-color: #FFFFFF !important;
       }
@@ -151,10 +152,10 @@
         page-break-inside: avoid;
       }
       
-      /* 🌟 27px 黃金高度：填滿 A4 空間且保證絕對不跨頁！ */
+      /* 🌟 將高度縮小至 23.5px，確保 iOS 扣掉頁首頁尾後依然能擠進同一頁 */
       .print-table th, .print-table td { 
         border: 1px solid #000; padding: 0 !important; 
-        height: 27px !important; line-height: 27px !important; 
+        height: 23.5px !important; line-height: 23.5px !important; 
         box-sizing: border-box; overflow: hidden;
         background-color: #FFFFFF !important;
       }
@@ -164,12 +165,13 @@
         font-size: 13px !important; font-family: "DFKai-SB", "BiauKai", serif; 
       }
       
-      .print-table td { font-size: 15px !important; color: #000 !important; }
+      /* 資料字體微調至 14px 配合壓縮的列高 */
+      .print-table td { font-size: 14px !important; color: #000 !important; }
       
       .print-table th.month-label { width: 6.5%; border-right: none; text-align: center; white-space: nowrap; }
       .print-table th.month-val { border-left: none; text-align: left; padding-left: 2px !important; font-family: -apple-system, Arial, sans-serif; font-weight: bold; white-space: nowrap; }
       
-      .print-table td:nth-child(4n+1) { color: #888888 !important; font-weight: 500; font-size: 12px !important; }
+      .print-table td:nth-child(4n+1) { color: #888888 !important; font-weight: 500; font-size: 11px !important; }
       .day-col { width: 6.5%; } 
       .sys-col, .dia-col, .hr-col { width: 8.9%; } 
     }
