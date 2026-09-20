@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=81">
+  <link rel="manifest" href="manifest.json?v=82">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -99,7 +99,6 @@
     .capsule-btn { background: transparent; color: #64748B; border: none; padding: 6px 12px; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 18px; transition: all 0.2s; white-space: nowrap; line-height: 1.2; display: flex; align-items: center; justify-content: center; }
     .capsule-btn.active { background-color: #FFFFFF; color: var(--primary-dark); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     
-    /* 🌟 凍結屬性依然完美運作中 (position: sticky; z-index: 100;) */
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     
     .chart-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 0 20px 10px 20px; box-sizing: border-box; background-color: var(--bg-color); height: 170px; display: block; }
@@ -132,8 +131,8 @@
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
     .high-bp { color: var(--danger-color); font-weight: bold; }
     
-    /* 🌟 月份膠囊獨立專區：設定為 4px 上下間距 */
-    .month-row { display: grid; grid-template-columns: 75px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding: 4px 0; }
+    /* 🌟 月份膠囊獨立專區：調整為 Top: 10px / Bottom: 4px，讓視覺達到完美 1:1 平衡 */
+    .month-row { display: grid; grid-template-columns: 75px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding: 10px 0 4px 0; }
     .month-box { 
       grid-column: 1 / 2; 
       width: 100%; 
@@ -274,7 +273,6 @@
       <canvas id="bpChart"></canvas>
     </div>
     
-    <!-- 🌟 將表頭下方的 10px 留白徹底歸零，讓下方膠囊完美服貼 4px -->
     <div class="container" style="padding-top: 0; padding-bottom: 0px;">
       <div class="list-header">
         <div>Date</div>
