@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=84">
+  <link rel="manifest" href="manifest.json?v=85">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -147,7 +147,7 @@
     }
 
     /* =========================================
-       🌟 報表引擎：4 個月 (16 欄位) 壓縮優化版
+       🌟 報表雙引擎 CSS (共用設定)
        ========================================= */
     #printArea { display: none; width: 210mm; height: 297mm; box-sizing: border-box; padding: 16mm 12mm 5mm 12mm; background-color: #FFFFFF; color: #000; }
     
@@ -163,17 +163,28 @@
     .print-table tr.month-row-thick th { border-bottom: 1.5px solid #000 !important; }
     .print-table th.thick-right, .print-table td.thick-right { border-right: 1.5px solid #000 !important; }
     
-    /* 🌟 字體縮小以容納 16 欄位 */
-    .print-table th { font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; font-weight: bold; font-size: 13px; }
-    .print-table td { font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #000; }
-    
-    /* 🌟 調整欄寬比例 */
-    .print-table th.month-label { width: 4.5%; text-align: center; white-space: nowrap; font-size: 14px; font-weight: bold; border-right: none !important; }
-    .print-table th.month-val { text-align: left; padding-left: 2px; font-size: 14px; font-weight: bold; white-space: nowrap; border-left: none !important; }
-    .print-table td:nth-child(4n+1) { color: #999999; font-weight: normal; font-size: 14px; }
-    
-    .day-col { width: 4.5%; font-weight: bold; } 
-    .sys-col, .dia-col, .hr-col { width: 6.83%; font-weight: bold; } 
+    .print-table th { font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; font-weight: bold; }
+    .print-table td { font-family: Arial, Helvetica, sans-serif; color: #000; }
+    .print-table th.month-label { text-align: center; white-space: nowrap; font-weight: bold; border-right: none !important; }
+    .print-table th.month-val { text-align: left; padding-left: 2px; font-weight: bold; white-space: nowrap; border-left: none !important; }
+
+    /* --- 🌟 3 個月排版樣式 --- */
+    .print-table.print-3m th { font-size: 15px; }
+    .print-table.print-3m td { font-size: 18px; }
+    .print-table.print-3m th.month-label { width: 6.5%; font-size: 16px; }
+    .print-table.print-3m th.month-val { font-size: 16px; }
+    .print-table.print-3m td:nth-child(4n+1) { color: #999999; font-weight: normal; font-size: 18px; }
+    .print-table.print-3m .day-col { width: 6.5%; }
+    .print-table.print-3m .sys-col, .print-table.print-3m .dia-col, .print-table.print-3m .hr-col { width: 8.9%; }
+
+    /* --- 🌟 4 個月排版樣式 --- */
+    .print-table.print-4m th { font-size: 13px; }
+    .print-table.print-4m td { font-size: 14px; }
+    .print-table.print-4m th.month-label { width: 4.5%; font-size: 14px; }
+    .print-table.print-4m th.month-val { font-size: 14px; }
+    .print-table.print-4m td:nth-child(4n+1) { color: #999999; font-weight: normal; font-size: 14px; }
+    .print-table.print-4m .day-col { width: 4.5%; }
+    .print-table.print-4m .sys-col, .print-table.print-4m .dia-col, .print-table.print-4m .hr-col { width: 6.83%; }
   </style>
 </head>
 <body>
@@ -610,6 +621,10 @@
         return;
       }
 
+      // 🌟 彈出原生對話框讓使用者選擇 4個月 或 3個月
+      const is4Months = confirm("是否要列印「4 個月 (84天慢箋)」專用格式？\n\n[確認] = 印 4 個月\n[取消] = 印 3 個月 (標準大字體)");
+      const monthCount = is4Months ? 4 : 3;
+
       const btn = document.getElementById('exportPdfBtn');
       btn.disabled = true;
       btn.style.opacity = '0.5';
@@ -634,40 +649,38 @@
         let firstMDate = new Date(firstMonthStr + '/01');
         let lastMDate = new Date(lastMonthStr + '/01');
         
-        // 🌟 邏輯修改為支援 4 個月：
         let monthDiff = (lastMDate.getFullYear() - firstMDate.getFullYear()) * 12 + (lastMDate.getMonth() - firstMDate.getMonth());
-        let startMDate = (monthDiff <= 3) ? new Date(firstMDate) : new Date(lastMDate.getFullYear(), lastMDate.getMonth() - 3, 1);
+        let startMDate = (monthDiff <= (monthCount - 1)) ? new Date(firstMDate) : new Date(lastMDate.getFullYear(), lastMDate.getMonth() - (monthCount - 1), 1);
         
         let targetMonths = [];
-        // 🌟 產生 4 個月的月份 Header
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < monthCount; i++) {
           let d = new Date(startMDate.getFullYear(), startMDate.getMonth() + i, 1);
           targetMonths.push(`${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}`);
         }
 
         let tableHtml = `<thead>`;
-        tableHtml += `<tr><th colspan="16" class="print-title">血壓記錄表</th></tr>`; // 16 欄位
+        tableHtml += `<tr><th colspan="${monthCount * 4}" class="print-title">血壓記錄表</th></tr>`; 
         
         tableHtml += `<tr class="month-row-thick">`;
-        for (let i = 0; i < 4; i++) {
+        for (let i = 0; i < monthCount; i++) {
           let mVal = targetMonths[i] ? targetMonths[i] : ``;
-          let rightCls = (i < 3) ? ' thick-right' : ''; // 前 3 個月加右側粗線
+          let rightCls = (i < (monthCount - 1)) ? ' thick-right' : ''; 
           tableHtml += `<th class="month-label">月份:</th><th colspan="3" class="month-val${rightCls}">${mVal}</th>`;
         }
         tableHtml += `</tr><tr>`;
         
-        for (let i = 0; i < 4; i++) {
-          let rightCls = (i < 3) ? ' thick-right' : '';
+        for (let i = 0; i < monthCount; i++) {
+          let rightCls = (i < (monthCount - 1)) ? ' thick-right' : '';
           tableHtml += `<th class="day-col">日期</th><th class="sys-col">收縮壓</th><th class="dia-col">舒張壓</th><th class="hr-col${rightCls}">脈搏</th>`;
         }
         tableHtml += `</tr></thead><tbody>`;
 
         for (let day = 1; day <= 31; day++) {
           tableHtml += `<tr>`;
-          for (let m = 0; m < 4; m++) {
+          for (let m = 0; m < monthCount; m++) {
             let monthKey = targetMonths[m];
             let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null;
-            let rightCls = (m < 3) ? ' thick-right' : '';
+            let rightCls = (m < (monthCount - 1)) ? ' thick-right' : '';
             tableHtml += `<td>${day}</td>`;
             tableHtml += `<td>${record ? record.systolic : ''}</td>`;
             tableHtml += `<td>${record ? record.diastolic : ''}</td>`;
@@ -677,7 +690,10 @@
         }
         tableHtml += `</tbody>`;
 
-        document.getElementById('printTable').innerHTML = tableHtml;
+        const printTable = document.getElementById('printTable');
+        // 🌟 核心：根據選擇動態套用 CSS class (print-3m 或 print-4m)
+        printTable.className = `print-table print-${monthCount}m`;
+        printTable.innerHTML = tableHtml;
         
         const printArea = document.getElementById('printArea');
         printArea.style.display = 'block';
@@ -699,7 +715,7 @@
 
         const today = new Date();
         const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
-        pdf.save(`血壓記錄表_${dateStr}.pdf`);
+        pdf.save(`血壓記錄表_${monthCount}個月版_${dateStr}.pdf`);
 
         printArea.style.display = 'none';
         printArea.style.position = '';
