@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=73">
+  <link rel="manifest" href="manifest.json?v=74">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -123,7 +123,7 @@
     .month-box { grid-column: 1 / 3; width: 100%; box-sizing: border-box; background-color: #E2E8F0; color: var(--primary-dark); font-weight: bold; font-size: 12px; padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px; }
 
     /* =========================================
-       🌟 原生 PDF 排版引擎 (1.5px 粗線 / 0.5px 細線)
+       🌟 原生 PDF 排版引擎 (1.5px / 0.5px 精確控制版)
        ========================================= */
     #printArea { 
       display: none; 
@@ -142,7 +142,6 @@
       font-family: Arial, "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; 
       table-layout: fixed; 
       background-color: #FFFFFF;
-      /* 🌟 最外圍邊框：粗線 1.5px */
       border: 1.5px solid #000 !important; 
     }
     
@@ -157,13 +156,18 @@
       background-color: #FFFFFF;
     }
     
+    /* 🌟 強制四周外框為 1.5px，確保轉圖時絕對不會被吃掉 */
+    .print-table tr:first-child th { border-top: 1.5px solid #000 !important; }
+    .print-table tr:last-child td { border-bottom: 1.5px solid #000 !important; }
+    .print-table tr th:first-child, .print-table tr td:first-child { border-left: 1.5px solid #000 !important; }
+    .print-table tr th:last-child, .print-table tr td:last-child { border-right: 1.5px solid #000 !important; }
+
     .print-table th.print-title { 
       font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
       font-size: 30px; 
       letter-spacing: 15px; 
       font-weight: 900; 
       background-color: #FFFFFF; 
-      /* 🌟 標題下方邊框：粗線 1.5px */
       border-bottom: 1.5px solid #000 !important;
       height: 50px; 
       line-height: 50px; 
@@ -172,8 +176,9 @@
     /* 🌟 月份下方邊框：粗線 1.5px */
     .month-row-thick th { border-bottom: 1.5px solid #000 !important; }
     
-    /* 🌟 月份之間垂直線：粗線 1.5px */
+    /* 🌟 月份之間垂直線：透過左右夾擊強制設定 1.5px */
     .thick-right { border-right: 1.5px solid #000 !important; }
+    .thick-left { border-left: 1.5px solid #000 !important; }
     
     .print-table th { 
       font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
@@ -187,8 +192,23 @@
       color: #000; 
     }
     
-    .print-table th.month-label { width: 6.5%; border-right: none; text-align: center; white-space: nowrap; font-size: 16px; font-weight: bold; }
-    .print-table th.month-val { border-left: none; text-align: left; padding-left: 2px; font-size: 16px; font-weight: bold; white-space: nowrap; }
+    /* 🌟 去除月份與 yyyy/mm 間的格線 */
+    .print-table th.month-label { 
+      width: 6.5%; 
+      text-align: center; 
+      white-space: nowrap; 
+      font-size: 16px; 
+      font-weight: bold; 
+      border-right: none !important; 
+    }
+    .print-table th.month-val { 
+      text-align: left; 
+      padding-left: 2px; 
+      font-size: 16px; 
+      font-weight: bold; 
+      white-space: nowrap; 
+      border-left: none !important; 
+    }
     
     .print-table td:nth-child(4n+1) { 
       color: #999999; 
@@ -419,7 +439,7 @@
       }, 300);
     }
 
-    // 🌟 生理作息時間判斷邏輯
+    // 生理作息時間判斷邏輯
     function getLogicalDate(dateStr, timeStr) {
       if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };
       let d = new Date(dateStr.replace(/-/g, '/'));
@@ -429,7 +449,6 @@
         let parts = timeStr.split(':');
         if (parts.length >= 2) {
           let h = parseInt(parts[0], 10);
-          // 只要時間落在 00:00 ~ 03:59 之間，邏輯日期就自動退回前一天
           if (h >= 0 && h < 4) { 
             d.setDate(d.getDate() - 1);
           }
@@ -544,7 +563,6 @@
         displayData.forEach(item => {
           let rawDate = item.date ? String(item.date) : ''; 
           
-          // 套用生理跨日判斷
           let logical = getLogicalDate(rawDate, item.time);
           let currMonthStr = logical.logicalMonthStr;
           let currDayStr = logical.logicalDayStr;
@@ -569,7 +587,7 @@
             html += `<div class="month-row"><div class="month-box">${currMonthStr}</div></div>`;
             lastMonthStr = currMonthStr;
             lastDate = null; 
-            isNewDay = false; // 月份換行的第一列不畫虛線
+            isNewDay = false; 
             displayDateText = currDayStr; 
           }
           
@@ -577,7 +595,6 @@
 
           let displayNote = (item.notes || '').replace(/☕ 咖啡/g, '☕').replace(/🏃 運動/g, '🏃').replace(/💊 吃藥/g, '💊').replace(/🤕 頭痛/g, '🤕').replace(/🏥 院所/g, '🏥').replace(/\[報表\]/g, reportSvg);
 
-          // 這裡利用 class "new-day" 來加上頂部虛線
           html += `
             <div class="record-row ${isNewDay ? 'new-day' : ''}">
               <div>${displayDateText}</div>
@@ -617,14 +634,12 @@
       }
 
       const btn = document.getElementById('exportPdfBtn');
-      // 將按鈕設為半透明表示載入中，不改變圖示
       btn.disabled = true;
       btn.style.opacity = '0.5';
 
       try {
         let monthMap = {}; 
         reportData.forEach(r => {
-          // PDF 也一併套用生理時間邏輯，讓凌晨數據寫進前一天的格子裡
           let logical = getLogicalDate(r.date, r.time);
           let d = logical.dateObj;
           if (isNaN(d.getTime())) return;
@@ -652,16 +667,21 @@
 
         let tableHtml = `<thead>`;
         tableHtml += `<tr><th colspan="12" class="print-title">血壓記錄表</th></tr>`;
+        
         tableHtml += `<tr class="month-row-thick">`;
         for (let i = 0; i < 3; i++) {
           let mVal = targetMonths[i] ? targetMonths[i] : ``;
-          let rightThickClass = (i < 2) ? ' thick-right' : '';
-          tableHtml += `<th class="month-label">月份:</th><th colspan="3" class="month-val${rightThickClass}">${mVal}</th>`;
+          // 🌟 加入 thick-left 與 thick-right 來強制生成 1.5px 的區分線
+          let leftCls = (i > 0) ? ' thick-left' : '';
+          let rightCls = (i < 2) ? ' thick-right' : '';
+          tableHtml += `<th class="month-label${leftCls}">月份:</th><th colspan="3" class="month-val${rightCls}">${mVal}</th>`;
         }
         tableHtml += `</tr><tr>`;
+        
         for (let i = 0; i < 3; i++) {
-          let rightThickClass = (i < 2) ? ' thick-right' : '';
-          tableHtml += `<th class="day-col">日期</th><th class="sys-col">收縮壓</th><th class="dia-col">舒張壓</th><th class="hr-col${rightThickClass}">脈搏</th>`;
+          let leftCls = (i > 0) ? ' thick-left' : '';
+          let rightCls = (i < 2) ? ' thick-right' : '';
+          tableHtml += `<th class="day-col${leftCls}">日期</th><th class="sys-col">收縮壓</th><th class="dia-col">舒張壓</th><th class="hr-col${rightCls}">脈搏</th>`;
         }
         tableHtml += `</tr></thead><tbody>`;
 
@@ -670,11 +690,12 @@
           for (let m = 0; m < 3; m++) {
             let monthKey = targetMonths[m];
             let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null;
-            let rightThickClass = (m < 2) ? ' thick-right' : '';
-            tableHtml += `<td>${day}</td>`;
+            let leftCls = (m > 0) ? ' thick-left' : '';
+            let rightCls = (m < 2) ? ' thick-right' : '';
+            tableHtml += `<td class="${leftCls}">${day}</td>`;
             tableHtml += `<td>${record ? record.systolic : ''}</td>`;
             tableHtml += `<td>${record ? record.diastolic : ''}</td>`;
-            tableHtml += `<td class="${rightThickClass}">${record ? record.heartRate : ''}</td>`;
+            tableHtml += `<td class="${rightCls}">${record ? record.heartRate : ''}</td>`;
           }
           tableHtml += `</tr>`;
         }
@@ -682,17 +703,14 @@
 
         document.getElementById('printTable').innerHTML = tableHtml;
         
-        // 將隱藏表格移出畫面並繪製
         const printArea = document.getElementById('printArea');
         printArea.style.display = 'block';
         printArea.style.position = 'absolute';
         printArea.style.left = '-9999px';
         printArea.style.top = '0';
 
-        // 等待 300 毫秒確保瀏覽器排版完成
         await new Promise(resolve => setTimeout(resolve, 300));
 
-        // 畫布解析度倍率設為 4，文字極度清晰
         const canvas = await html2canvas(printArea, { 
           scale: 4, 
           backgroundColor: '#ffffff', 
