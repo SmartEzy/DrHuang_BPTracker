@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=75">
+  <link rel="manifest" href="manifest.json?v=76">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -123,7 +123,7 @@
     .month-box { grid-column: 1 / 3; width: 100%; box-sizing: border-box; background-color: #E2E8F0; color: var(--primary-dark); font-weight: bold; font-size: 12px; padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px; }
 
     /* =========================================
-       🌟 原生 PDF 排版引擎 (1.5px / 0.5px 精確控制版)
+       🌟 原生 PDF 排版引擎 (取消雙重框線疊加)
        ========================================= */
     #printArea { 
       display: none; 
@@ -149,7 +149,6 @@
       /* 內部一般邊框：細線 0.5px */
       border: 0.5px solid #000 !important; 
       padding: 0; 
-      /* 🌟 每日列高微調：增加 0.5px 以提供更多呼吸空間 */
       height: 28.5px; 
       line-height: 28.5px; 
       box-sizing: border-box; 
@@ -157,7 +156,7 @@
       background-color: #FFFFFF;
     }
     
-    /* 🌟 強制四周外框為 1.5px */
+    /* 強制四周外框為 1.5px */
     .print-table tr:first-child th { border-top: 1.5px solid #000 !important; }
     .print-table tr:last-child td { border-bottom: 1.5px solid #000 !important; }
     .print-table tr th:first-child, .print-table tr td:first-child { border-left: 1.5px solid #000 !important; }
@@ -177,9 +176,8 @@
     /* 月份下方邊框：粗線 1.5px */
     .print-table tr.month-row-thick th { border-bottom: 1.5px solid #000 !important; }
     
-    /* 🌟 月份之間垂直線：修正權重問題，絕對生效 1.5px */
+    /* 🌟 月份之間垂直線：只使用單邊(右側)設定，避免疊加成兩倍粗 */
     .print-table th.thick-right, .print-table td.thick-right { border-right: 1.5px solid #000 !important; }
-    .print-table th.thick-left, .print-table td.thick-left { border-left: 1.5px solid #000 !important; }
     
     .print-table th { 
       font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
@@ -330,7 +328,6 @@
     </div>
   </div>
 
-  <!-- 🌟 隱藏的 A4 PDF 畫布區域 -->
   <div id="printArea">
     <table class="print-table" id="printTable"></table>
   </div>
@@ -341,7 +338,6 @@
     let currentFilter = '30days'; 
     let bpChartInstance = null; 
 
-    // 初始化日期與時間
     const now = new Date();
     document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
@@ -440,7 +436,6 @@
       }, 300);
     }
 
-    // 生理作息時間判斷邏輯
     function getLogicalDate(dateStr, timeStr) {
       if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };
       let d = new Date(dateStr.replace(/-/g, '/'));
@@ -672,17 +667,16 @@
         tableHtml += `<tr class="month-row-thick">`;
         for (let i = 0; i < 3; i++) {
           let mVal = targetMonths[i] ? targetMonths[i] : ``;
-          // 🌟 加入 thick-left 與 thick-right 來強制生成 1.5px 的區分線
-          let leftCls = (i > 0) ? ' thick-left' : '';
+          // 🌟 修改點：移除 thick-left，只依靠單邊(右側)設定粗線，避免疊加成 3px 雙倍粗
           let rightCls = (i < 2) ? ' thick-right' : '';
-          tableHtml += `<th class="month-label${leftCls}">月份:</th><th colspan="3" class="month-val${rightCls}">${mVal}</th>`;
+          tableHtml += `<th class="month-label">月份:</th><th colspan="3" class="month-val${rightCls}">${mVal}</th>`;
         }
         tableHtml += `</tr><tr>`;
         
         for (let i = 0; i < 3; i++) {
-          let leftCls = (i > 0) ? ' thick-left' : '';
+          // 🌟 同樣移除 leftCls，只保留 rightCls
           let rightCls = (i < 2) ? ' thick-right' : '';
-          tableHtml += `<th class="day-col${leftCls}">日期</th><th class="sys-col">收縮壓</th><th class="dia-col">舒張壓</th><th class="hr-col${rightCls}">脈搏</th>`;
+          tableHtml += `<th class="day-col">日期</th><th class="sys-col">收縮壓</th><th class="dia-col">舒張壓</th><th class="hr-col${rightCls}">脈搏</th>`;
         }
         tableHtml += `</tr></thead><tbody>`;
 
@@ -691,9 +685,9 @@
           for (let m = 0; m < 3; m++) {
             let monthKey = targetMonths[m];
             let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null;
-            let leftCls = (m > 0) ? ' thick-left' : '';
+            // 🌟 同樣移除 leftCls，只保留 rightCls
             let rightCls = (m < 2) ? ' thick-right' : '';
-            tableHtml += `<td class="${leftCls}">${day}</td>`;
+            tableHtml += `<td>${day}</td>`;
             tableHtml += `<td>${record ? record.systolic : ''}</td>`;
             tableHtml += `<td>${record ? record.diastolic : ''}</td>`;
             tableHtml += `<td class="${rightCls}">${record ? record.heartRate : ''}</td>`;
