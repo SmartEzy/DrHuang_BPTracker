@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=82">
+  <link rel="manifest" href="manifest.json?v=83">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -131,8 +131,8 @@
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
     .high-bp { color: var(--danger-color); font-weight: bold; }
     
-    /* 🌟 月份膠囊獨立專區：調整為 Top: 10px / Bottom: 4px，讓視覺達到完美 1:1 平衡 */
-    .month-row { display: grid; grid-template-columns: 75px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding: 10px 0 4px 0; }
+    /* 🌟 月份膠囊置中設定：上方間距 6px，下方間距 0px (加上 record-row 的 6px = 6px) */
+    .month-row { display: grid; grid-template-columns: 75px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding: 6px 0 0 0; }
     .month-box { 
       grid-column: 1 / 2; 
       width: 100%; 
