@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=78">
+  <link rel="manifest" href="manifest.json?v=79">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -47,8 +47,10 @@
     .header-actions { display: flex; gap: 26px; align-items: center; }
     .header-btn { background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center; transition: opacity 0.2s; }
     
-    .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 15px 20px; box-sizing: border-box; }
-    .form-group { margin-bottom: 12px; }
+    .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; }
+    
+    /* 🌟 全域 10px 間距對齊 */
+    .form-group { margin-bottom: 10px; }
     
     .date-time-layout { display: flex; justify-content: space-between; width: 100%; }
     .date-time-layout .date-box { width: 56%; }
@@ -67,13 +69,14 @@
     .notes-save-row input { flex: 1; min-width: 0; }
     .notes-save-row button.primary-btn { width: 105px; margin-top: 0; padding: 12px 0; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
     
-    .quick-tags-container { display: flex; gap: 8px; margin-top: 10px; margin-bottom: 2px; overflow-x: auto; padding-bottom: 2px; }
+    /* 🌟 標籤與下方區塊保持 10px */
+    .quick-tags-container { display: flex; gap: 8px; margin-top: 0; margin-bottom: 10px; overflow-x: auto; padding-bottom: 2px; }
     .quick-tags-container::-webkit-scrollbar { display: none; } 
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; }
     .quick-tag-btn:active { background-color: #CBD5E1; }
     
-    /* 🌟 大幅縮小濾鏡列(7D/1M)區塊的上下 padding */
-    .records-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px 6px 20px; background-color: var(--bg-color); box-sizing: border-box; width: 100%; }
+    /* 🌟 膠囊與下方圖表保持 10px */
+    .records-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px 10px 20px; background-color: var(--bg-color); box-sizing: border-box; width: 100%; }
     .chart-controls-left { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
     .chart-toggle-btn { background: none; border: none; padding: 4px 8px; margin: 0; color: var(--primary-color); cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
     .chart-toggle-btn.active { background-color: #E2E8F0; color: var(--primary-dark); }
@@ -101,16 +104,17 @@
     
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     
-    /* 🌟 大幅壓縮圖表區塊的上下 padding，並稍微調低高度使畫面更緊湊 */
-    .chart-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 2px 20px 6px 20px; box-sizing: border-box; background-color: var(--bg-color); height: 175px; display: block; }
+    /* 🌟 圖表與下方表頭保持 10px */
+    .chart-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 0 20px 10px 20px; box-sizing: border-box; background-color: var(--bg-color); height: 170px; display: block; }
     
-    /* 🌟 縮小清單表頭下方與第一筆資料的距離 */
-    .list-header { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding-bottom: 4px; border-bottom: 2px solid var(--primary-dark); font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center; }
+    /* 🌟 放大 Date 欄寬度至 75px，確保膠囊可以完全放入 */
+    .list-header { display: grid; grid-template-columns: 75px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding-bottom: 4px; border-bottom: 2px solid var(--primary-dark); font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center; }
     .list-header div:nth-child(5) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 8px; }
     
+    /* 🌟 對齊 75px Grid */
     .record-row { 
-      display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; align-items: center; 
+      display: grid; grid-template-columns: 75px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; align-items: center; 
       padding: 6px 0; font-size: 15px; line-height: 1.1; color: var(--text-main); text-align: center; 
       font-variant-numeric: tabular-nums; transition: background-color 0.2s; 
       border-top: 1px solid transparent; 
@@ -133,89 +137,43 @@
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
     .high-bp { color: var(--danger-color); font-weight: bold; }
     
-    /* 🌟 極致壓縮月份膠囊 (e.g. 2026/09) 的上下間距與內部厚度 */
-    .month-row { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding: 4px 0 2px 0; }
-    .month-box { grid-column: 1 / 3; width: 100%; box-sizing: border-box; background-color: #E2E8F0; color: var(--primary-dark); font-weight: bold; font-size: 12px; padding: 2px 0; border-radius: 20px; text-align: center; letter-spacing: 1px; }
-
-    #printArea { 
-      display: none; 
-      width: 210mm; 
-      height: 297mm; 
-      box-sizing: border-box; 
-      padding: 16mm 12mm 5mm 12mm; 
-      background-color: #FFFFFF; 
-      color: #000; 
-    }
-    
-    .print-table { 
+    /* 🌟 月份膠囊獨立專區：設定為 4px 上下間距，並只在 Date 欄位顯示 */
+    .month-row { display: grid; grid-template-columns: 75px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding: 4px 0; }
+    .month-box { 
+      grid-column: 1 / 2; /* 絕對限制在第一欄 (Date) 內 */
       width: 100%; 
-      border-collapse: collapse; 
-      text-align: center; 
-      font-family: Arial, "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; 
-      table-layout: fixed; 
-      background-color: #FFFFFF;
-      border: 1.5px solid #000 !important; 
-    }
-    
-    .print-table th, .print-table td { 
-      border: 0.5px solid #000 !important; 
-      padding: 0; 
-      height: 28.5px; 
-      line-height: 28.5px; 
       box-sizing: border-box; 
-      overflow: hidden;
-      background-color: #FFFFFF;
+      background-color: #E2E8F0; 
+      color: var(--primary-dark); 
+      font-weight: bold; 
+      font-size: 11.5px; 
+      padding: 4px 0; 
+      border-radius: 12px; 
+      text-align: center; 
+      letter-spacing: 0px; 
     }
+
+    #printArea { display: none; width: 210mm; height: 297mm; box-sizing: border-box; padding: 16mm 12mm 5mm 12mm; background-color: #FFFFFF; color: #000; }
+    
+    .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: Arial, "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; table-layout: fixed; background-color: #FFFFFF; border: 1.5px solid #000 !important; }
+    .print-table th, .print-table td { border: 0.5px solid #000 !important; padding: 0; height: 28.5px; line-height: 28.5px; box-sizing: border-box; overflow: hidden; background-color: #FFFFFF; }
     
     .print-table tr:first-child th { border-top: 1.5px solid #000 !important; }
     .print-table tr:last-child td { border-bottom: 1.5px solid #000 !important; }
     .print-table tr th:first-child, .print-table tr td:first-child { border-left: 1.5px solid #000 !important; }
     .print-table tr th:last-child, .print-table tr td:last-child { border-right: 1.5px solid #000 !important; }
 
-    .print-table th.print-title { 
-      font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
-      font-size: 30px; 
-      letter-spacing: 15px; 
-      font-weight: 900; 
-      background-color: #FFFFFF; 
-      border-bottom: 1.5px solid #000 !important;
-      height: 50px; 
-      line-height: 50px; 
-    }
-
+    .print-table th.print-title { font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; font-size: 30px; letter-spacing: 15px; font-weight: 900; background-color: #FFFFFF; border-bottom: 1.5px solid #000 !important; height: 50px; line-height: 50px; }
     .print-table tr.month-row-thick th { border-bottom: 1.5px solid #000 !important; }
     .print-table th.thick-right, .print-table td.thick-right { border-right: 1.5px solid #000 !important; }
     
-    .print-table th { 
-      font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif;
-      font-weight: bold; 
-      font-size: 15px; 
-    }
+    .print-table th { font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; font-weight: bold; font-size: 15px; }
+    .print-table td { font-family: Arial, Helvetica, sans-serif; font-size: 18px; color: #000; }
     
-    .print-table td { 
-      font-family: Arial, Helvetica, sans-serif;
-      font-size: 18px; 
-      color: #000; 
-    }
-    
-    .print-table th.month-label { 
-      width: 6.5%; 
-      text-align: center; 
-      white-space: nowrap; 
-      font-size: 16px; 
-      font-weight: bold; 
-      border-right: none !important; 
-    }
-    .print-table th.month-val { 
-      text-align: left; 
-      padding-left: 2px; 
-      font-size: 16px; 
-      font-weight: bold; 
-      white-space: nowrap; 
-      border-left: none !important; 
-    }
-    
+    .print-table th.month-label { width: 6.5%; text-align: center; white-space: nowrap; font-size: 16px; font-weight: bold; border-right: none !important; }
+    .print-table th.month-val { text-align: left; padding-left: 2px; font-size: 16px; font-weight: bold; white-space: nowrap; border-left: none !important; }
     .print-table td:nth-child(4n+1) { color: #999999; font-weight: normal; font-size: 18px; }
+    
     .day-col { width: 6.5%; font-weight: bold; } 
     .sys-col, .dia-col, .hr-col { width: 8.9%; font-weight: bold; } 
   </style>
@@ -237,7 +195,8 @@
       </div>
     </div>
     
-    <div class="container" style="padding-bottom: 5px; padding-top: 16px;">
+    <!-- 🌟 輸入區加上 top padding 10px -->
+    <div class="container" style="padding-top: 10px; padding-bottom: 0;">
       <form id="bpForm">
         <div class="form-group date-time-layout">
           <div class="date-box"><input type="date" id="date" required></div>
@@ -251,7 +210,8 @@
           <input type="number" id="heartRate" placeholder="HR" inputmode="numeric" pattern="[0-9]*" required>
           <span class="unit" style="margin-right:0;">bpm</span>
         </div>
-        <div class="form-group notes-save-row" style="margin-bottom: 0;">
+        <!-- 🌟 原本有 inline style 的 margin 改套用全域 10px -->
+        <div class="form-group notes-save-row">
           <input type="text" id="notes" placeholder="Notes (e.g., dizzy...)">
           <button type="submit" id="submitBtn" class="primary-btn">Save</button>
         </div>
@@ -275,6 +235,7 @@
       </form>
     </div>
 
+    <!-- 🌟 膠囊與下方保持 10px -->
     <div class="records-header">
       <div class="chart-controls-left">
         <button id="toggleChartBtn" class="chart-toggle-btn active" title="Toggle Trend Chart">
@@ -321,8 +282,8 @@
       <canvas id="bpChart"></canvas>
     </div>
     
-    <!-- 🌟 取消多餘的上下 Padding -->
-    <div class="container" style="padding-top: 0px; padding-bottom: 0;">
+    <!-- 🌟 表頭上方維持 10px -->
+    <div class="container" style="padding-top: 0; padding-bottom: 10px;">
       <div class="list-header">
         <div>Date</div>
         <div>Time</div>
@@ -335,8 +296,7 @@
     </div>
   </div> 
 
-  <!-- 🌟 取消多餘的上下 Padding -->
-  <div class="container" style="padding-top: 0px; padding-bottom: 40px;">
+  <div class="container" style="padding-top: 0; padding-bottom: 40px;">
     <div id="recordsList">
       <div style="text-align:center; padding: 20px; color: #888;">Loading...</div>
     </div>
@@ -353,31 +313,7 @@
     let bpChartInstance = null; 
 
     const now = new Date();
-    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-    document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-    function checkMorningTag() {
-      const timeVal = document.getElementById('time').value;
-      if (!timeVal) return;
-      const h = parseInt(timeVal.split(':')[0], 10);
-      const notesInput = document.getElementById('notes');
-      if (h >= 4 && h < 10) {
-        if (!notesInput.value.includes('[報表]')) {
-          if (notesInput.value.trim() !== '') notesInput.value += ', ';
-          notesInput.value += '[報表]';
-        }
-      }
-    }
-    
-    document.getElementById('time').addEventListener('change', checkMorningTag);
-    checkMorningTag();
-
-    function addQuickTag(tagText) {
-      const notesInput = document.getElementById('notes');
-      if (notesInput.value.trim() === '') {
-        notesInput.value = tagText;
-      } else if (!notesInput.value.includes(tagText)) {
-        notesInput.value += `, ${tagText}`;
+    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;      function checkMorningTag() {       const timeVal = document.getElementById('time').value;       if (!timeVal) return;       const h = parseInt(timeVal.split(':')[0], 10);       const notesInput = document.getElementById('notes');       if (h >= 4 && h < 10) {         if (!notesInput.value.includes('[報表]')) {           if (notesInput.value.trim() !== '') notesInput.value += ', ';           notesInput.value += '[報表]';         }       }     }          document.getElementById('time').addEventListener('change', checkMorningTag);     checkMorningTag();      function addQuickTag(tagText) {       const notesInput = document.getElementById('notes');       if (notesInput.value.trim() === '') {         notesInput.value = tagText;       } else if (!notesInput.value.includes(tagText)) {         notesInput.value += `, ${tagText}`;
       }
     }
 
@@ -440,38 +376,8 @@
       const row = btn.closest('.record-row');
       row.classList.add('highlight-delete');
       setTimeout(() => {
-        if (confirm(`${formattedDate} ${formattedTime}${sys}/${dia} mmHg${hr} bpm\n確定刪除？`)) {
-          allRecords = allRecords.filter(r => !(r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr));
-          renderList();
-          syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr });
-        } else {
-          row.classList.remove('highlight-delete');
-        }
-      }, 300);
-    }
-
-    function getLogicalDate(dateStr, timeStr) {
-      if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };
-      let d = new Date(dateStr.replace(/-/g, '/'));
-      if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };
-      
-      if (timeStr) {
-        let parts = timeStr.split(':');
-        if (parts.length >= 2) {
-          let h = parseInt(parts[0], 10);
-          if (h >= 0 && h < 4) { 
-            d.setDate(d.getDate() - 1);
-          }
-        }
-      }
-      
-      let yy = d.getFullYear();
-      let mm = String(d.getMonth() + 1).padStart(2, '0');
-      let dd = String(d.getDate()).padStart(2, '0');
-      
-      return {
-        logicalStr: `${yy}/${mm}/${dd}`,
-        logicalMonthStr: `${yy} /${mm}`,
+        if (confirm(`${formattedDate}${formattedTime} ${sys}/${dia} mmHg  ${hr} bpm\n確定刪除？`)) {           allRecords = allRecords.filter(r => !(r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr));           renderList();           syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr });         } else {           row.classList.remove('highlight-delete');         }       }, 300);     }      function getLogicalDate(dateStr, timeStr) {       if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };       let d = new Date(dateStr.replace(/-/g, '/'));       if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };              if (timeStr) {         let parts = timeStr.split(':');         if (parts.length >= 2) {           let h = parseInt(parts[0], 10);           if (h >= 0 && h < 4) {              d.setDate(d.getDate() - 1);           }         }       }              let yy = d.getFullYear();       let mm = String(d.getMonth() + 1).padStart(2, '0');       let dd = String(d.getDate()).padStart(2, '0');              return {         logicalStr: `${yy}/${mm}/${dd}`,
+        logicalMonthStr: `${yy}/${mm}`, // 🌟 拿掉空白，變成 2026/09 節省空間
         logicalDayStr: dd,
         dateObj: d
       };
