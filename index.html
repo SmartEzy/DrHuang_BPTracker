@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=76">
+  <link rel="manifest" href="manifest.json?v=77">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -73,7 +73,7 @@
     .quick-tag-btn:active { background-color: #CBD5E1; }
     
     .records-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 12px 20px; background-color: var(--bg-color); box-sizing: border-box; width: 100%; }
-    .chart-controls-left { display: flex; align-items: center; gap: 12px; }
+    .chart-controls-left { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
     .chart-toggle-btn { background: none; border: none; padding: 4px 8px; margin: 0; color: var(--primary-color); cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
     .chart-toggle-btn.active { background-color: #E2E8F0; color: var(--primary-dark); }
     
@@ -84,7 +84,18 @@
     .legend-hr-line { width: 14px; height: 2px; background: #CBD5E1; }
     .chart-tip { position: absolute; top: 100%; left: 0; font-size: 9px; color: #A0AAB5; font-weight: normal; margin-top: 2px; white-space: nowrap; }
     
-    .capsule-group { display: flex; background-color: #E2E8F0; border-radius: 20px; padding: 3px; flex-shrink: 0; }
+    /* 🌟 修改膠囊區塊：允許橫向滑動，隱藏捲軸 */
+    .capsule-group { 
+      display: flex; 
+      background-color: #E2E8F0; 
+      border-radius: 20px; 
+      padding: 3px; 
+      overflow-x: auto; 
+      max-width: 100%; 
+      -webkit-overflow-scrolling: touch; 
+    }
+    .capsule-group::-webkit-scrollbar { display: none; }
+    
     .capsule-btn { background: transparent; color: #64748B; border: none; padding: 6px 12px; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 18px; transition: all 0.2s; white-space: nowrap; line-height: 1.2; display: flex; align-items: center; justify-content: center; }
     .capsule-btn.active { background-color: #FFFFFF; color: var(--primary-dark); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     
@@ -122,9 +133,6 @@
     .month-row { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding: 10px 0 4px 0; }
     .month-box { grid-column: 1 / 3; width: 100%; box-sizing: border-box; background-color: #E2E8F0; color: var(--primary-dark); font-weight: bold; font-size: 12px; padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px; }
 
-    /* =========================================
-       🌟 原生 PDF 排版引擎 (取消雙重框線疊加)
-       ========================================= */
     #printArea { 
       display: none; 
       width: 210mm; 
@@ -146,7 +154,6 @@
     }
     
     .print-table th, .print-table td { 
-      /* 內部一般邊框：細線 0.5px */
       border: 0.5px solid #000 !important; 
       padding: 0; 
       height: 28.5px; 
@@ -156,7 +163,6 @@
       background-color: #FFFFFF;
     }
     
-    /* 強制四周外框為 1.5px */
     .print-table tr:first-child th { border-top: 1.5px solid #000 !important; }
     .print-table tr:last-child td { border-bottom: 1.5px solid #000 !important; }
     .print-table tr th:first-child, .print-table tr td:first-child { border-left: 1.5px solid #000 !important; }
@@ -173,10 +179,7 @@
       line-height: 50px; 
     }
 
-    /* 月份下方邊框：粗線 1.5px */
     .print-table tr.month-row-thick th { border-bottom: 1.5px solid #000 !important; }
-    
-    /* 🌟 月份之間垂直線：只使用單邊(右側)設定，避免疊加成兩倍粗 */
     .print-table th.thick-right, .print-table td.thick-right { border-right: 1.5px solid #000 !important; }
     
     .print-table th { 
@@ -191,7 +194,6 @@
       color: #000; 
     }
     
-    /* 去除月份與 yyyy/mm 間的格線 */
     .print-table th.month-label { 
       width: 6.5%; 
       text-align: center; 
@@ -209,12 +211,7 @@
       border-left: none !important; 
     }
     
-    .print-table td:nth-child(4n+1) { 
-      color: #999999; 
-      font-weight: normal; 
-      font-size: 18px; 
-    }
-    
+    .print-table td:nth-child(4n+1) { color: #999999; font-weight: normal; font-size: 18px; }
     .day-col { width: 6.5%; font-weight: bold; } 
     .sys-col, .dia-col, .hr-col { width: 8.9%; font-weight: bold; } 
   </style>
@@ -289,9 +286,12 @@
           <span class="chart-tip">Tap bar for details</span>
         </div>
       </div>
+      
+      <!-- 🌟 修改膠囊設計：簡化文字，並加入太陽濾鏡 -->
       <div class="capsule-group">
-        <button class="capsule-btn" data-val="7days">7 days</button>
-        <button class="capsule-btn active" data-val="30days">30 days</button>
+        <button class="capsule-btn" data-val="7days">7 D</button>
+        <button class="capsule-btn active" data-val="30days">1 M</button>
+        <button class="capsule-btn" data-val="90days">3 M</button>
         <button class="capsule-btn" data-val="all">All</button>
         <button class="capsule-btn" data-val="report" title="Report Filter">
           <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -300,6 +300,15 @@
             <line x1="16" y1="13" x2="8" y2="13"></line>
             <line x1="16" y1="17" x2="8" y2="17"></line>
             <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </button>
+        <button class="capsule-btn" data-val="morning" title="Morning Filter">
+          <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
           </svg>
         </button>
       </div>
@@ -530,13 +539,27 @@
       localStorage.setItem('bpCacheRecords', JSON.stringify(allRecords));
       let displayData = [...allRecords].filter(r => r && r.date && String(r.date).trim() !== '');
       
+      // 🌟 加入進階過濾邏輯：90天、早晨時段
       if (currentFilter === 'report') { 
         displayData = displayData.filter(r => r.notes && r.notes.includes('[報表]')); 
+      } else if (currentFilter === 'morning') {
+        displayData = displayData.filter(r => {
+          if (!r.time) return false;
+          let parts = String(r.time).split(':');
+          if (parts.length >= 2) {
+            let h = parseInt(parts[0], 10);
+            return h >= 4 && h < 10;
+          }
+          return false;
+        });
       } else if (currentFilter === '7days') { 
         let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7); 
         displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff); 
       } else if (currentFilter === '30days') { 
         let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30); 
+        displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff); 
+      } else if (currentFilter === '90days') { 
+        let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 90); 
         displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff); 
       }
 
@@ -667,14 +690,12 @@
         tableHtml += `<tr class="month-row-thick">`;
         for (let i = 0; i < 3; i++) {
           let mVal = targetMonths[i] ? targetMonths[i] : ``;
-          // 🌟 修改點：移除 thick-left，只依靠單邊(右側)設定粗線，避免疊加成 3px 雙倍粗
           let rightCls = (i < 2) ? ' thick-right' : '';
           tableHtml += `<th class="month-label">月份:</th><th colspan="3" class="month-val${rightCls}">${mVal}</th>`;
         }
         tableHtml += `</tr><tr>`;
         
         for (let i = 0; i < 3; i++) {
-          // 🌟 同樣移除 leftCls，只保留 rightCls
           let rightCls = (i < 2) ? ' thick-right' : '';
           tableHtml += `<th class="day-col">日期</th><th class="sys-col">收縮壓</th><th class="dia-col">舒張壓</th><th class="hr-col${rightCls}">脈搏</th>`;
         }
@@ -685,7 +706,6 @@
           for (let m = 0; m < 3; m++) {
             let monthKey = targetMonths[m];
             let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null;
-            // 🌟 同樣移除 leftCls，只保留 rightCls
             let rightCls = (m < 2) ? ' thick-right' : '';
             tableHtml += `<td>${day}</td>`;
             tableHtml += `<td>${record ? record.systolic : ''}</td>`;
