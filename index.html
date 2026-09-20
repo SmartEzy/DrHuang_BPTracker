@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=86">
+  <link rel="manifest" href="manifest.json?v=87">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -44,8 +44,10 @@
     .banner-content { background-color: var(--primary-dark); flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 10px; }
     .banner-text { font-size: 20px; font-weight: bold; color: #FFFFFF; }
     
-    .header-actions { display: flex; gap: 26px; align-items: center; }
-    .header-btn { background: none; border: none; color: #FFFFFF; font-size: 20px; cursor: pointer; padding: 0; display: flex; align-items: center; transition: opacity 0.2s; }
+    .header-actions { display: flex; gap: 18px; align-items: center; }
+    .header-btn { background: none; border: none; color: #FFFFFF; cursor: pointer; padding: 0; display: flex; align-items: center; transition: opacity 0.2s; }
+    .header-btn-icon { font-size: 20px; }
+    .header-btn-text { font-size: 14px; font-weight: bold; margin-left: 2px; }
     
     .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; }
     
@@ -159,31 +161,32 @@
     .print-table tr th:first-child, .print-table tr td:first-child { border-left: 1.5px solid #000 !important; }
     .print-table tr th:last-child, .print-table tr td:last-child { border-right: 1.5px solid #000 !important; }
 
-    /* 🌟 大標題加大至 34px */
-    .print-table th.print-title { font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; font-size: 34px; letter-spacing: 15px; font-weight: 900; background-color: #FFFFFF; border-bottom: 1.5px solid #000 !important; height: 50px; line-height: 50px; }
+    /* 🌟 大標題恢復原始 30px 完美比例 */
+    .print-table th.print-title { font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; font-size: 30px; letter-spacing: 15px; font-weight: 900; background-color: #FFFFFF; border-bottom: 1.5px solid #000 !important; height: 50px; line-height: 50px; }
     .print-table tr.month-row-thick th { border-bottom: 1.5px solid #000 !important; }
     .print-table th.thick-right, .print-table td.thick-right { border-right: 1.5px solid #000 !important; }
     
-    .print-table th { font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; font-weight: bold; }
+    /* 強制所有表頭不換行 */
+    .print-table th { font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; font-weight: bold; white-space: nowrap; }
     .print-table td { font-family: Arial, Helvetica, sans-serif; color: #000; }
-    .print-table th.month-label { text-align: center; white-space: nowrap; font-weight: bold; border-right: none !important; }
-    .print-table th.month-val { text-align: left; padding-left: 2px; font-weight: bold; white-space: nowrap; border-left: none !important; }
+    .print-table th.month-label { text-align: center; font-weight: bold; border-right: none !important; }
+    .print-table th.month-val { text-align: left; padding-left: 2px; font-weight: bold; border-left: none !important; }
 
-    /* --- 🌟 3 個月排版樣式 (字體極限放大) --- */
-    .print-table.print-3m th { font-size: 18px; }
-    .print-table.print-3m td { font-size: 22px; }
-    .print-table.print-3m th.month-label { width: 6.5%; font-size: 18px; }
-    .print-table.print-3m th.month-val { font-size: 18px; }
-    .print-table.print-3m td:nth-child(4n+1) { color: #999999; font-weight: normal; font-size: 22px; }
+    /* --- 🌟 3 個月排版樣式 (維持原始 15px/18px 比例) --- */
+    .print-table.print-3m th { font-size: 15px; }
+    .print-table.print-3m td { font-size: 18px; }
+    .print-table.print-3m th.month-label { width: 6.5%; font-size: 16px; }
+    .print-table.print-3m th.month-val { font-size: 16px; }
+    .print-table.print-3m td:nth-child(4n+1) { color: #999999; font-weight: normal; font-size: 18px; }
     .print-table.print-3m .day-col { width: 6.5%; }
     .print-table.print-3m .sys-col, .print-table.print-3m .dia-col, .print-table.print-3m .hr-col { width: 8.9%; }
 
-    /* --- 🌟 4 個月排版樣式 (字體大幅升級) --- */
-    .print-table.print-4m th { font-size: 15px; }
-    .print-table.print-4m td { font-size: 19px; }
-    .print-table.print-4m th.month-label { width: 4.5%; font-size: 15px; }
-    .print-table.print-4m th.month-val { font-size: 15px; }
-    .print-table.print-4m td:nth-child(4n+1) { color: #999999; font-weight: normal; font-size: 19px; }
+    /* --- 🌟 4 個月排版樣式 (略小於3個月: 13px/16px，並加入微縮字距確保不換行) --- */
+    .print-table.print-4m th { font-size: 13px; letter-spacing: -0.5px; padding: 0 1px; } 
+    .print-table.print-4m td { font-size: 16px; }
+    .print-table.print-4m th.month-label { width: 4.5%; font-size: 14px; letter-spacing: 0; }
+    .print-table.print-4m th.month-val { font-size: 14px; letter-spacing: 0; }
+    .print-table.print-4m td:nth-child(4n+1) { color: #999999; font-weight: normal; font-size: 16px; }
     .print-table.print-4m .day-col { width: 4.5%; }
     .print-table.print-4m .sys-col, .print-table.print-4m .dia-col, .print-table.print-4m .hr-col { width: 6.83%; }
   </style>
@@ -198,10 +201,20 @@
       </div>
       <div class="banner-content"> 
         <span class="banner-text">BP Tracker</span>
+        
+        <!-- 🌟 拆分成兩個獨立的列印按鈕 -->
         <div class="header-actions">
-          <button class="header-btn" id="exportPdfBtn" onclick="generatePDF()" title="Export PDF">🖨️</button>
-          <button class="header-btn" onclick="window.location.reload()" title="Refresh Time">↻</button>
+          <button class="header-btn" id="exportPdfBtn3" onclick="generatePDF(3)" title="Print 3 Months">
+            <span class="header-btn-icon">🖨️</span><span class="header-btn-text">3</span>
+          </button>
+          <button class="header-btn" id="exportPdfBtn4" onclick="generatePDF(4)" title="Print 4 Months">
+            <span class="header-btn-icon">🖨️</span><span class="header-btn-text">4</span>
+          </button>
+          <button class="header-btn" onclick="window.location.reload()" title="Refresh Time">
+            <span class="header-btn-icon">↻</span>
+          </button>
         </div>
+        
       </div>
     </div>
     
@@ -612,7 +625,7 @@
       document.getElementById('recordsList').innerHTML = html;
     }
 
-    async function generatePDF() {
+    async function generatePDF(monthCount) {
       let reportData = [...allRecords]
         .filter(r => r && r.date && r.notes && r.notes.includes('[報表]'))
         .sort((a, b) => new Date(a.date.replace(/-/g, '/')).getTime() - new Date(b.date.replace(/-/g, '/')).getTime());
@@ -622,12 +635,10 @@
         return;
       }
 
-      const is4Months = confirm("是否要列印「4 個月 (84天慢箋)」專用格式？\n\n[確認] = 印 4 個月\n[取消] = 印 3 個月 (標準大字體)");
-      const monthCount = is4Months ? 4 : 3;
-
-      const btn = document.getElementById('exportPdfBtn');
-      btn.disabled = true;
-      btn.style.opacity = '0.5';
+      const btn3 = document.getElementById('exportPdfBtn3');
+      const btn4 = document.getElementById('exportPdfBtn4');
+      btn3.disabled = true; btn3.style.opacity = '0.5';
+      btn4.disabled = true; btn4.style.opacity = '0.5';
 
       try {
         let monthMap = {}; 
@@ -725,8 +736,8 @@
         console.error("PDF 產生失敗", err);
         alert("產生 PDF 時發生錯誤，請稍後再試。");
       } finally {
-        btn.disabled = false;
-        btn.style.opacity = '1';
+        btn3.disabled = false; btn3.style.opacity = '1';
+        btn4.disabled = false; btn4.style.opacity = '1';
       }
     }
 
