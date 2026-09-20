@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=77">
+  <link rel="manifest" href="manifest.json?v=78">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -72,7 +72,8 @@
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; }
     .quick-tag-btn:active { background-color: #CBD5E1; }
     
-    .records-header { display: flex; justify-content: space-between; align-items: center; padding: 18px 20px 12px 20px; background-color: var(--bg-color); box-sizing: border-box; width: 100%; }
+    /* 🌟 大幅縮小濾鏡列(7D/1M)區塊的上下 padding */
+    .records-header { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px 6px 20px; background-color: var(--bg-color); box-sizing: border-box; width: 100%; }
     .chart-controls-left { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
     .chart-toggle-btn { background: none; border: none; padding: 4px 8px; margin: 0; color: var(--primary-color); cursor: pointer; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
     .chart-toggle-btn.active { background-color: #E2E8F0; color: var(--primary-dark); }
@@ -84,7 +85,6 @@
     .legend-hr-line { width: 14px; height: 2px; background: #CBD5E1; }
     .chart-tip { position: absolute; top: 100%; left: 0; font-size: 9px; color: #A0AAB5; font-weight: normal; margin-top: 2px; white-space: nowrap; }
     
-    /* 🌟 修改膠囊區塊：允許橫向滑動，隱藏捲軸 */
     .capsule-group { 
       display: flex; 
       background-color: #E2E8F0; 
@@ -100,9 +100,12 @@
     .capsule-btn.active { background-color: #FFFFFF; color: var(--primary-dark); box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
     
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); box-shadow: 0 4px 6px -4px rgba(0,0,0,0.1); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
-    .chart-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 5px 20px 10px 20px; box-sizing: border-box; background-color: var(--bg-color); height: 190px; display: block; }
     
-    .list-header { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding-bottom: 8px; border-bottom: 2px solid var(--primary-dark); font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center; }
+    /* 🌟 大幅壓縮圖表區塊的上下 padding，並稍微調低高度使畫面更緊湊 */
+    .chart-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 2px 20px 6px 20px; box-sizing: border-box; background-color: var(--bg-color); height: 175px; display: block; }
+    
+    /* 🌟 縮小清單表頭下方與第一筆資料的距離 */
+    .list-header { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding-bottom: 4px; border-bottom: 2px solid var(--primary-dark); font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center; }
     .list-header div:nth-child(5) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 8px; }
     
@@ -130,8 +133,9 @@
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
     .high-bp { color: var(--danger-color); font-weight: bold; }
     
-    .month-row { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding: 10px 0 4px 0; }
-    .month-box { grid-column: 1 / 3; width: 100%; box-sizing: border-box; background-color: #E2E8F0; color: var(--primary-dark); font-weight: bold; font-size: 12px; padding: 4px 0; border-radius: 20px; text-align: center; letter-spacing: 1px; }
+    /* 🌟 極致壓縮月份膠囊 (e.g. 2026/09) 的上下間距與內部厚度 */
+    .month-row { display: grid; grid-template-columns: 55px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; padding: 4px 0 2px 0; }
+    .month-box { grid-column: 1 / 3; width: 100%; box-sizing: border-box; background-color: #E2E8F0; color: var(--primary-dark); font-weight: bold; font-size: 12px; padding: 2px 0; border-radius: 20px; text-align: center; letter-spacing: 1px; }
 
     #printArea { 
       display: none; 
@@ -287,7 +291,6 @@
         </div>
       </div>
       
-      <!-- 🌟 修改膠囊設計：簡化文字，並加入太陽濾鏡 -->
       <div class="capsule-group">
         <button class="capsule-btn" data-val="7days">7 D</button>
         <button class="capsule-btn active" data-val="30days">1 M</button>
@@ -318,7 +321,8 @@
       <canvas id="bpChart"></canvas>
     </div>
     
-    <div class="container" style="padding-top: 5px; padding-bottom: 0;">
+    <!-- 🌟 取消多餘的上下 Padding -->
+    <div class="container" style="padding-top: 0px; padding-bottom: 0;">
       <div class="list-header">
         <div>Date</div>
         <div>Time</div>
@@ -331,7 +335,8 @@
     </div>
   </div> 
 
-  <div class="container" style="padding-top: 5px; padding-bottom: 40px;">
+  <!-- 🌟 取消多餘的上下 Padding -->
+  <div class="container" style="padding-top: 0px; padding-bottom: 40px;">
     <div id="recordsList">
       <div style="text-align:center; padding: 20px; color: #888;">Loading...</div>
     </div>
@@ -539,7 +544,6 @@
       localStorage.setItem('bpCacheRecords', JSON.stringify(allRecords));
       let displayData = [...allRecords].filter(r => r && r.date && String(r.date).trim() !== '');
       
-      // 🌟 加入進階過濾邏輯：90天、早晨時段
       if (currentFilter === 'report') { 
         displayData = displayData.filter(r => r.notes && r.notes.includes('[報表]')); 
       } else if (currentFilter === 'morning') {
