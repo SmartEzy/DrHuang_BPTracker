@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=104">
+  <link rel="manifest" href="manifest.json?v=105">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -227,10 +227,11 @@
     .print-table.print-4m .day-col { width: 4.5%; }
     .print-table.print-4m .sys-col, .print-table.print-4m .dia-col, .print-table.print-4m .hr-col { width: 6.83%; }
 
+    /* 🌟 優化版 Loading 遮罩：提升透明度、減輕模糊感，保持空間感知 */
     .loading-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(244, 246, 248, 0.75); 
-      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); 
+      background: rgba(244, 246, 248, 0.4); /* 背景透明度調降至 40% */
+      backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); /* 模糊度調降為 2px */
       z-index: 9999; 
       display: flex; flex-direction: column; justify-content: center; align-items: center; 
       opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
@@ -278,7 +279,6 @@
           <button class="header-btn" id="exportPdfBtn3" onclick="generatePDF(3)" title="Print 3 Months">
             <span class="header-btn-icon">🖨️</span><span class="header-btn-text">3</span>
           </button>
-          <!-- 🌟 重新整理按鈕 -->
           <button class="header-btn" onclick="handleRefresh()" title="Refresh Time">
             <span class="header-btn-icon">↻</span>
           </button>
@@ -411,10 +411,8 @@
       document.getElementById('loadingOverlay').classList.remove('show');
     }
 
-    // 🌟 重新整理：加上「感知工程」的 800 毫秒延遲，讓轉圈動畫停留一陣子
     function handleRefresh() {
       showLoading('資料重整中...');
-      // 強制等待 0.8 秒，讓大腦產生「系統有在做事」的安心感
       setTimeout(() => {
         window.location.reload();
       }, 800); 
