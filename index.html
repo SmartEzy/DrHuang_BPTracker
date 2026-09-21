@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=101">
+  <link rel="manifest" href="manifest.json?v=102">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -505,8 +505,8 @@
       let decodedNotes = decodeURIComponent(encodedNotes);
       
       setTimeout(() => {
-        // 🌟 核心修復：使用 \u00A0 (不換行空格) 來強制 iOS Safari 保留空格，避免數字被擠在一起
-        if (confirm(`${formattedDate} ${formattedTime}\n${sys}/${dia}\u00A0\u00A0\u00A0\u00A0${hr}\n\n確定刪除？`)) {
+        // 🌟 縮減為 2 個不換行空格，讓顯示距離自然且不會被 iOS 吃掉
+        if (confirm(`${formattedDate} ${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {
           
           let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
           
