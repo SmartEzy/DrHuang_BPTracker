@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=102">
+  <link rel="manifest" href="manifest.json?v=103">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -226,9 +226,43 @@
     .print-table.print-4m td:nth-child(4n+1) { color: #999999; font-weight: normal; font-size: 16px; }
     .print-table.print-4m .day-col { width: 4.5%; }
     .print-table.print-4m .sys-col, .print-table.print-4m .dia-col, .print-table.print-4m .hr-col { width: 6.83%; }
+
+    /* 🌟 新增：全螢幕毛玻璃 Loading 遮罩與 Apple 風格轉圈動畫 */
+    .loading-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(244, 246, 248, 0.75); /* 半透明底色 */
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); /* iOS 毛玻璃效果 */
+      z-index: 9999; 
+      display: flex; flex-direction: column; justify-content: center; align-items: center; 
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    }
+    .loading-overlay.show { 
+      opacity: 1; pointer-events: auto; /* 顯示並阻擋背景點擊 */
+    }
+    .spinner {
+      width: 46px; height: 46px;
+      border: 4px solid #CED4DA;
+      border-top-color: var(--primary-color);
+      border-radius: 50%;
+      animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+    }
+    @keyframes spin { 
+      0% { transform: rotate(0deg); } 
+      100% { transform: rotate(360deg); } 
+    }
+    .loading-text {
+      margin-top: 16px; font-size: 15px; color: var(--primary-dark); 
+      font-weight: 800; letter-spacing: 1px;
+    }
   </style>
 </head>
 <body>
+
+  <!-- 🌟 新增：Loading 遮罩結構 -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="spinner"></div>
+    <div id="loadingText" class="loading-text">請稍候...</div>
+  </div>
 
   <div class="sticky-top-panel">
     <div class="banner-container">
@@ -246,7 +280,8 @@
           <button class="header-btn" id="exportPdfBtn3" onclick="generatePDF(3)" title="Print 3 Months">
             <span class="header-btn-icon">🖨️</span><span class="header-btn-text">3</span>
           </button>
-          <button class="header-btn" onclick="window.location.reload()" title="Refresh Time">
+          <!-- 🌟 綁定新的 handleRefresh 函數 -->
+          <button class="header-btn" onclick="handleRefresh()" title="Refresh Time">
             <span class="header-btn-icon">↻</span>
           </button>
         </div>
@@ -368,6 +403,24 @@
     let allRecords = [];
     let currentFilter = '90days'; 
     let bpChartInstance = null; 
+
+    // 🌟 Loading 顯示與隱藏函式
+    function showLoading(text) {
+      document.getElementById('loadingText').innerText = text;
+      document.getElementById('loadingOverlay').classList.add('show');
+    }
+    
+    function hideLoading() {
+      document.getElementById('loadingOverlay').classList.remove('show');
+    }
+
+    // 🌟 專屬的重整邏輯
+    function handleRefresh() {
+      showLoading('資料重整中...');
+      setTimeout(() => {
+        window.location.reload();
+      }, 100);
+    }
 
     function scrollToBottom() {
       setTimeout(() => {
@@ -505,7 +558,6 @@
       let decodedNotes = decodeURIComponent(encodedNotes);
       
       setTimeout(() => {
-        // 🌟 縮減為 2 個不換行空格，讓顯示距離自然且不會被 iOS 吃掉
         if (confirm(`${formattedDate} ${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {
           
           let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
@@ -738,8 +790,12 @@
 
       const btn3 = document.getElementById('exportPdfBtn3');
       const btn4 = document.getElementById('exportPdfBtn4');
-      btn3.disabled = true; btn3.style.opacity = '0.5';
-      btn4.disabled = true; btn4.style.opacity = '0.5';
+      btn3.disabled = true; 
+      btn4.disabled = true; 
+      
+      // 🌟 啟動載入動畫並等待 50 毫秒，讓瀏覽器把畫面繪製出來後再進行繁重的 PDF 處理
+      showLoading(`報表產生中...`);
+      await new Promise(resolve => setTimeout(resolve, 50));
 
       try {
         let monthMap = {}; 
@@ -837,8 +893,9 @@
         console.error("PDF 產生失敗", err);
         alert("產生 PDF 時發生錯誤，請稍後再試。");
       } finally {
-        btn3.disabled = false; btn3.style.opacity = '1';
-        btn4.disabled = false; btn4.style.opacity = '1';
+        btn3.disabled = false;
+        btn4.disabled = false;
+        hideLoading(); // 🌟 結束時隱藏載入遮罩
       }
     }
 
