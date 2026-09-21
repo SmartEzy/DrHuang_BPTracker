@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=88">
+  <link rel="manifest" href="manifest.json?v=89">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -148,9 +148,6 @@
       letter-spacing: 0px; 
     }
 
-    /* =========================================
-       🌟 報表雙引擎 CSS (共用設定)
-       ========================================= */
     #printArea { display: none; width: 210mm; height: 297mm; box-sizing: border-box; padding: 16mm 12mm 5mm 12mm; background-color: #FFFFFF; color: #000; }
     
     .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: Arial, "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; table-layout: fixed; background-color: #FFFFFF; border: 1.5px solid #000 !important; }
@@ -161,19 +158,16 @@
     .print-table tr th:first-child, .print-table tr td:first-child { border-left: 1.5px solid #000 !important; }
     .print-table tr th:last-child, .print-table tr td:last-child { border-right: 1.5px solid #000 !important; }
 
-    /* 🌟 大標題：加上 !important 強制鎖定字體 30px 與字距 15px，不受下方縮放干擾 */
     .print-table th.print-title { font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; font-size: 30px !important; letter-spacing: 15px !important; font-weight: 900; background-color: #FFFFFF; border-bottom: 1.5px solid #000 !important; height: 50px; line-height: 50px; }
     
     .print-table tr.month-row-thick th { border-bottom: 1.5px solid #000 !important; }
     .print-table th.thick-right, .print-table td.thick-right { border-right: 1.5px solid #000 !important; }
     
-    /* 強制所有次層表頭不換行 */
     .print-table th { font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; font-weight: bold; white-space: nowrap; }
     .print-table td { font-family: Arial, Helvetica, sans-serif; color: #000; }
     .print-table th.month-label { text-align: center; font-weight: bold; border-right: none !important; }
     .print-table th.month-val { text-align: left; padding-left: 2px; font-weight: bold; border-left: none !important; }
 
-    /* --- 🌟 3 個月排版樣式 (維持原始 15px/18px 比例) --- */
     .print-table.print-3m th { font-size: 15px; }
     .print-table.print-3m td { font-size: 18px; }
     .print-table.print-3m th.month-label { width: 6.5%; font-size: 16px !important; letter-spacing: 0 !important; }
@@ -182,7 +176,6 @@
     .print-table.print-3m .day-col { width: 6.5%; }
     .print-table.print-3m .sys-col, .print-table.print-3m .dia-col, .print-table.print-3m .hr-col { width: 8.9%; }
 
-    /* --- 🌟 4 個月排版樣式 (略小於3個月: 13px/16px，並加入微縮字距確保不換行) --- */
     .print-table.print-4m th { font-size: 13px; letter-spacing: -0.5px; padding: 0 1px; } 
     .print-table.print-4m td { font-size: 16px; }
     .print-table.print-4m th.month-label { width: 4.5%; font-size: 14px !important; letter-spacing: 0 !important; }
@@ -415,14 +408,28 @@
       }
     });
 
-    function confirmDelete(btn, formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime) {
+    // 🌟 Bug Fix: 加入 URL 編碼的 Notes 以進行精準比對刪除
+    function confirmDelete(btn, formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime, encodedNotes) {
       const row = btn.closest('.record-row');
       row.classList.add('highlight-delete');
+      let decodedNotes = decodeURIComponent(encodedNotes);
+      
       setTimeout(() => {
         if (confirm(`${formattedDate} ${formattedTime}${sys}/${dia} mmHg${hr} bpm\n確定刪除？`)) {
-          allRecords = allRecords.filter(r => !(r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr));
+          
+          // 精準尋找具備相同 Notes 的那一筆 (findIndex)
+          let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
+          
+          if (idx !== -1) {
+            allRecords.splice(idx, 1); // 單點刪除
+          } else {
+            // 防呆備用：如果 Notes 有微小差異找不到，至少刪掉時間數值相符的第一筆
+            let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);
+            if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);
+          }
+
           renderList();
-          syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr });
+          syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });
         } else {
           row.classList.remove('highlight-delete');
         }
@@ -596,6 +603,9 @@
           lastDate = formattedDate;
 
           let displayNote = (item.notes || '').replace(/☕ 咖啡/g, '☕').replace(/🏃 運動/g, '🏃').replace(/💊 吃藥/g, '💊').replace(/🤕 頭痛/g, '🤕').replace(/🏥 院所/g, '🏥').replace(/\[報表\]/g, reportSvg);
+          
+          // 🌟 編碼 Notes 字串，安全傳遞給點擊事件
+          let encodedNotes = encodeURIComponent(item.notes || '');
 
           html += `
             <div class="record-row ${isNewDay ? 'new-day' : ''}">
@@ -610,10 +620,10 @@
               <div>${item.heartRate || ''}</div>
               <div class="note-col">${displayNote}</div>
               <div>
-                <button class="delete-btn" onclick="confirmDelete(this, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}')" title="Delete">
+                <button class="delete-btn" onclick="confirmDelete(this, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}', '${encodedNotes}')" title="Delete">
                   <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2-2v2"></path>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                     <line x1="10" y1="11" x2="10" y2="17"></line>
                     <line x1="14" y1="11" x2="14" y2="17"></line>
                   </svg>
