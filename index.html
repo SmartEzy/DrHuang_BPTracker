@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=97">
+  <link rel="manifest" href="manifest.json?v=98">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -79,9 +79,8 @@
     .records-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px 10px 20px; background-color: var(--bg-color); box-sizing: border-box; width: 100%; }
     .chart-controls-left { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
     
-    /* 🌟 圖表按鈕實體化設計 */
     .chart-toggle-btn { 
-      background-color: var(--primary-color); /* 與 Save 按鈕同色系，吸引視覺焦點 */
+      background-color: var(--primary-color); 
       color: #FFFFFF; 
       border: none; 
       padding: 5px 10px; 
@@ -91,14 +90,13 @@
       align-items: center; 
       justify-content: center; 
       border-radius: 8px; 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15); /* 微微浮起的立體感 */
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
       transition: all 0.2s; 
     }
-    /* 🌟 點開圖表後的「凹陷按壓」狀態 */
     .chart-toggle-btn.active { 
       background-color: #E2E8F0; 
       color: var(--primary-dark); 
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); /* 內陰影凹陷感 */
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); 
     }
     
     .legend-wrapper { position: relative; display: flex; flex-direction: column; }
@@ -135,17 +133,12 @@
     .list-header div:nth-child(5) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 8px; }
 
-    @keyframes slideUpBadge {
-      0% { transform: translateY(18px); opacity: 0; background-color: var(--primary-color); color: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
-      20% { opacity: 1; }
-      80% { background-color: var(--primary-color); color: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
-      100% { transform: translateY(0); background-color: #E2E8F0; color: var(--primary-dark); box-shadow: none; }
-    }
-    @keyframes slideDownBadge {
-      0% { transform: translateY(-18px); opacity: 0; background-color: var(--primary-color); color: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
-      20% { opacity: 1; }
-      80% { background-color: var(--primary-color); color: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
-      100% { transform: translateY(0); background-color: #E2E8F0; color: var(--primary-dark); box-shadow: none; }
+    /* 🌟 原地突顯的心跳特效 (Pulse)：捨棄垂直位移，用「放大 + 變色 + 停留」抓眼球 */
+    @keyframes monthPulse {
+      0%   { transform: scale(1); background-color: #E2E8F0; color: var(--primary-dark); box-shadow: none; }
+      30%  { transform: scale(1.25); background-color: var(--primary-color); color: #FFFFFF; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
+      70%  { transform: scale(1.25); background-color: var(--primary-color); color: #FFFFFF; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
+      100% { transform: scale(1); background-color: #E2E8F0; color: var(--primary-dark); box-shadow: none; }
     }
     
     .dynamic-month-badge {
@@ -154,8 +147,11 @@
       display: inline-block; font-weight: 800; line-height: 1.1;
       letter-spacing: 0px; white-space: nowrap; 
     }
-    .dynamic-month-badge.slide-up-anim { animation: slideUpBadge 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
-    .dynamic-month-badge.slide-down-anim { animation: slideDownBadge 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+    
+    /* 動畫時間設為 0.8s，中間包含一點點停頓，讓您在高速滑動時也能看清楚是幾月 */
+    .dynamic-month-badge.pulse-anim {
+      animation: monthPulse 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
     
     .record-row { 
       display: grid; grid-template-columns: 75px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; align-items: center; 
@@ -310,8 +306,9 @@
       
       <div class="capsule-group">
         <button class="capsule-btn" data-val="7days">7 D</button>
-        <button class="capsule-btn active" data-val="30days">1 M</button>
-        <button class="capsule-btn" data-val="90days">3 M</button>
+        <button class="capsule-btn" data-val="30days">1 M</button>
+        <!-- 🌟 預設啟動 3 M (90days) 濾鏡 -->
+        <button class="capsule-btn active" data-val="90days">3 M</button>
         <button class="capsule-btn" data-val="all">All</button>
         <button class="capsule-btn" data-val="report" title="Report Filter">
           <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -366,7 +363,8 @@
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
     let allRecords = [];
-    let currentFilter = '30days'; 
+    // 🌟 將初始化預設值改為 90days (3 M)
+    let currentFilter = '90days'; 
     let bpChartInstance = null; 
 
     function scrollToBottom() {
@@ -378,8 +376,7 @@
       }, 100);
     }
 
-    let lastScrollTop = 0;
-
+    // 🌟 簡化並更新動畫觸發邏輯，移除方向判斷
     function updateDynamicMonth() {
       let stickyPanel = document.querySelector('.sticky-top-panel');
       if (!stickyPanel) return;
@@ -393,10 +390,6 @@
       }
       badge.style.opacity = 1;
 
-      let st = window.pageYOffset || document.documentElement.scrollTop;
-      let scrollDirection = st > lastScrollTop ? 'down' : 'up';
-      lastScrollTop = st <= 0 ? 0 : st;
-      
       let activeMonth = monthMarkers[0].getAttribute('data-month'); 
       
       monthMarkers.forEach(marker => {
@@ -406,17 +399,13 @@
         }
       });
       
+      // 🌟 當月份改變時，觸發 pulse 動畫 (原地縮放+變色)
       if(badge.innerText !== activeMonth) {
         badge.innerText = activeMonth;
         
-        badge.classList.remove('slide-up-anim', 'slide-down-anim');
-        void badge.offsetWidth; 
-        
-        if (scrollDirection === 'down') {
-          badge.classList.add('slide-up-anim');
-        } else {
-          badge.classList.add('slide-down-anim');
-        }
+        badge.classList.remove('pulse-anim');
+        void badge.offsetWidth; // 強制瀏覽器重繪
+        badge.classList.add('pulse-anim');
       }
     }
     
