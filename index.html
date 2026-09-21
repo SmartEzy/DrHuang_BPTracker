@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=93">
+  <link rel="manifest" href="manifest.json?v=94">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -115,7 +115,6 @@
     .list-header div:nth-child(5) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 8px; }
 
-    /* 🌟 動態膠囊升級：加入變化時的彈跳閃爍特效 */
     @keyframes badgePop {
       0% { transform: scale(1); background-color: #E2E8F0; color: var(--primary-dark); }
       50% { transform: scale(1.15); background-color: var(--primary-color); color: #FFFFFF; box-shadow: 0 2px 6px rgba(0,0,0,0.2); }
@@ -137,7 +136,8 @@
       font-variant-numeric: tabular-nums; transition: background-color 0.2s; 
       border-top: 1px solid transparent; 
     }
-    .record-row.new-day { border-top: 1px dashed #CED4DA; }
+    /* 🌟 移除 .new-day 的 dashed 虛線設定，達到純淨無框線視覺效果 */
+    .record-row.new-day { border-top: 1px solid transparent; }
     
     .record-row.highlight-delete { background-color: rgba(211, 47, 47, 0.2); border-radius: 6px; }
     .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
@@ -155,10 +155,10 @@
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
     .high-bp { color: var(--danger-color); font-weight: bold; }
     
-    /* 🌟 取代舊版膠囊，改為全寬水平分隔線，讓換月段落更明確乾淨 */
+    /* 🌟 大幅縮減上下留白：上方 8px，下方 4px */
     .month-divider {
       display: flex; align-items: center; font-weight: 800; font-size: 13px; 
-      color: var(--primary-dark); margin: 20px 0 10px 0;
+      color: var(--primary-dark); margin: 8px 0 4px 0;
     }
     .month-divider::before, .month-divider::after {
       content: ""; flex: 1; border-bottom: 2px solid #CBD5E1; opacity: 0.6;
@@ -215,11 +215,12 @@
         <span class="banner-text">BP Tracker</span>
         
         <div class="header-actions">
-          <button class="header-btn" id="exportPdfBtn3" onclick="generatePDF(3)" title="Print 3 Months">
-            <span class="header-btn-icon">🖨️</span><span class="header-btn-text">3</span>
-          </button>
+          <!-- 🌟 列印 4 與 3 的按鈕對調 -->
           <button class="header-btn" id="exportPdfBtn4" onclick="generatePDF(4)" title="Print 4 Months">
             <span class="header-btn-icon">🖨️</span><span class="header-btn-text">4</span>
+          </button>
+          <button class="header-btn" id="exportPdfBtn3" onclick="generatePDF(3)" title="Print 3 Months">
+            <span class="header-btn-icon">🖨️</span><span class="header-btn-text">3</span>
           </button>
           <button class="header-btn" onclick="window.location.reload()" title="Refresh Time">
             <span class="header-btn-icon">↻</span>
@@ -269,13 +270,11 @@
 
     <div class="records-header">
       <div class="chart-controls-left">
-        <!-- 🌟 圖表開關：預設關閉 (移除 active class) -->
         <button id="toggleChartBtn" class="chart-toggle-btn" title="Toggle Trend Chart">
           <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
           </svg>
         </button>
-        <!-- 🌟 圖例：預設隱藏 -->
         <div id="customLegend" class="legend-wrapper" style="display: none;">
           <div class="custom-legend">
             <div class="legend-item"><div class="legend-bp-bar"></div> BP</div>
@@ -311,7 +310,6 @@
       </div>
     </div>
     
-    <!-- 🌟 圖表區塊：預設隱藏 -->
     <div id="chartContainer" class="chart-container" style="display: none;">
       <canvas id="bpChart"></canvas>
     </div>
@@ -356,12 +354,11 @@
       }, 100);
     }
 
-    // 🌟 動態更新表頭月份，並觸發特效
     function updateDynamicMonth() {
       let stickyPanel = document.querySelector('.sticky-top-panel');
       if (!stickyPanel) return;
       let headerBottom = stickyPanel.getBoundingClientRect().bottom;
-      let monthMarkers = document.querySelectorAll('.month-marker'); // 改抓分隔線
+      let monthMarkers = document.querySelectorAll('.month-marker'); 
       let badge = document.getElementById('dynamicMonthBadge');
       
       if(monthMarkers.length === 0) {
@@ -379,11 +376,10 @@
         }
       });
       
-      // 若月份改變，更新文字並重啟動畫
       if(badge.innerText !== activeMonth) {
         badge.innerText = activeMonth;
         badge.classList.remove('pop-anim');
-        void badge.offsetWidth; // 觸發重繪 (Reflow)，讓動畫可以重複執行
+        void badge.offsetWidth; 
         badge.classList.add('pop-anim');
       }
     }
@@ -658,7 +654,6 @@
           let displayDateText = (lastDate !== formattedDate) ? currDayStr : '';
 
           if (lastMonthStr !== currMonthStr) {
-            // 🌟 核心：輸出全寬度的水平線與月份文字作為視覺分隔
             html += `<div class="month-divider month-marker" data-month="${currMonthStr}">${currMonthStr}</div>`;
             lastMonthStr = currMonthStr;
             lastDate = null; 
