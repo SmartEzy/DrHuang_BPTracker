@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=98">
+  <link rel="manifest" href="manifest.json?v=99">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -133,7 +133,6 @@
     .list-header div:nth-child(5) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 8px; }
 
-    /* 🌟 原地突顯的心跳特效 (Pulse)：捨棄垂直位移，用「放大 + 變色 + 停留」抓眼球 */
     @keyframes monthPulse {
       0%   { transform: scale(1); background-color: #E2E8F0; color: var(--primary-dark); box-shadow: none; }
       30%  { transform: scale(1.25); background-color: var(--primary-color); color: #FFFFFF; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
@@ -148,7 +147,6 @@
       letter-spacing: 0px; white-space: nowrap; 
     }
     
-    /* 動畫時間設為 0.8s，中間包含一點點停頓，讓您在高速滑動時也能看清楚是幾月 */
     .dynamic-month-badge.pulse-anim {
       animation: monthPulse 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
@@ -307,7 +305,6 @@
       <div class="capsule-group">
         <button class="capsule-btn" data-val="7days">7 D</button>
         <button class="capsule-btn" data-val="30days">1 M</button>
-        <!-- 🌟 預設啟動 3 M (90days) 濾鏡 -->
         <button class="capsule-btn active" data-val="90days">3 M</button>
         <button class="capsule-btn" data-val="all">All</button>
         <button class="capsule-btn" data-val="report" title="Report Filter">
@@ -363,7 +360,6 @@
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
     let allRecords = [];
-    // 🌟 將初始化預設值改為 90days (3 M)
     let currentFilter = '90days'; 
     let bpChartInstance = null; 
 
@@ -376,7 +372,8 @@
       }, 100);
     }
 
-    // 🌟 簡化並更新動畫觸發邏輯，移除方向判斷
+    let lastScrollTop = 0;
+
     function updateDynamicMonth() {
       let stickyPanel = document.querySelector('.sticky-top-panel');
       if (!stickyPanel) return;
@@ -399,12 +396,11 @@
         }
       });
       
-      // 🌟 當月份改變時，觸發 pulse 動畫 (原地縮放+變色)
       if(badge.innerText !== activeMonth) {
         badge.innerText = activeMonth;
         
         badge.classList.remove('pulse-anim');
-        void badge.offsetWidth; // 強制瀏覽器重繪
+        void badge.offsetWidth; 
         badge.classList.add('pulse-anim');
       }
     }
@@ -503,7 +499,9 @@
       let decodedNotes = decodeURIComponent(encodedNotes);
       
       setTimeout(() => {
-        if (confirm(`${formattedDate} ${formattedTime}${sys}/${dia} mmHg${hr} bpm\n確定刪除？`)) {
+        // 🌟 修改：刪除單位，加上空格隔開
+        // 格式：日期 時間 收縮壓/舒張壓 心率
+        if (confirm(`${formattedDate} ${formattedTime}${sys}/${dia}${hr}\n確定刪除？`)) {
           
           let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
           
