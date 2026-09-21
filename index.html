@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=95">
+  <link rel="manifest" href="manifest.json?v=96">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -115,14 +115,18 @@
     .list-header div:nth-child(5) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 8px; }
 
-    /* 🌟 新增：雙向滑動過場動畫 (Slide Up / Slide Down) */
+    /* 🌟 升級版雙向滑動過場動畫：距離更長、顏色高亮提示、優雅減速 */
     @keyframes slideUpBadge {
-      0% { transform: translateY(12px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
+      0% { transform: translateY(18px); opacity: 0; background-color: var(--primary-color); color: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+      20% { opacity: 1; }
+      80% { background-color: var(--primary-color); color: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+      100% { transform: translateY(0); background-color: #E2E8F0; color: var(--primary-dark); box-shadow: none; }
     }
     @keyframes slideDownBadge {
-      0% { transform: translateY(-12px); opacity: 0; }
-      100% { transform: translateY(0); opacity: 1; }
+      0% { transform: translateY(-18px); opacity: 0; background-color: var(--primary-color); color: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+      20% { opacity: 1; }
+      80% { background-color: var(--primary-color); color: #FFFFFF; box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
+      100% { transform: translateY(0); background-color: #E2E8F0; color: var(--primary-dark); box-shadow: none; }
     }
     
     .dynamic-month-badge {
@@ -131,12 +135,13 @@
       display: inline-block; font-weight: 800; line-height: 1.1;
       letter-spacing: 0px; white-space: nowrap; 
     }
-    /* 套用動畫的 Class */
+    
+    /* 動畫時間放慢至 0.5s，讓眼睛能舒適捕捉顏色與方向變化 */
     .dynamic-month-badge.slide-up-anim {
-      animation: slideUpBadge 0.3s ease-out;
+      animation: slideUpBadge 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
     .dynamic-month-badge.slide-down-anim {
-      animation: slideDownBadge 0.3s ease-out;
+      animation: slideDownBadge 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
     }
     
     .record-row { 
@@ -360,7 +365,6 @@
       }, 100);
     }
 
-    // 🌟 記錄前一次的捲動位置，用來判斷是往上滑還是往下滑
     let lastScrollTop = 0;
 
     function updateDynamicMonth() {
@@ -376,7 +380,6 @@
       }
       badge.style.opacity = 1;
 
-      // 判斷滑動方向
       let st = window.pageYOffset || document.documentElement.scrollTop;
       let scrollDirection = st > lastScrollTop ? 'down' : 'up';
       lastScrollTop = st <= 0 ? 0 : st;
@@ -390,20 +393,15 @@
         }
       });
       
-      // 🌟 根據滑動方向，套用不同的進場動畫
       if(badge.innerText !== activeMonth) {
         badge.innerText = activeMonth;
         
-        // 先移除所有舊動畫
         badge.classList.remove('slide-up-anim', 'slide-down-anim');
-        void badge.offsetWidth; // 觸發重繪 (Reflow)
+        void badge.offsetWidth; 
         
-        // 往下捲動 (看新資料) -> 由下往上進場
         if (scrollDirection === 'down') {
           badge.classList.add('slide-up-anim');
-        } 
-        // 往上捲動 (看舊資料) -> 由上往下進場
-        else {
+        } else {
           badge.classList.add('slide-down-anim');
         }
       }
