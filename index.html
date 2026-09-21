@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=103">
+  <link rel="manifest" href="manifest.json?v=104">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -227,17 +227,16 @@
     .print-table.print-4m .day-col { width: 4.5%; }
     .print-table.print-4m .sys-col, .print-table.print-4m .dia-col, .print-table.print-4m .hr-col { width: 6.83%; }
 
-    /* 🌟 新增：全螢幕毛玻璃 Loading 遮罩與 Apple 風格轉圈動畫 */
     .loading-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(244, 246, 248, 0.75); /* 半透明底色 */
-      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); /* iOS 毛玻璃效果 */
+      background: rgba(244, 246, 248, 0.75); 
+      backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); 
       z-index: 9999; 
       display: flex; flex-direction: column; justify-content: center; align-items: center; 
       opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
     }
     .loading-overlay.show { 
-      opacity: 1; pointer-events: auto; /* 顯示並阻擋背景點擊 */
+      opacity: 1; pointer-events: auto; 
     }
     .spinner {
       width: 46px; height: 46px;
@@ -258,7 +257,6 @@
 </head>
 <body>
 
-  <!-- 🌟 新增：Loading 遮罩結構 -->
   <div id="loadingOverlay" class="loading-overlay">
     <div class="spinner"></div>
     <div id="loadingText" class="loading-text">請稍候...</div>
@@ -280,7 +278,7 @@
           <button class="header-btn" id="exportPdfBtn3" onclick="generatePDF(3)" title="Print 3 Months">
             <span class="header-btn-icon">🖨️</span><span class="header-btn-text">3</span>
           </button>
-          <!-- 🌟 綁定新的 handleRefresh 函數 -->
+          <!-- 🌟 重新整理按鈕 -->
           <button class="header-btn" onclick="handleRefresh()" title="Refresh Time">
             <span class="header-btn-icon">↻</span>
           </button>
@@ -404,7 +402,6 @@
     let currentFilter = '90days'; 
     let bpChartInstance = null; 
 
-    // 🌟 Loading 顯示與隱藏函式
     function showLoading(text) {
       document.getElementById('loadingText').innerText = text;
       document.getElementById('loadingOverlay').classList.add('show');
@@ -414,12 +411,13 @@
       document.getElementById('loadingOverlay').classList.remove('show');
     }
 
-    // 🌟 專屬的重整邏輯
+    // 🌟 重新整理：加上「感知工程」的 800 毫秒延遲，讓轉圈動畫停留一陣子
     function handleRefresh() {
       showLoading('資料重整中...');
+      // 強制等待 0.8 秒，讓大腦產生「系統有在做事」的安心感
       setTimeout(() => {
         window.location.reload();
-      }, 100);
+      }, 800); 
     }
 
     function scrollToBottom() {
@@ -793,7 +791,6 @@
       btn3.disabled = true; 
       btn4.disabled = true; 
       
-      // 🌟 啟動載入動畫並等待 50 毫秒，讓瀏覽器把畫面繪製出來後再進行繁重的 PDF 處理
       showLoading(`報表產生中...`);
       await new Promise(resolve => setTimeout(resolve, 50));
 
@@ -895,7 +892,7 @@
       } finally {
         btn3.disabled = false;
         btn4.disabled = false;
-        hideLoading(); // 🌟 結束時隱藏載入遮罩
+        hideLoading(); 
       }
     }
 
