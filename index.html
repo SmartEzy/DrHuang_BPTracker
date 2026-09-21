@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=89">
+  <link rel="manifest" href="manifest.json?v=90">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -35,6 +35,7 @@
       color: var(--text-main); 
       margin: 0; 
       padding: 0; 
+      scroll-behavior: smooth; /* 加入整體平滑捲動設定 */
     }
     
     .banner-container { display: flex; align-items: stretch; width: 100%; height: 44px; box-sizing: border-box; }
@@ -324,6 +325,16 @@
     let currentFilter = '30days'; 
     let bpChartInstance = null; 
 
+    // 🌟 新增：畫面捲動置底的輔助功能
+    function scrollToBottom() {
+      setTimeout(() => {
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'smooth'
+        });
+      }, 100);
+    }
+
     const now = new Date();
     document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
@@ -386,6 +397,7 @@
         e.target.closest('.capsule-btn').classList.add('active'); 
         currentFilter = e.target.closest('.capsule-btn').getAttribute('data-val'); 
         renderList();
+        scrollToBottom(); // 🌟 切換濾鏡時也自動捲動到最底下看最新資料
       });
     });
 
@@ -408,7 +420,6 @@
       }
     });
 
-    // 🌟 Bug Fix: 加入 URL 編碼的 Notes 以進行精準比對刪除
     function confirmDelete(btn, formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime, encodedNotes) {
       const row = btn.closest('.record-row');
       row.classList.add('highlight-delete');
@@ -417,13 +428,11 @@
       setTimeout(() => {
         if (confirm(`${formattedDate} ${formattedTime}${sys}/${dia} mmHg${hr} bpm\n確定刪除？`)) {
           
-          // 精準尋找具備相同 Notes 的那一筆 (findIndex)
           let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
           
           if (idx !== -1) {
-            allRecords.splice(idx, 1); // 單點刪除
+            allRecords.splice(idx, 1); 
           } else {
-            // 防呆備用：如果 Notes 有微小差異找不到，至少刪掉時間數值相符的第一筆
             let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);
             if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);
           }
@@ -604,7 +613,6 @@
 
           let displayNote = (item.notes || '').replace(/☕ 咖啡/g, '☕').replace(/🏃 運動/g, '🏃').replace(/💊 吃藥/g, '💊').replace(/🤕 頭痛/g, '🤕').replace(/🏥 院所/g, '🏥').replace(/\[報表\]/g, reportSvg);
           
-          // 🌟 編碼 Notes 字串，安全傳遞給點擊事件
           let encodedNotes = encodeURIComponent(item.notes || '');
 
           html += `
@@ -757,6 +765,7 @@
         try { 
           allRecords = JSON.parse(cachedData); 
           renderList(); 
+          scrollToBottom(); // 🌟 載入快取後自動置底
         } catch(e){} 
       }
       try {
@@ -765,6 +774,7 @@
         allRecords = JSON.parse(rawText); 
         if (!Array.isArray(allRecords)) allRecords = []; 
         renderList(); 
+        scrollToBottom(); // 🌟 網路載入後自動置底
       } catch (err) {
         if (allRecords.length === 0) {
           document.getElementById('recordsList').innerHTML = `<div style="text-align:center; color:red; padding:20px;">[請檢查網路連線]<br>${err.message}</div>`;
@@ -787,6 +797,7 @@
       };
       allRecords.push(payload); 
       renderList(); 
+      scrollToBottom(); // 🌟 儲存新資料後自動捲動到最底下看新增的資料
       document.getElementById('bpForm').reset();
       
       let curr = new Date();
