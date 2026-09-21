@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=100">
+  <link rel="manifest" href="manifest.json?v=101">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -175,20 +175,19 @@
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
     .high-bp { color: var(--danger-color); font-weight: bold; }
     
-    /* 🌟 新版月份分隔線：對齊 Date 欄位，附帶整行底線 */
     .month-divider {
       display: grid;
-      grid-template-columns: 75px 1fr; /* 切齊 Date 欄的 75px 寬度 */
+      grid-template-columns: 75px 1fr; 
       align-items: end; 
       margin: 12px 0 4px 0; 
       padding-bottom: 4px;
-      border-bottom: 1px solid #CBD5E1; /* 橫跨整行的分隔底線 */
+      border-bottom: 1px solid #CBD5E1; 
     }
     .month-divider-text {
       font-weight: 800; 
       font-size: 13px; 
       color: var(--primary-dark); 
-      text-align: center; /* 在 75px 內置中對齊，完美契合上方的動態膠囊 */
+      text-align: center; 
       letter-spacing: 0;
     }
 
@@ -379,6 +378,8 @@
       }, 100);
     }
 
+    let lastScrollTop = 0;
+
     function updateDynamicMonth() {
       let stickyPanel = document.querySelector('.sticky-top-panel');
       if (!stickyPanel) return;
@@ -504,8 +505,8 @@
       let decodedNotes = decodeURIComponent(encodedNotes);
       
       setTimeout(() => {
-        // 🌟 刪除確認訊息大翻新：兩行排版，拔除單位，清爽俐落
-        if (confirm(`${formattedDate}  ${formattedTime}\n${sys}/${dia}${hr}\n\n確定刪除？`)) {
+        // 🌟 核心修復：使用 \u00A0 (不換行空格) 來強制 iOS Safari 保留空格，避免數字被擠在一起
+        if (confirm(`${formattedDate} ${formattedTime}\n${sys}/${dia}\u00A0\u00A0\u00A0\u00A0${hr}\n\n確定刪除？`)) {
           
           let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
           
@@ -681,7 +682,6 @@
           let displayDateText = (lastDate !== formattedDate) ? currDayStr : '';
 
           if (lastMonthStr !== currMonthStr) {
-            // 🌟 完美置左對齊 Date 的分隔線結構
             html += `<div class="month-divider month-marker" data-month="${currMonthStr}">
                        <div class="month-divider-text">${currMonthStr}</div>
                      </div>`;
