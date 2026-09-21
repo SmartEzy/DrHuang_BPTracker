@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=91">
+  <link rel="manifest" href="manifest.json?v=92">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -106,20 +106,20 @@
     
     .chart-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 0 20px 10px 20px; box-sizing: border-box; background-color: var(--bg-color); height: 170px; display: block; }
     
-    /* 🌟 核心修改：align-items: end 確保加入動態標籤後，所有文字底部依然對齊成完美一直線 */
+    /* 🌟 改回垂直置中對齊，讓膠囊與其他標題完美對齊 */
     .list-header { 
       display: grid; grid-template-columns: 75px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; 
       padding-bottom: 4px; border-bottom: 2px solid var(--primary-dark); 
       font-weight: bold; font-size: 14px; color: var(--primary-dark); text-align: center; 
-      align-items: end; 
+      align-items: center; 
     }
     .list-header div:nth-child(5) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 8px; }
 
-    /* 🌟 新增：Date 上方的極小巧動態月份標籤 */
+    /* 🌟 動態膠囊升級：變大、變明顯，直接取代原本 Date 的位置 */
     .dynamic-month-badge {
-      font-size: 9.5px; background: #E2E8F0; color: var(--primary-dark);
-      padding: 2px 5px; border-radius: 6px; margin-bottom: 3px;
+      font-size: 12px; background: #E2E8F0; color: var(--primary-dark);
+      padding: 4px 6px; border-radius: 12px; 
       display: inline-block; font-weight: 800; line-height: 1.1;
       letter-spacing: 0px; white-space: nowrap; transition: opacity 0.2s;
     }
@@ -312,10 +312,9 @@
     
     <div class="container" style="padding-top: 0; padding-bottom: 0px;">
       <div class="list-header">
-        <!-- 🌟 動態跟隨月份的小膠囊完美放置於 Date 上方 -->
-        <div style="display: flex; flex-direction: column; align-items: center;">
+        <!-- 🌟 原本的 Date 拿掉，完美嵌入這顆動態更新的月份膠囊 -->
+        <div style="display: flex; justify-content: center; align-items: center;">
           <span id="dynamicMonthBadge" class="dynamic-month-badge"></span>
-          <span>Date</span>
         </div>
         <div>Time</div>
         <div></div>
@@ -343,7 +342,6 @@
     let currentFilter = '30days'; 
     let bpChartInstance = null; 
 
-    // 🌟 捲動至最底下功能
     function scrollToBottom() {
       setTimeout(() => {
         window.scrollTo({
@@ -353,7 +351,7 @@
       }, 100);
     }
 
-    // 🌟 動態更新表頭月份徽章的功能
+    // 🌟 動態更新表頭月份膠囊
     function updateDynamicMonth() {
       let stickyPanel = document.querySelector('.sticky-top-panel');
       if (!stickyPanel) return;
@@ -371,8 +369,8 @@
       
       monthBoxes.forEach(box => {
         let rect = box.getBoundingClientRect();
-        // 當月份列頂部滑過凍結區下方時，更新標籤文字
-        if (rect.top <= headerBottom + 40) {
+        // 🌟 偵測門檻微調：當下方膠囊往上推，碰到表頭邊界時，瞬間切換文字
+        if (rect.top <= headerBottom + 20) {
           activeMonth = box.innerText;
         }
       });
@@ -382,7 +380,6 @@
       }
     }
     
-    // 綁定捲動事件
     window.addEventListener('scroll', updateDynamicMonth);
 
     const now = new Date();
@@ -429,7 +426,6 @@
         toggleChartBtn.classList.add('active');
         if (bpChartInstance) bpChartInstance.update(); 
       }
-      // 🌟 開關圖表時，因凍結區高度改變，立刻更新月份標籤
       setTimeout(updateDynamicMonth, 50);
     });
 
@@ -693,7 +689,6 @@
         });
       }
       document.getElementById('recordsList').innerHTML = html;
-      // 🌟 確保畫面產生後立刻更新一次月份標籤
       setTimeout(updateDynamicMonth, 50);
     }
 
@@ -819,7 +814,7 @@
         try { 
           allRecords = JSON.parse(cachedData); 
           renderList(); 
-          scrollToBottom(); // 🌟 載入快取後自動置底
+          scrollToBottom(); 
         } catch(e){} 
       }
       try {
@@ -828,7 +823,7 @@
         allRecords = JSON.parse(rawText); 
         if (!Array.isArray(allRecords)) allRecords = []; 
         renderList(); 
-        scrollToBottom(); // 🌟 從網路載入最新資料後自動置底
+        scrollToBottom(); 
       } catch (err) {
         if (allRecords.length === 0) {
           document.getElementById('recordsList').innerHTML = `<div style="text-align:center; color:red; padding:20px;">[請檢查網路連線]<br>${err.message}</div>`;
@@ -851,7 +846,7 @@
       };
       allRecords.push(payload); 
       renderList(); 
-      scrollToBottom(); // 🌟 儲存新資料後自動捲動到最底下看新增的資料
+      scrollToBottom(); 
       
       document.getElementById('bpForm').reset();
       let curr = new Date();
