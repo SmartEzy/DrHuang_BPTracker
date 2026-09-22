@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=130">
+  <link rel="manifest" href="manifest.json?v=128">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -453,7 +453,47 @@
       if (!isDraggingSheet) return;
       currentY = e.clientY;
       const deltaY = currentY - startY;
-      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }     });     window.addEventListener('mouseup', () => {       if (!isDraggingSheet) return;       isDraggingSheet = false;       bottomSheet.classList.remove('dragging');       const deltaY = currentY - startY;       if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }     });      let isDownChart = false;     let startXChart;     let scrollLeftChart;      chartOuter.addEventListener('mousedown', (e) => {       isDownChart = true;       chartOuter.style.cursor = 'grabbing';       startXChart = e.pageX - chartOuter.offsetLeft;       scrollLeftChart = chartOuter.scrollLeft;     });     chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mousemove', (e) => {       if (!isDownChart) return;       e.preventDefault();       const x = e.pageX - chartOuter.offsetLeft;       const walk = (x - startXChart) * 1.5;        chartOuter.scrollLeft = scrollLeftChart - walk;     });      function showLoading(text) {       document.getElementById('loadingText').innerText = text;       document.getElementById('loadingOverlay').classList.add('show');     }          function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }      async function handleRefresh() {       showLoading('資料重整中...');       let curr = new Date();       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
+      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }
+    });
+    window.addEventListener('mouseup', () => {
+      if (!isDraggingSheet) return;
+      isDraggingSheet = false;
+      bottomSheet.classList.remove('dragging');
+      const deltaY = currentY - startY;
+      if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }
+    });
+
+    let isDownChart = false;
+    let startXChart;
+    let scrollLeftChart;
+
+    chartOuter.addEventListener('mousedown', (e) => {
+      isDownChart = true;
+      chartOuter.style.cursor = 'grabbing';
+      startXChart = e.pageX - chartOuter.offsetLeft;
+      scrollLeftChart = chartOuter.scrollLeft;
+    });
+    chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
+    chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
+    chartOuter.addEventListener('mousemove', (e) => {
+      if (!isDownChart) return;
+      e.preventDefault();
+      const x = e.pageX - chartOuter.offsetLeft;
+      const walk = (x - startXChart) * 1.5; 
+      chartOuter.scrollLeft = scrollLeftChart - walk;
+    });
+
+    function showLoading(text) {
+      document.getElementById('loadingText').innerText = text;
+      document.getElementById('loadingOverlay').classList.add('show');
+    }
+    
+    function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+
+    async function handleRefresh() {
+      showLoading('資料重整中...');
+      let curr = new Date();
+      document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
       checkMorningTag();
       try {
@@ -470,7 +510,29 @@
     window.addEventListener('resize', updateStickyOffset);
 
     const now = new Date();
-    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;      function checkMorningTag() {       const timeVal = document.getElementById('time').value;       if (!timeVal) return;       const h = parseInt(timeVal.split(':')[0], 10);       const notesInput = document.getElementById('notes');       if (h >= 4 && h < 10) {         if (!notesInput.value.includes('[報表]')) {           if (notesInput.value.trim() !== '') notesInput.value += ', ';           notesInput.value += '[報表]';         }       }     }          document.getElementById('time').addEventListener('change', checkMorningTag);     checkMorningTag();      function addQuickTag(tagText) {       const notesInput = document.getElementById('notes');       if (notesInput.value.trim() === '') { notesInput.value = tagText; }        else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
+    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    function checkMorningTag() {
+      const timeVal = document.getElementById('time').value;
+      if (!timeVal) return;
+      const h = parseInt(timeVal.split(':')[0], 10);
+      const notesInput = document.getElementById('notes');
+      if (h >= 4 && h < 10) {
+        if (!notesInput.value.includes('[報表]')) {
+          if (notesInput.value.trim() !== '') notesInput.value += ', ';
+          notesInput.value += '[報表]';
+        }
+      }
+    }
+    
+    document.getElementById('time').addEventListener('change', checkMorningTag);
+    checkMorningTag();
+
+    function addQuickTag(tagText) {
+      const notesInput = document.getElementById('notes');
+      if (notesInput.value.trim() === '') { notesInput.value = tagText; } 
+      else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
     }
 
     document.querySelectorAll('.capsule-btn').forEach(btn => {
@@ -502,73 +564,96 @@
       const row = btn.closest('.record-row'); row.classList.add('highlight-delete');
       let decodedNotes = decodeURIComponent(encodedNotes);
       setTimeout(() => {
-        if (confirm(`${formattedDate}${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {           let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes \vert{}\vert{} '') === decodedNotes);           if (idx !== -1) { allRecords.splice(idx, 1); }            else {             let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);             if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);           }           renderList();           syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });         } else { row.classList.remove('highlight-delete'); }       }, 300);     }      function getLogicalDate(dateStr, timeStr) {       if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };       let d = new Date(String(dateStr).replace(/-/g, '/'));       if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };       if (timeStr) {         let parts = String(timeStr).split(':');         if (parts.length >= 2) {           let h = parseInt(parts[0], 10);           if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); }         }       }       let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');       return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
+        if (confirm(`${formattedDate} ${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {
+          let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
+          if (idx !== -1) { allRecords.splice(idx, 1); } 
+          else {
+            let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);
+            if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);
+          }
+          renderList();
+          syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });
+        } else { row.classList.remove('highlight-delete'); }
+      }, 300);
+    }
+
+    function getLogicalDate(dateStr, timeStr) {
+      if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };
+      let d = new Date(dateStr.replace(/-/g, '/'));
+      if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };
+      if (timeStr) {
+        let parts = timeStr.split(':');
+        if (parts.length >= 2) {
+          let h = parseInt(parts[0], 10);
+          if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); }
+        }
+      }
+      let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');
+      return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
     }
 
     function updateChart(displayData) {
-      try {
-        const canvas = document.getElementById('bpChart');
-        if (!canvas) return; 
-        
-        const inner = document.getElementById('chartInnerContainer');
-        const requiredWidth = Math.max(500, displayData.length * 20 + 40);
-        inner.style.width = requiredWidth + 'px'; inner.style.minWidth = requiredWidth + 'px'; 
-        const ctx = canvas.getContext('2d');
-        
-        let lastMonth = null;
-        const labels = displayData.map((d, index) => { 
-          let p = String(d.date || '').split('/'); 
-          if (p.length === 3) {
-            let currentMonth = parseInt(p[1], 10); 
-            if (index === 0 || currentMonth !== lastMonth) { lastMonth = currentMonth; return currentMonth.toString(); } else { return ''; }
-          }
-          return d.date || ''; 
-        });
+      const canvas = document.getElementById('bpChart');
+      if (!canvas) return; 
+      
+      const inner = document.getElementById('chartInnerContainer');
+      const requiredWidth = Math.max(500, displayData.length * 20 + 40);
+      inner.style.width = requiredWidth + 'px'; inner.style.minWidth = requiredWidth + 'px'; 
+      const ctx = canvas.getContext('2d');
+      
+      let lastMonth = null;
+      const labels = displayData.map((d, index) => { 
+        let p = d.date.split('/'); 
+        if (p.length === 3) {
+          let currentMonth = parseInt(p[1], 10); 
+          if (index === 0 || currentMonth !== lastMonth) { lastMonth = currentMonth; return currentMonth.toString(); } else { return ''; }
+        }
+        return d.date; 
+      });
 
-        const fullDatesForTooltip = displayData.map(d => { let p = String(d.date || '').split('/'); return p.length === 3 ? `${p[1]}/${p[2]}` : (d.date || ''); });
-        const times = displayData.map(d => { let t = d.time ? String(d.time).match(/(\d+):(\d+)/) : null; return t ? `${t[1].padStart(2, '0')}:${t[2].padStart(2, '0')}` : (d.time || ''); });
-        const bpRangeData = displayData.map(d => [parseInt(d.diastolic), parseInt(d.systolic)]);
-        const hrData = displayData.map(d => parseInt(d.heartRate));
-        const limit130Data = displayData.map(() => 130);
+      const fullDatesForTooltip = displayData.map(d => { let p = d.date.split('/'); return p.length === 3 ? `${p[1]}/${p[2]}` : d.date; });
+      const times = displayData.map(d => { let t = d.time ? String(d.time).match(/(\d+):(\d+)/) : null; return t ? `${t[1].padStart(2, '0')}:${t[2].padStart(2, '0')}` : (d.time || ''); });
+      const bpRangeData = displayData.map(d => [parseInt(d.diastolic), parseInt(d.systolic)]);
+      const hrData = displayData.map(d => parseInt(d.heartRate));
+      const limit130Data = displayData.map(() => 130);
 
-        if (bpChartInstance) {
-          bpChartInstance.resize(); bpChartInstance.data.labels = labels; bpChartInstance.data.times = times; bpChartInstance.data.fullDates = fullDatesForTooltip; 
-          bpChartInstance.data.datasets[0].data = bpRangeData; bpChartInstance.data.datasets[1].data = hrData; bpChartInstance.data.datasets[2].data = limit130Data; 
-          bpChartInstance.update();
-        } else {
-          bpChartInstance = new Chart(ctx, {
-            data: {
-              labels: labels, times: times, fullDates: fullDatesForTooltip, 
-              datasets: [
-                { type: 'bar', label: 'BP Range', data: bpRangeData, backgroundColor: '#7895B2', borderRadius: 100, barThickness: 6, order: 2 },
-                { type: 'line', label: 'HR', data: hrData, borderColor: '#CBD5E1', borderWidth: 1.5, tension: 0, pointRadius: 1.5, order: 3 },
-                { type: 'line', label: '130 Limit', data: limit130Data, borderColor: 'rgba(211, 47, 47, 0.4)', borderWidth: 1, borderDash: [4, 4], pointRadius: 0, fill: false, order: 1 }
-              ]
-            },
-            options: {
-              responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
-              plugins: { 
-                legend: { display: false },
-                tooltip: {
-                  yAlign: 'bottom', displayColors: false,
-                  callbacks: {
-                    title: function(items) { 
-                      let dataIndex = items[0].dataIndex; let fullDateStr = items[0].chart.data.fullDates[dataIndex]; let timeStr = items[0].chart.data.times[dataIndex];
-                      return fullDateStr + (timeStr ? ' ' + timeStr : ''); 
-                    },
-                    label: function(ctx) { 
-                      if (ctx.datasetIndex === 0) {
-                        let hrVal = ctx.chart.data.datasets[1].data[ctx.dataIndex]; return ctx.raw[1] + '/' + ctx.raw[0] + (hrVal ? '   ' + hrVal : ''); 
-                      } return null; 
-                    }
+      if (bpChartInstance) {
+        bpChartInstance.resize(); bpChartInstance.data.labels = labels; bpChartInstance.data.times = times; bpChartInstance.data.fullDates = fullDatesForTooltip; 
+        bpChartInstance.data.datasets[0].data = bpRangeData; bpChartInstance.data.datasets[1].data = hrData; bpChartInstance.data.datasets[2].data = limit130Data; 
+        bpChartInstance.update();
+      } else {
+        bpChartInstance = new Chart(ctx, {
+          data: {
+            labels: labels, times: times, fullDates: fullDatesForTooltip, 
+            datasets: [
+              { type: 'bar', label: 'BP Range', data: bpRangeData, backgroundColor: '#7895B2', borderRadius: 100, barThickness: 6, order: 2 },
+              { type: 'line', label: 'HR', data: hrData, borderColor: '#CBD5E1', borderWidth: 1.5, tension: 0, pointRadius: 1.5, order: 3 },
+              { type: 'line', label: '130 Limit', data: limit130Data, borderColor: 'rgba(211, 47, 47, 0.4)', borderWidth: 1, borderDash: [4, 4], pointRadius: 0, fill: false, order: 1 }
+            ]
+          },
+          options: {
+            responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+            plugins: { 
+              legend: { display: false },
+              tooltip: {
+                yAlign: 'bottom', displayColors: false,
+                callbacks: {
+                  title: function(items) { 
+                    let dataIndex = items[0].dataIndex; let fullDateStr = items[0].chart.data.fullDates[dataIndex]; let timeStr = items[0].chart.data.times[dataIndex];
+                    return fullDateStr + (timeStr ? ' ' + timeStr : ''); 
+                  },
+                  label: function(ctx) { 
+                    if (ctx.datasetIndex === 0) {
+                      let hrVal = ctx.chart.data.datasets[1].data[ctx.dataIndex]; return ctx.raw[1] + '/' + ctx.raw[0] + (hrVal ? '   ' + hrVal : ''); 
+                    } return null; 
                   }
                 }
-              },
-              scales: { x: { grid: { display: false }, ticks: { autoSkip: false, maxRotation: 0, font: { size: 11, weight: 'bold' }, color: '#8FA3B8' } }, y: { grid: { color: '#E2E8F0' }, beginAtZero: false, suggestedMin: 40, suggestedMax: 160 } }
-            }
-          });
-        }
-      } catch (err) { console.error("Chart Rendering Error:", err); }
+              }
+            },
+            scales: { x: { grid: { display: false }, ticks: { autoSkip: false, maxRotation: 0, font: { size: 11, weight: 'bold' }, color: '#8FA3B8' } }, y: { grid: { color: '#E2E8F0' }, beginAtZero: false, suggestedMin: 40, suggestedMax: 160 } }
+          }
+        });
+      }
     }
 
     function renderList() {
@@ -576,7 +661,7 @@
         localStorage.setItem('bpCacheRecords', JSON.stringify(allRecords));
         let displayData = [...allRecords].filter(r => r && r.date && String(r.date).trim() !== '');
         
-        if (currentFilter === 'report') { displayData = displayData.filter(r => r.notes && String(r.notes).includes('[報表]')); } 
+        if (currentFilter === 'report') { displayData = displayData.filter(r => r.notes && r.notes.includes('[報表]')); } 
         else if (currentFilter === 'morning') {
           displayData = displayData.filter(r => {
             if (!r.time) return false;
@@ -595,6 +680,7 @@
           return (isNaN(dtA.getTime()) ? 0 : dtA.getTime()) - (isNaN(dtB.getTime()) ? 0 : dtB.getTime()); 
         });
 
+        updateChart(displayData);
         let html = '';
 
         if (displayData.length === 0) { html = `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
@@ -644,19 +730,12 @@
           if (!isFirstSection) { html += `</div>`; }
         }
         document.getElementById('recordsList').innerHTML = html;
-        
-        // 🌟 確保圖表繪製安全執行，不再成為清單卡死的兇手
-        updateChart(displayData);
         setTimeout(updateStickyOffset, 50);
-
-      } catch (error) { 
-        console.error("Render Error:", error); 
-        document.getElementById('recordsList').innerHTML = `<div style="text-align:center; padding: 20px; color: red;">資料渲染錯誤，請重新整理。<br>${error.message}</div>`;
-      }
+      } catch (error) { console.error("Render Error:", error); }
     }
 
     async function generatePDF(monthCount) {
-      let reportData = [...allRecords].filter(r => r && r.date && String(r.notes || '').includes('[報表]')).sort((a, b) => new Date(String(a.date).replace(/-/g, '/')).getTime() - new Date(String(b.date).replace(/-/g, '/')).getTime());
+      let reportData = [...allRecords].filter(r => r && r.date && r.notes && r.notes.includes('[報表]')).sort((a, b) => new Date(a.date.replace(/-/g, '/')).getTime() - new Date(b.date.replace(/-/g, '/')).getTime());
       if (reportData.length === 0) { alert("目前沒有包含「報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return; }
       const btn3 = document.getElementById('exportPdfBtn3'); const btn4 = document.getElementById('exportPdfBtn4');
       btn3.disabled = true; btn4.disabled = true; 
@@ -732,32 +811,41 @@
 
         let tableHtml = `<thead>`;
         
-        tableHtml += `<tr><th colspan="${monthCount * 4}" style="position: relative; height: 50px; padding: 0; border-bottom: 1.5px solid #000 !important; background-color: #FFFFFF; overflow: hidden;">`;
+        // 🌟 極致網格美學表頭 (列高縮減為 54px 防止裁切)
+        tableHtml += `<tr><th colspan="${monthCount * 4}" style="position: relative; height: 54px; padding: 0; border-bottom: 1.5px solid #000 !important; background-color: #FFFFFF; overflow: hidden;">`;
         
-        tableHtml += `<div style="position: absolute; left: 16px; bottom: 8px; font-size: 28px; letter-spacing: 12px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; text-align: left; line-height: 1;">血壓記錄表</div>`;
+        // 標題靠左下對齊
+        tableHtml += `<div style="position: absolute; left: 16px; bottom: 8px; font-size: 26px; letter-spacing: 12px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; text-align: left; line-height: 1;">血壓記錄表</div>`;
 
+        // 隱形無框線對齊表格，保證 Baseline 完美對齊
         tableHtml += `<div style="position: absolute; right: 12px; bottom: 8px; font-family: Arial, sans-serif;">`;
         tableHtml += `<table style="border: none !important; border-collapse: collapse; margin: 0; padding: 0; background-color: transparent;">`;
         
-        tableHtml += `<tr style="height: 12px;">`;
-        tableHtml += `<td style="border: none !important; padding: 0 8px; vertical-align: bottom; text-align: left; color: #999999; font-size: 10px; font-weight: bold; line-height: 1;">MEAN</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 8px; vertical-align: bottom; text-align: left; color: #999999; font-size: 10px; font-weight: bold; line-height: 1;">MAX</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 8px; vertical-align: bottom; text-align: left; color: #999999; font-size: 10px; font-weight: bold; line-height: 1;">MIN</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 6px; vertical-align: middle;" rowspan="2"><div style="width: 1.5px; height: 30px; background-color: #E2E8F0;"></div></td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 8px; vertical-align: bottom; text-align: left; color: #999999; font-size: 10px; font-weight: bold; line-height: 1;">Normal</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 8px; vertical-align: bottom; text-align: left; color: #999999; font-size: 10px; font-weight: bold; line-height: 1;">Elevated</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 8px; vertical-align: bottom; text-align: left; color: #999999; font-size: 10px; font-weight: bold; line-height: 1;">Stage 1</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 8px; vertical-align: bottom; text-align: left; color: #999999; font-size: 10px; font-weight: bold; line-height: 1;">Stage 2</td>`;
+        // 第一列：淺灰 Label (純灰 #999999, size 9px, 靠左)
+        const renderLabel = (text) => `<td style="border: none !important; padding: 0 0 4px 16px; vertical-align: bottom; text-align: left; color: #999999; font-size: 9px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif;">${text}</td>`;
+        
+        tableHtml += `<tr>`;
+        tableHtml += renderLabel('MEAN');
+        tableHtml += renderLabel('MAX');
+        tableHtml += renderLabel('MIN');
+        tableHtml += `<td style="border: none !important; padding: 0 0 0 14px;" rowspan="2"><div style="width: 1.5px; height: 26px; background-color: #E2E8F0;"></div></td>`;
+        tableHtml += renderLabel('Normal');
+        tableHtml += renderLabel('Elevated');
+        tableHtml += renderLabel('Stage 1');
+        tableHtml += renderLabel('Stage 2');
         tableHtml += `</tr>`;
         
-        tableHtml += `<tr style="height: 24px;">`;
-        tableHtml += `<td style="border: none !important; padding: 2px 8px 0 8px; vertical-align: bottom; text-align: left; color: #111111; font-size: 24px; font-weight: 900; line-height: 1;">${meanSys}/${meanDia}</td>`;
-        tableHtml += `<td style="border: none !important; padding: 2px 8px 0 8px; vertical-align: bottom; text-align: left; color: #666666; font-size: 17px; font-weight: 900; line-height: 1;">${maxStr}</td>`;
-        tableHtml += `<td style="border: none !important; padding: 2px 8px 0 8px; vertical-align: bottom; text-align: left; color: #666666; font-size: 17px; font-weight: 900; line-height: 1;">${minStr}</td>`;
-        tableHtml += `<td style="border: none !important; padding: 2px 8px 0 8px; vertical-align: bottom; text-align: left; color: #111111; font-size: 17px; font-weight: 900; line-height: 1;">${pctNormal}%</td>`;
-        tableHtml += `<td style="border: none !important; padding: 2px 8px 0 8px; vertical-align: bottom; text-align: left; color: #111111; font-size: 17px; font-weight: 900; line-height: 1;">${pctElevated}%</td>`;
-        tableHtml += `<td style="border: none !important; padding: 2px 8px 0 8px; vertical-align: bottom; text-align: left; color: #111111; font-size: 17px; font-weight: 900; line-height: 1;">${pctStage1}%</td>`;
-        tableHtml += `<td style="border: none !important; padding: 2px 8px 0 8px; vertical-align: bottom; text-align: left; color: #111111; font-size: 17px; font-weight: 900; line-height: 1;">${pctStage2}%</td>`;
+        // 第二列：數值 (底部對齊)
+        const renderVal = (text, size, color) => `<td style="border: none !important; padding: 0 0 0 16px; vertical-align: bottom; text-align: left; color: ${color}; font-size: ${size}; font-weight: 900; line-height: 0.85; font-family: Arial, sans-serif;">${text}</td>`;
+        
+        tableHtml += `<tr>`;
+        tableHtml += renderVal(`${meanSys}/${meanDia}`, '22px', '#111111'); // MEAN最大，黑字
+        tableHtml += renderVal(maxStr, '15px', '#666666'); // MAX 深灰
+        tableHtml += renderVal(minStr, '15px', '#666666'); // MIN 深灰
+        tableHtml += renderVal(`${pctNormal}%`, '15px', '#111111'); // 四分類 黑字
+        tableHtml += renderVal(`${pctElevated}%`, '15px', '#111111');
+        tableHtml += renderVal(`${pctStage1}%`, '15px', '#111111');
+        tableHtml += renderVal(`${pctStage2}%`, '15px', '#111111');
         tableHtml += `</tr>`;
         
         tableHtml += `</table></div>`;
