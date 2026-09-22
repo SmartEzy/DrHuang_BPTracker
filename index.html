@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=125">
+  <link rel="manifest" href="manifest.json?v=126">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -204,6 +204,7 @@
       padding: 0 20px 0 20px; box-sizing: border-box; 
     }
 
+    /* 🌟 PDF 表格專用樣式 */
     #printArea { display: none; width: 210mm; height: 297mm; box-sizing: border-box; padding: 16mm 12mm 5mm 12mm; background-color: #FFFFFF; color: #000; }
     .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: Arial, sans-serif; table-layout: fixed; background-color: #FFFFFF; border: 1.5px solid #000 !important; }
     .print-table th, .print-table td { border: 0.5px solid #000 !important; padding: 0; height: 28.5px; line-height: 28.5px; box-sizing: border-box; overflow: hidden; }
@@ -441,12 +442,7 @@
       isDraggingSheet = false;
       bottomSheet.classList.remove('dragging');
       const deltaY = currentY - startY;
-      
-      if (deltaY > 60) {
-        closeSheet();
-      } else {
-        bottomSheet.style.transform = ''; 
-      }
+      if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }
     });
     
     dragArea.addEventListener('mousedown', (e) => {
@@ -458,20 +454,14 @@
       if (!isDraggingSheet) return;
       currentY = e.clientY;
       const deltaY = currentY - startY;
-      if (deltaY > 0) {
-        bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`;
-      }
+      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }
     });
     window.addEventListener('mouseup', () => {
       if (!isDraggingSheet) return;
       isDraggingSheet = false;
       bottomSheet.classList.remove('dragging');
       const deltaY = currentY - startY;
-      if (deltaY > 60) {
-        closeSheet();
-      } else {
-        bottomSheet.style.transform = ''; 
-      }
+      if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }
     });
 
     let isDownChart = false;
@@ -499,39 +489,24 @@
       document.getElementById('loadingOverlay').classList.add('show');
     }
     
-    function hideLoading() {
-      document.getElementById('loadingOverlay').classList.remove('show');
-    }
+    function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
 
     async function handleRefresh() {
       showLoading('資料重整中...');
-      
       let curr = new Date();
       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
       checkMorningTag();
-
       try {
-        await Promise.all([
-          new Promise(resolve => setTimeout(resolve, 800)),
-          loadData() 
-        ]);
-      } catch (err) {
-        console.error("Refresh error", err);
-      } finally {
-        hideLoading();
-      }
+        await Promise.all([ new Promise(resolve => setTimeout(resolve, 800)), loadData() ]);
+      } catch (err) { console.error("Refresh error", err); } finally { hideLoading(); }
     }
 
-    function scrollToBottom() {
-      setTimeout(() => { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }, 100);
-    }
+    function scrollToBottom() { setTimeout(() => { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }, 100); }
 
     function updateStickyOffset() {
       const topPanel = document.querySelector('.sticky-top-panel');
-      if (topPanel) {
-        document.documentElement.style.setProperty('--sticky-offset', topPanel.offsetHeight + 'px');
-      }
+      if (topPanel) { document.documentElement.style.setProperty('--sticky-offset', topPanel.offsetHeight + 'px'); }
     }
     window.addEventListener('resize', updateStickyOffset);
 
@@ -557,11 +532,8 @@
 
     function addQuickTag(tagText) {
       const notesInput = document.getElementById('notes');
-      if (notesInput.value.trim() === '') {
-        notesInput.value = tagText;
-      } else if (!notesInput.value.includes(tagText)) {
-        notesInput.value += `, ${tagText}`;
-      }
+      if (notesInput.value.trim() === '') { notesInput.value = tagText; } 
+      else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
     }
 
     document.querySelectorAll('.capsule-btn').forEach(btn => {
@@ -569,8 +541,7 @@
         document.querySelectorAll('.capsule-btn').forEach(b => b.classList.remove('active'));
         e.target.closest('.capsule-btn').classList.add('active'); 
         currentFilter = e.target.closest('.capsule-btn').getAttribute('data-val'); 
-        renderList();
-        scrollToBottom(); 
+        renderList(); scrollToBottom(); 
       });
     });
 
@@ -578,26 +549,21 @@
       fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
       .catch(err => {
         let queue = JSON.parse(localStorage.getItem('bpSyncQueue') || '[]'); 
-        queue.push(payload); 
-        localStorage.setItem('bpSyncQueue', JSON.stringify(queue));
+        queue.push(payload); localStorage.setItem('bpSyncQueue', JSON.stringify(queue));
       });
     }
 
     window.addEventListener('online', () => {
       let queue = JSON.parse(localStorage.getItem('bpSyncQueue') || '[]');
       if (queue.length > 0) {
-        queue.forEach(payload => { 
-          fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }); 
-        });
+        queue.forEach(payload => { fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }); });
         localStorage.removeItem('bpSyncQueue');
       }
     });
 
     function confirmDelete(btn, formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime, encodedNotes) {
-      const row = btn.closest('.record-row');
-      row.classList.add('highlight-delete');
+      const row = btn.closest('.record-row'); row.classList.add('highlight-delete');
       let decodedNotes = decodeURIComponent(encodedNotes);
-      
       setTimeout(() => {
         if (confirm(`${formattedDate} ${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {
           let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
@@ -608,9 +574,7 @@
           }
           renderList();
           syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });
-        } else {
-          row.classList.remove('highlight-delete');
-        }
+        } else { row.classList.remove('highlight-delete'); }
       }, 300);
     }
 
@@ -635,9 +599,7 @@
       
       const inner = document.getElementById('chartInnerContainer');
       const requiredWidth = Math.max(500, displayData.length * 20 + 40);
-      inner.style.width = requiredWidth + 'px';
-      inner.style.minWidth = requiredWidth + 'px'; 
-      
+      inner.style.width = requiredWidth + 'px'; inner.style.minWidth = requiredWidth + 'px'; 
       const ctx = canvas.getContext('2d');
       
       let lastMonth = null;
@@ -645,32 +607,20 @@
         let p = d.date.split('/'); 
         if (p.length === 3) {
           let currentMonth = parseInt(p[1], 10); 
-          if (index === 0 || currentMonth !== lastMonth) {
-            lastMonth = currentMonth; return currentMonth.toString(); 
-          } else { return ''; }
+          if (index === 0 || currentMonth !== lastMonth) { lastMonth = currentMonth; return currentMonth.toString(); } else { return ''; }
         }
         return d.date; 
       });
 
-      const fullDatesForTooltip = displayData.map(d => {
-        let p = d.date.split('/'); return p.length === 3 ? `${p[1]}/${p[2]}` : d.date; 
-      });
-
-      const times = displayData.map(d => { 
-        let t = d.time ? String(d.time).match(/(\d+):(\d+)/) : null; return t ? `${t[1].padStart(2, '0')}:${t[2].padStart(2, '0')}` : (d.time || ''); 
-      });
+      const fullDatesForTooltip = displayData.map(d => { let p = d.date.split('/'); return p.length === 3 ? `${p[1]}/${p[2]}` : d.date; });
+      const times = displayData.map(d => { let t = d.time ? String(d.time).match(/(\d+):(\d+)/) : null; return t ? `${t[1].padStart(2, '0')}:${t[2].padStart(2, '0')}` : (d.time || ''); });
       const bpRangeData = displayData.map(d => [parseInt(d.diastolic), parseInt(d.systolic)]);
       const hrData = displayData.map(d => parseInt(d.heartRate));
       const limit130Data = displayData.map(() => 130);
 
       if (bpChartInstance) {
-        bpChartInstance.resize(); 
-        bpChartInstance.data.labels = labels; 
-        bpChartInstance.data.times = times; 
-        bpChartInstance.data.fullDates = fullDatesForTooltip; 
-        bpChartInstance.data.datasets[0].data = bpRangeData;
-        bpChartInstance.data.datasets[1].data = hrData; 
-        bpChartInstance.data.datasets[2].data = limit130Data; 
+        bpChartInstance.resize(); bpChartInstance.data.labels = labels; bpChartInstance.data.times = times; bpChartInstance.data.fullDates = fullDatesForTooltip; 
+        bpChartInstance.data.datasets[0].data = bpRangeData; bpChartInstance.data.datasets[1].data = hrData; bpChartInstance.data.datasets[2].data = limit130Data; 
         bpChartInstance.update();
       } else {
         bpChartInstance = new Chart(ctx, {
@@ -690,25 +640,18 @@
                 yAlign: 'bottom', displayColors: false,
                 callbacks: {
                   title: function(items) { 
-                    let dataIndex = items[0].dataIndex;
-                    let fullDateStr = items[0].chart.data.fullDates[dataIndex];
-                    let timeStr = items[0].chart.data.times[dataIndex];
+                    let dataIndex = items[0].dataIndex; let fullDateStr = items[0].chart.data.fullDates[dataIndex]; let timeStr = items[0].chart.data.times[dataIndex];
                     return fullDateStr + (timeStr ? ' ' + timeStr : ''); 
                   },
                   label: function(ctx) { 
                     if (ctx.datasetIndex === 0) {
-                      let hrVal = ctx.chart.data.datasets[1].data[ctx.dataIndex];
-                      return ctx.raw[1] + '/' + ctx.raw[0] + (hrVal ? '   ' + hrVal : ''); 
-                    }
-                    return null; 
+                      let hrVal = ctx.chart.data.datasets[1].data[ctx.dataIndex]; return ctx.raw[1] + '/' + ctx.raw[0] + (hrVal ? '   ' + hrVal : ''); 
+                    } return null; 
                   }
                 }
               }
             },
-            scales: { 
-              x: { grid: { display: false }, ticks: { autoSkip: false, maxRotation: 0, font: { size: 11, weight: 'bold' }, color: '#8FA3B8' } }, 
-              y: { grid: { color: '#E2E8F0' }, beginAtZero: false, suggestedMin: 40, suggestedMax: 160 } 
-            }
+            scales: { x: { grid: { display: false }, ticks: { autoSkip: false, maxRotation: 0, font: { size: 11, weight: 'bold' }, color: '#8FA3B8' } }, y: { grid: { color: '#E2E8F0' }, beginAtZero: false, suggestedMin: 40, suggestedMax: 160 } }
           }
         });
       }
@@ -741,21 +684,15 @@
         updateChart(displayData);
         let html = '';
 
-        if (displayData.length === 0) {
-          html = `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
+        if (displayData.length === 0) { html = `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
         } else {
-          let lastDate = null; 
-          let lastMonthStr = null;
-          let isFirstSection = true;
+          let lastDate = null; let lastMonthStr = null; let isFirstSection = true;
           const reportSvg = `<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color:#495057; display:inline-block;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`;
 
           displayData.forEach(item => {
             let rawDate = item.date ? String(item.date) : ''; 
             let logical = getLogicalDate(rawDate, item.time);
-            let currMonthStr = logical.logicalMonthStr;
-            let currDayStr = logical.logicalDayStr;
-            let formattedDate = logical.logicalStr;
-            
+            let currMonthStr = logical.logicalMonthStr; let currDayStr = logical.logicalDayStr; let formattedDate = logical.logicalStr;
             let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
             let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
             let sysHtml = (item.systolic >= 130) ? `<span class="high-bp">${item.systolic}</span>` : (item.systolic || '');
@@ -763,9 +700,7 @@
             let sunSvgHtml = '';
             if (timeParts) {
               let h = parseInt(timeParts[1], 10);
-              if (h >= 4 && h < 10) { 
-                sunSvgHtml = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="#495057" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
-              }
+              if (h >= 4 && h < 10) { sunSvgHtml = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="#495057" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`; }
             }
 
             let isNewDay = (lastDate !== null && lastDate !== formattedDate);
@@ -776,7 +711,6 @@
               html += `<div class="month-section"><div class="month-divider"><div class="month-divider-text">${currMonthStr}</div></div>`;
               lastMonthStr = currMonthStr; lastDate = null; isNewDay = false; displayDateText = currDayStr; isFirstSection = false;
             }
-            
             lastDate = formattedDate;
 
             let displayNote = (item.notes || '').replace(/☕ 咖啡/g, '☕').replace(/🏃 運動/g, '🏃').replace(/💊 吃藥/g, '💊').replace(/🤕 頭痛/g, '🤕').replace(/🏥 院所/g, '🏥').replace(/\[報表\]/g, reportSvg);
@@ -789,10 +723,7 @@
                 <div>${item.heartRate || ''}</div><div class="note-col">${displayNote}</div>
                 <div>
                   <button class="delete-btn" onclick="confirmDelete(this, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}', '${encodedNotes}')" title="Delete">
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                      <polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                      <line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>
-                    </svg>
+                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                   </button>
                 </div>
               </div>`;
@@ -845,49 +776,91 @@
           }
         }
 
-        let sumSys = 0, sumDia = 0, sumHr = 0, countSys = 0, countDia = 0, countHr = 0, maxSys = 0, maxRecord = null, sbpUnder130Count = 0;
+        // 🌟 重新設計的核心運算邏輯：包含 AHA 分級與 MAX/MIN 極值
+        let sumSys = 0, sumDia = 0, countSys = 0, countDia = 0;
+        let maxSys = -Infinity, minSys = Infinity;
+        let maxRecord = null, minRecord = null;
+        let countNormal = 0, countElevated = 0, countStage1 = 0, countStage2 = 0;
+
         printedRecords.forEach(r => {
-            let sys = parseInt(r.systolic); let dia = parseInt(r.diastolic); let hr = parseInt(r.heartRate);
-            if (!isNaN(sys)) { sumSys += sys; countSys++; if (sys < 130) sbpUnder130Count++; if (sys > maxSys) { maxSys = sys; maxRecord = r; } }
-            if (!isNaN(dia)) { sumDia += dia; countDia++; }
-            if (!isNaN(hr)) { sumHr += hr; countHr++; }
+            let sys = parseInt(r.systolic); let dia = parseInt(r.diastolic);
+            if (!isNaN(sys) && !isNaN(dia)) { 
+                sumSys += sys; countSys++;
+                sumDia += dia; countDia++;
+                
+                if (sys > maxSys) { maxSys = sys; maxRecord = r; }
+                if (sys < minSys) { minSys = sys; minRecord = r; }
+                
+                // AHA 分級演算法
+                let sysCat = (sys < 120) ? 0 : ((sys < 130) ? 1 : ((sys < 140) ? 2 : 3));
+                let diaCat = (dia < 80) ? 0 : ((dia < 90) ? 2 : 3);
+                let category = Math.max(sysCat, diaCat); // 取 SBP 或 DBP 較高的層級
+                
+                if (category === 0) countNormal++;
+                else if (category === 1) countElevated++;
+                else if (category === 2) countStage1++;
+                else if (category === 3) countStage2++;
+            }
         });
         
+        let totalCat = countNormal + countElevated + countStage1 + countStage2;
+        let pctNormal = totalCat ? Math.round((countNormal / totalCat) * 100) : 0;
+        let pctElevated = totalCat ? Math.round((countElevated / totalCat) * 100) : 0;
+        let pctStage1 = totalCat ? Math.round((countStage1 / totalCat) * 100) : 0;
+        let pctStage2 = totalCat ? Math.round((countStage2 / totalCat) * 100) : 0;
+
         let meanSys = countSys ? Math.round(sumSys / countSys) : '-'; 
         let meanDia = countDia ? Math.round(sumDia / countDia) : '-'; 
-        let meanHr = countHr ? Math.round(sumHr / countHr) : '-';
-        let sbpTargetPct = countSys ? Math.round((sbpUnder130Count / countSys) * 100) : 0;
-        let maxStr = '-';
-        if (maxRecord) {
-            let dObj = new Date(maxRecord.date.replace(/-/g, '/'));
-            maxStr = `${maxRecord.systolic}/${maxRecord.diastolic} <span style="font-size: 11px; font-weight: normal; color: #666;">(${String(dObj.getMonth() + 1).padStart(2, '0')}/${String(dObj.getDate()).padStart(2, '0')})</span>`;
-        }
+        let maxStr = maxRecord ? `${maxRecord.systolic}/${maxRecord.diastolic}` : '-/-';
+        let minStr = minRecord ? `${minRecord.systolic}/${minRecord.diastolic}` : '-/-';
 
         let tableHtml = `<thead>`;
         
-        // 🌟 醫療儀表板表頭 (Center Title, Left & Right Dashboard Metrics)
+        // 🌟 終極儀表板表頭 (全灰色標籤 + 純數字層次排版)
         tableHtml += `<tr><th colspan="${monthCount * 4}" style="position: relative; height: 65px; padding: 0; border-bottom: 1.5px solid #000 !important; background-color: #FFFFFF;">`;
         
-        // 🌟 左側：HERO Metric (MEAN)
-        tableHtml += `<div style="position: absolute; left: 16px; top: 8px; text-align: left; line-height: 1.1; font-family: Arial, sans-serif;">`;
-        tableHtml += `<div style="color: #8FA3B8; font-size: 11px; font-weight: 900; letter-spacing: 1px;">MEAN</div>`;
-        tableHtml += `<div style="margin-top: 2px;">`;
-        tableHtml += `<span style="font-size: 26px; font-weight: 900; color: #222;">${meanSys}</span>`;
-        tableHtml += `<span style="font-size: 18px; font-weight: 900; color: #666;">/${meanDia}</span>`;
-        tableHtml += `<span style="font-size: 13px; font-weight: bold; color: #666; margin-left: 4px;">${meanHr} bpm</span>`;
-        tableHtml += `</div></div>`;
+        // 1. 左側：血壓記錄表 (維持 30px 與 15px 字距)
+        tableHtml += `<div style="position: absolute; left: 16px; top: 12px; font-size: 30px; letter-spacing: 15px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; text-align: left;">血壓記錄表</div>`;
 
-        // 🌟 中央：對稱的血壓記錄表標題
-        tableHtml += `<div style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; font-size: 28px; letter-spacing: 12px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000;">血壓記錄表</div>`;
-
-        // 🌟 右側：次要指標 (MAX & TARGET) 上下排列
-        tableHtml += `<div style="position: absolute; right: 16px; top: 12px; text-align: right; line-height: 1.5; font-size: 12px; font-family: Arial, sans-serif;">`;
-        tableHtml += `<div><span style="color: #8FA3B8; font-weight: 900; letter-spacing: 0.5px; margin-right: 6px;">MAX</span><span style="font-weight: 900; color: #495057; font-size: 13px;">${maxStr}</span></div>`;
-        tableHtml += `<div><span style="color: #8FA3B8; font-weight: 900; letter-spacing: 0.5px; margin-right: 6px;">SBP&lt;130</span><span style="font-weight: 900; color: #495057; font-size: 13px;">${sbpTargetPct}%</span></div>`;
+        // 2. 中左：MEAN (拔除 HR，等大字體)
+        tableHtml += `<div style="position: absolute; left: 280px; top: 12px; text-align: center; font-family: Arial, sans-serif;">`;
+        tableHtml += `<div style="color: #888888; font-size: 11px; font-weight: bold; letter-spacing: 0.5px;">MEAN</div>`;
+        tableHtml += `<div style="color: #222222; font-size: 18px; font-weight: 900; margin-top: 2px;">${meanSys}/${meanDia}</div>`;
         tableHtml += `</div>`;
 
+        // 3. 中右：MAX & MIN (上下疊放，不放日期)
+        tableHtml += `<div style="position: absolute; left: 380px; top: 10px; text-align: left; font-family: Arial, sans-serif; font-size: 12px; line-height: 1.4;">`;
+        tableHtml += `<div><span style="color: #888888; font-weight: bold; display: inline-block; width: 35px;">MAX</span><span style="font-weight: 900; color: #495057;">${maxStr}</span></div>`;
+        tableHtml += `<div><span style="color: #888888; font-weight: bold; display: inline-block; width: 35px;">MIN</span><span style="font-weight: 900; color: #495057;">${minStr}</span></div>`;
+        tableHtml += `</div>`;
+
+        // 4. 最右側：AHA 四分類 (Normal, Elevated, Stage 1, Stage 2) + 百分比
+        tableHtml += `<div style="position: absolute; right: 16px; top: 10px; display: flex; gap: 16px; text-align: center; font-family: Arial, sans-serif;">`;
+        
+        tableHtml += `<div>`;
+        tableHtml += `<div style="color: #888888; font-size: 10px; font-weight: bold;">Normal</div>`;
+        tableHtml += `<div style="color: #495057; font-size: 14px; font-weight: 900; margin-top: 4px;">${pctNormal}%</div>`;
+        tableHtml += `</div>`;
+        
+        tableHtml += `<div>`;
+        tableHtml += `<div style="color: #888888; font-size: 10px; font-weight: bold;">Elevated</div>`;
+        tableHtml += `<div style="color: #495057; font-size: 14px; font-weight: 900; margin-top: 4px;">${pctElevated}%</div>`;
+        tableHtml += `</div>`;
+        
+        tableHtml += `<div>`;
+        tableHtml += `<div style="color: #888888; font-size: 10px; font-weight: bold;">Stage 1</div>`;
+        tableHtml += `<div style="color: #495057; font-size: 14px; font-weight: 900; margin-top: 4px;">${pctStage1}%</div>`;
+        tableHtml += `</div>`;
+        
+        tableHtml += `<div>`;
+        tableHtml += `<div style="color: #888888; font-size: 10px; font-weight: bold;">Stage 2</div>`;
+        tableHtml += `<div style="color: #495057; font-size: 14px; font-weight: 900; margin-top: 4px;">${pctStage2}%</div>`;
+        tableHtml += `</div>`;
+
+        tableHtml += `</div>`;
         tableHtml += `</th></tr>`;
         
+        // 渲染表格內容
         tableHtml += `<tr class="month-row-thick">`;
         for (let i = 0; i < monthCount; i++) {
           let mVal = targetMonths[i] ? targetMonths[i] : ``; let rightCls = (i < (monthCount - 1)) ? ' thick-right' : ''; 
