@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=114">
+  <link rel="manifest" href="manifest.json?v=115">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -277,7 +277,6 @@
         <span class="banner-text">BP Tracker</span>
         
         <div class="header-actions">
-          <!-- 🌟 1. 按鈕文字改為 4M 與 3M -->
           <button class="header-btn" id="exportPdfBtn4" onclick="generatePDF(4)" title="Print 4 Months">
             <span class="header-btn-icon">🖨️</span><span class="header-btn-text">4M</span>
           </button>
@@ -596,26 +595,25 @@
       
       const ctx = canvas.getContext('2d');
       
-      // 🌟 2. X 軸標籤演算法：只在月份變更的第一筆資料標記「X月」，其餘留白
+      // 🌟 純數字月份標記邏輯
       let lastMonth = null;
       const labels = displayData.map((d, index) => { 
         let p = d.date.split('/'); 
         if (p.length === 3) {
-          let currentMonth = parseInt(p[1], 10); // 取出整數月份，例如 '09' -> 9
+          let currentMonth = parseInt(p[1], 10); 
           if (index === 0 || currentMonth !== lastMonth) {
             lastMonth = currentMonth;
-            return currentMonth + '月'; // 只回傳月份
+            return currentMonth.toString(); // 拔除「月」字，只回傳純數字 (如 7, 8, 9)
           } else {
-            return ''; // 同月份的後續點留白，營造乾淨時間軸
+            return ''; // 同月份的其餘資料留白
           }
         }
         return d.date; 
       });
 
-      // 為了不讓 Tooltip 也變成只顯示「9月」，我們把完整的日期抽出來存放在陣列裡
       const fullDatesForTooltip = displayData.map(d => {
         let p = d.date.split('/'); 
-        return p.length === 3 ? `${p[1]}/${p[2]}` : d.date; // 格式如 09/22
+        return p.length === 3 ? `${p[1]}/${p[2]}` : d.date; 
       });
 
       const times = displayData.map(d => { 
@@ -629,7 +627,7 @@
       if (bpChartInstance) {
         bpChartInstance.data.labels = labels; 
         bpChartInstance.data.times = times; 
-        bpChartInstance.data.fullDates = fullDatesForTooltip; // 🌟 傳入完整日期供 Tooltip 使用
+        bpChartInstance.data.fullDates = fullDatesForTooltip; 
         bpChartInstance.data.datasets[0].data = bpRangeData;
         bpChartInstance.data.datasets[1].data = hrData; 
         bpChartInstance.data.datasets[2].data = limit130Data; 
@@ -639,7 +637,7 @@
           data: {
             labels: labels, 
             times: times, 
-            fullDates: fullDatesForTooltip, // 🌟 傳入完整日期供 Tooltip 使用
+            fullDates: fullDatesForTooltip, 
             datasets: [
               { type: 'bar', label: 'BP Range', data: bpRangeData, backgroundColor: '#7895B2', borderRadius: 100, barThickness: 6, order: 2 },
               { type: 'line', label: 'HR', data: hrData, borderColor: '#CBD5E1', borderWidth: 1.5, tension: 0, pointRadius: 1.5, order: 3 },
@@ -656,7 +654,6 @@
                 yAlign: 'bottom', displayColors: false,
                 callbacks: {
                   title: function(items) { 
-                    // 🌟 點擊圖表時，強制從 fullDates 抓取包含「日期」的完整字串
                     let dataIndex = items[0].dataIndex;
                     let fullDateStr = items[0].chart.data.fullDates[dataIndex];
                     let timeStr = items[0].chart.data.times[dataIndex];
@@ -673,7 +670,15 @@
               }
             },
             scales: { 
-              x: { grid: { display: false }, ticks: { maxTicksLimit: 12, font: { size: 10 } } }, // 稍微放寬 X 軸的顯示數量，確保每個月份都能印出來
+              x: { 
+                grid: { display: false }, 
+                ticks: { 
+                  autoSkip: false, // 🌟 關閉自動隱藏，強制印出我們設定的月份數字
+                  maxRotation: 0, // 確保文字不要傾斜
+                  font: { size: 11, weight: 'bold' }, // 稍微放大加粗
+                  color: '#8FA3B8' // 使用清爽的灰藍色
+                } 
+              }, 
               y: { grid: { color: '#E2E8F0' }, beginAtZero: false, suggestedMin: 40, suggestedMax: 160 } 
             }
           }
