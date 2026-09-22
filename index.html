@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=108">
+  <link rel="manifest" href="manifest.json?v=105">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -27,7 +27,6 @@
       --text-main: #333333; 
       --border-color: #CED4DA; 
       --danger-color: #D32F2F; 
-      --sticky-offset: 240px; 
     }
     
     html, body { 
@@ -70,18 +69,7 @@
     
     .notes-save-row { display: flex; gap: 8px; width: 100%; align-items: center; }
     .notes-save-row input { flex: 1; min-width: 0; }
-    
-    .notes-save-row button.primary-btn { 
-      width: 105px; margin-top: 0; padding: 12px 0; 
-      background-color: var(--primary-color); color: white; 
-      border: none; border-radius: 6px; font-size: 16px; font-weight: bold; 
-      cursor: pointer; 
-      box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
-      transition: all 0.2s; 
-    }
-    .notes-save-row button.primary-btn:active {
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); 
-    }
+    .notes-save-row button.primary-btn { width: 105px; margin-top: 0; padding: 12px 0; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: background-color 0.2s; }
     
     .quick-tags-container { display: flex; gap: 8px; margin-top: 0; margin-bottom: 10px; overflow-x: auto; padding-bottom: 2px; }
     .quick-tags-container::-webkit-scrollbar { display: none; } 
@@ -145,32 +133,24 @@
     .list-header div:nth-child(5) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 8px; }
 
-    .month-section {
-      position: relative;
+    @keyframes monthPulse {
+      0%   { transform: scale(1); background-color: #E2E8F0; color: var(--primary-dark); box-shadow: none; }
+      30%  { transform: scale(1.25); background-color: var(--primary-color); color: #FFFFFF; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
+      70%  { transform: scale(1.25); background-color: var(--primary-color); color: #FFFFFF; box-shadow: 0 3px 8px rgba(0,0,0,0.25); }
+      100% { transform: scale(1); background-color: #E2E8F0; color: var(--primary-dark); box-shadow: none; }
     }
     
-    .month-divider {
-      position: -webkit-sticky; 
-      position: sticky;
-      top: var(--sticky-offset); 
-      z-index: 90; 
-      display: grid;
-      grid-template-columns: 75px 1fr; 
-      align-items: center; 
-      background-color: rgba(244, 246, 248, 0.92); 
-      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-      padding: 6px 0;
-      border-bottom: 1px solid rgba(206, 212, 218, 0.6); 
-      margin: 0; 
+    .dynamic-month-badge {
+      font-size: 12px; background: #E2E8F0; color: var(--primary-dark);
+      padding: 4px 6px; border-radius: 12px; 
+      display: inline-block; font-weight: 800; line-height: 1.1;
+      letter-spacing: 0px; white-space: nowrap; 
     }
-    .month-divider-text {
-      font-weight: 800; 
-      font-size: 13px; 
-      color: var(--primary-dark); 
-      text-align: center; 
-      letter-spacing: 0;
+    
+    .dynamic-month-badge.pulse-anim {
+      animation: monthPulse 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
-
+    
     .record-row { 
       display: grid; grid-template-columns: 75px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; align-items: center; 
       padding: 6px 0; font-size: 15px; line-height: 1.1; color: var(--text-main); text-align: center; 
@@ -194,6 +174,22 @@
     .bp-dia { text-align: left; font-weight: bold; }
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
     .high-bp { color: var(--danger-color); font-weight: bold; }
+    
+    .month-divider {
+      display: grid;
+      grid-template-columns: 75px 1fr; 
+      align-items: end; 
+      margin: 12px 0 4px 0; 
+      padding-bottom: 4px;
+      border-bottom: 1px solid #CBD5E1; 
+    }
+    .month-divider-text {
+      font-weight: 800; 
+      font-size: 13px; 
+      color: var(--primary-dark); 
+      text-align: center; 
+      letter-spacing: 0;
+    }
 
     #printArea { display: none; width: 210mm; height: 297mm; box-sizing: border-box; padding: 16mm 12mm 5mm 12mm; background-color: #FFFFFF; color: #000; }
     
@@ -231,10 +227,11 @@
     .print-table.print-4m .day-col { width: 4.5%; }
     .print-table.print-4m .sys-col, .print-table.print-4m .dia-col, .print-table.print-4m .hr-col { width: 6.83%; }
 
+    /* 🌟 優化版 Loading 遮罩：提升透明度、減輕模糊感，保持空間感知 */
     .loading-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(244, 246, 248, 0.4); 
-      backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); 
+      background: rgba(244, 246, 248, 0.4); /* 背景透明度調降至 40% */
+      backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px); /* 模糊度調降為 2px */
       z-index: 9999; 
       display: flex; flex-direction: column; justify-content: center; align-items: center; 
       opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
@@ -370,9 +367,15 @@
       </div>
     </div>
     
+    <div id="chartContainer" class="chart-container" style="display: none;">
+      <canvas id="bpChart"></canvas>
+    </div>
+    
     <div class="container" style="padding-top: 0; padding-bottom: 0px;">
       <div class="list-header">
-        <div></div> 
+        <div style="display: flex; justify-content: center; align-items: center;">
+          <span id="dynamicMonthBadge" class="dynamic-month-badge"></span>
+        </div>
         <div>Time</div>
         <div></div>
         <div>BP</div>
@@ -408,24 +411,11 @@
       document.getElementById('loadingOverlay').classList.remove('show');
     }
 
-    async function handleRefresh() {
+    function handleRefresh() {
       showLoading('資料重整中...');
-      
-      let curr = new Date();
-      document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
-      document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
-      checkMorningTag();
-
-      try {
-        await Promise.all([
-          new Promise(resolve => setTimeout(resolve, 800)),
-          loadData() 
-        ]);
-      } catch (err) {
-        console.error("Refresh error", err);
-      } finally {
-        hideLoading();
-      }
+      setTimeout(() => {
+        window.location.reload();
+      }, 800); 
     }
 
     function scrollToBottom() {
@@ -437,13 +427,40 @@
       }, 100);
     }
 
-    function updateStickyOffset() {
-      const topPanel = document.querySelector('.sticky-top-panel');
-      if (topPanel) {
-        document.documentElement.style.setProperty('--sticky-offset', topPanel.offsetHeight + 'px');
+    let lastScrollTop = 0;
+
+    function updateDynamicMonth() {
+      let stickyPanel = document.querySelector('.sticky-top-panel');
+      if (!stickyPanel) return;
+      let headerBottom = stickyPanel.getBoundingClientRect().bottom;
+      let monthMarkers = document.querySelectorAll('.month-marker'); 
+      let badge = document.getElementById('dynamicMonthBadge');
+      
+      if(monthMarkers.length === 0) {
+         badge.style.opacity = 0;
+         return;
+      }
+      badge.style.opacity = 1;
+
+      let activeMonth = monthMarkers[0].getAttribute('data-month'); 
+      
+      monthMarkers.forEach(marker => {
+        let rect = marker.getBoundingClientRect();
+        if (rect.top <= headerBottom + 30) {
+          activeMonth = marker.getAttribute('data-month');
+        }
+      });
+      
+      if(badge.innerText !== activeMonth) {
+        badge.innerText = activeMonth;
+        
+        badge.classList.remove('pulse-anim');
+        void badge.offsetWidth; 
+        badge.classList.add('pulse-anim');
       }
     }
-    window.addEventListener('resize', updateStickyOffset);
+    
+    window.addEventListener('scroll', updateDynamicMonth);
 
     const now = new Date();
     document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
@@ -489,7 +506,7 @@
         toggleChartBtn.classList.add('active');
         if (bpChartInstance) bpChartInstance.update(); 
       }
-      setTimeout(updateStickyOffset, 50);
+      setTimeout(updateDynamicMonth, 50);
     });
 
     document.addEventListener('click', (e) => {
@@ -687,7 +704,6 @@
       } else {
         let lastDate = null; 
         let lastMonthStr = null;
-        let isFirstSection = true;
         const reportSvg = `<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color:#495057; display:inline-block;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`;
 
         displayData.forEach(item => {
@@ -714,20 +730,13 @@
           let displayDateText = (lastDate !== formattedDate) ? currDayStr : '';
 
           if (lastMonthStr !== currMonthStr) {
-            if (!isFirstSection) {
-              html += `</div>`; 
-            }
-            html += `
-              <div class="month-section">
-                <div class="month-divider">
-                  <div class="month-divider-text">${currMonthStr}</div>
-                </div>`;
-            
+            html += `<div class="month-divider month-marker" data-month="${currMonthStr}">
+                       <div class="month-divider-text">${currMonthStr}</div>
+                     </div>`;
             lastMonthStr = currMonthStr;
             lastDate = null; 
             isNewDay = false; 
             displayDateText = currDayStr; 
-            isFirstSection = false;
           }
           
           lastDate = formattedDate;
@@ -760,14 +769,9 @@
               </div>
             </div>`;
         });
-        
-        if (!isFirstSection) {
-          html += `</div>`;
-        }
       }
       document.getElementById('recordsList').innerHTML = html;
-      
-      setTimeout(updateStickyOffset, 50);
+      setTimeout(updateDynamicMonth, 50);
     }
 
     async function generatePDF(monthCount) {
@@ -896,6 +900,7 @@
         try { 
           allRecords = JSON.parse(cachedData); 
           renderList(); 
+          scrollToBottom(); 
         } catch(e){} 
       }
       try {
@@ -947,10 +952,6 @@
       syncToCloud(payload);
     });
 
-    window.addEventListener('load', () => {
-      setTimeout(updateStickyOffset, 100);
-    });
-    
     loadData();
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
   </script>
