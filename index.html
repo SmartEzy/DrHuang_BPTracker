@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=118">
+  <link rel="manifest" href="manifest.json?v=119">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -70,13 +70,7 @@
     
     .notes-save-row { display: flex; gap: 8px; width: 100%; align-items: center; }
     .notes-save-row input { flex: 1; min-width: 0; }
-    
-    .notes-save-row button.primary-btn { 
-      width: 105px; margin-top: 0; padding: 12px 0; 
-      background-color: var(--primary-color); color: white; 
-      border: none; border-radius: 6px; font-size: 16px; font-weight: bold; 
-      cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: all 0.2s; 
-    }
+    .notes-save-row button.primary-btn { width: 105px; margin-top: 0; padding: 12px 0; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: all 0.2s; }
     .notes-save-row button.primary-btn:active { box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
     .quick-tags-container { display: flex; gap: 8px; margin-top: 0; margin-bottom: 10px; overflow-x: auto; padding-bottom: 2px; }
@@ -84,8 +78,30 @@
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     .quick-tag-btn:active { background-color: #CBD5E1; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
-    .records-header { display: flex; justify-content: space-between; align-items: center; padding: 0 20px 10px 20px; background-color: var(--bg-color); box-sizing: border-box; width: 100%; }
-    .chart-controls-left { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+    /* 🌟 重構 Header 排版：左膠囊、右按鈕 */
+    .records-header { 
+      display: flex; justify-content: space-between; align-items: center; 
+      padding: 0 20px 10px 20px; background-color: var(--bg-color); 
+      box-sizing: border-box; width: 100%; gap: 16px; 
+    }
+    
+    /* 包裝盒：保護膠囊能自由滑動，又不會擠爆右側按鈕 */
+    .capsule-wrapper {
+      flex: 1; min-width: 0; display: flex; justify-content: flex-start;
+    }
+    .capsule-group { 
+      display: flex; background-color: #E2E8F0; border-radius: 20px; padding: 3px; 
+      overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch; 
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.08); 
+    }
+    .capsule-group::-webkit-scrollbar { display: none; }
+    
+    .capsule-btn { background: transparent; color: #64748B; border: none; padding: 6px 12px; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 18px; transition: all 0.2s; white-space: nowrap; line-height: 1.2; display: flex; align-items: center; justify-content: center; }
+    .capsule-btn.active { background-color: #FFFFFF; color: var(--primary-dark); box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+    
+    .chart-controls-right { 
+      display: flex; align-items: center; flex-shrink: 0; 
+    }
     
     .chart-toggle-btn { 
       background-color: var(--primary-color); color: #FFFFFF; 
@@ -93,14 +109,6 @@
       border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: all 0.2s; 
     }
     .chart-toggle-btn:active { transform: scale(0.95); }
-    
-    .capsule-group { 
-      display: flex; background-color: #E2E8F0; border-radius: 20px; padding: 3px; overflow-x: auto; max-width: 100%; -webkit-overflow-scrolling: touch; box-shadow: inset 0 1px 3px rgba(0,0,0,0.08); 
-    }
-    .capsule-group::-webkit-scrollbar { display: none; }
-    
-    .capsule-btn { background: transparent; color: #64748B; border: none; padding: 6px 12px; font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 18px; transition: all 0.2s; white-space: nowrap; line-height: 1.2; display: flex; align-items: center; justify-content: center; }
-    .capsule-btn.active { background-color: #FFFFFF; color: var(--primary-dark); box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
     
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     
@@ -144,7 +152,7 @@
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
     .high-bp { color: var(--danger-color); font-weight: bold; }
 
-    /* 🌟 新增：底部抽屜 UI 系統 */
+    /* 底部抽屜 UI 系統 */
     .sheet-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);
@@ -157,11 +165,11 @@
       width: 100%; max-width: 500px; background: #FFFFFF;
       border-radius: 20px 20px 0 0; z-index: 1001;
       box-shadow: 0 -4px 16px rgba(0,0,0,0.15);
-      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1); /* 帶有一點點 Q 彈感 */
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1); 
       display: flex; flex-direction: column;
     }
     .bottom-sheet.show { transform: translateX(-50%) translateY(0); }
-    .bottom-sheet.dragging { transition: none; /* 拖曳時取消動畫，讓手感跟手 */ }
+    .bottom-sheet.dragging { transition: none; }
 
     .drag-handle-area { width: 100%; padding: 12px 0; display: flex; justify-content: center; cursor: grab; touch-action: none; }
     .drag-handle-area:active { cursor: grabbing; }
@@ -183,7 +191,6 @@
     }
     .sheet-close-btn:active { background: #E2E8F0; transform: scale(0.9); }
 
-    /* 🌟 圖表容器放置於抽屜內，高度加高至 250px */
     .chart-outer-container { 
       width: 100%; overflow-x: auto; overflow-y: hidden; 
       -webkit-overflow-scrolling: touch; scrollbar-width: none; 
@@ -198,7 +205,7 @@
     }
     
     .chart-inner-container { 
-      position: relative; height: 250px; /* 圖表不再委屈，獲得更大空間 */
+      position: relative; height: 250px; 
       padding: 0 20px 0 20px; box-sizing: border-box; 
     }
 
@@ -290,34 +297,36 @@
       </form>
     </div>
 
+    <!-- 🌟 左邊膠囊，右邊圖表按鈕 -->
     <div class="records-header">
-      <div class="chart-controls-left">
-        <!-- 🌟 打開抽屜的觸發按鈕 -->
+      <div class="capsule-wrapper">
+        <div class="capsule-group">
+          <button class="capsule-btn" data-val="7days">7 D</button>
+          <button class="capsule-btn" data-val="30days">1 M</button>
+          <button class="capsule-btn active" data-val="90days">3 M</button>
+          <button class="capsule-btn" data-val="all">All</button>
+          <button class="capsule-btn" data-val="report" title="Report Filter">
+            <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </button>
+          <button class="capsule-btn" data-val="morning" title="Morning Filter">
+            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="chart-controls-right">
         <button id="toggleChartBtn" class="chart-toggle-btn" title="Open Trend Chart">
           <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-          </svg>
-        </button>
-      </div>
-      
-      <div class="capsule-group">
-        <button class="capsule-btn" data-val="7days">7 D</button>
-        <button class="capsule-btn" data-val="30days">1 M</button>
-        <button class="capsule-btn active" data-val="90days">3 M</button>
-        <button class="capsule-btn" data-val="all">All</button>
-        <button class="capsule-btn" data-val="report" title="Report Filter">
-          <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-            <polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line>
-            <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
-          </svg>
-        </button>
-        <button class="capsule-btn" data-val="morning" title="Morning Filter">
-          <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
           </svg>
         </button>
       </div>
@@ -336,7 +345,6 @@
     </div>
   </div>
 
-  <!-- 🌟 新增：原生 iOS 底部圖表抽屜 -->
   <div id="chartSheetOverlay" class="sheet-overlay"></div>
   <div id="chartBottomSheet" class="bottom-sheet">
     <div class="drag-handle-area" id="dragHandleArea">
@@ -370,7 +378,6 @@
     let currentFilter = '90days'; 
     let bpChartInstance = null; 
 
-    // 🌟 底部抽屜控制邏輯 
     const sheetOverlay = document.getElementById('chartSheetOverlay');
     const bottomSheet = document.getElementById('chartBottomSheet');
     const toggleChartBtn = document.getElementById('toggleChartBtn');
@@ -391,7 +398,7 @@
     function closeSheet() {
       sheetOverlay.classList.remove('show');
       bottomSheet.classList.remove('show');
-      bottomSheet.style.transform = ''; // 恢復預設位置
+      bottomSheet.style.transform = ''; 
       if (bpChartInstance) {
         bpChartInstance.setActiveElements([]); 
         bpChartInstance.tooltip.setActiveElements([], {x: 0, y: 0}); 
@@ -399,32 +406,24 @@
       }
     }
 
-    // 觸發條件 1：點擊按鈕開啟
     toggleChartBtn.addEventListener('click', openSheet);
-    
-    // 觸發條件 2：點擊 X 關閉
     closeSheetBtn.addEventListener('click', closeSheet);
-    
-    // 觸發條件 3：點擊暗色背景關閉
     sheetOverlay.addEventListener('click', closeSheet);
 
-    // 觸發條件 4：物理向下拉動關閉 (Swipe Down)
     let startY = 0;
     let currentY = 0;
     let isDraggingSheet = false;
 
-    // 支援觸控螢幕
     dragArea.addEventListener('touchstart', (e) => {
       startY = e.touches[0].clientY;
       isDraggingSheet = true;
-      bottomSheet.classList.add('dragging'); // 取消動畫，讓拖曳跟手
+      bottomSheet.classList.add('dragging'); 
     }, {passive: true});
 
     dragArea.addEventListener('touchmove', (e) => {
       if (!isDraggingSheet) return;
       currentY = e.touches[0].clientY;
       const deltaY = currentY - startY;
-      // 只允許往下拉
       if (deltaY > 0) {
         bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`;
       }
@@ -436,7 +435,6 @@
       bottomSheet.classList.remove('dragging');
       const deltaY = currentY - startY;
       
-      // 拖曳超過 60px 就視為關閉，否則回彈
       if (deltaY > 60) {
         closeSheet();
       } else {
@@ -444,7 +442,6 @@
       }
     });
     
-    // 支援滑鼠拖曳 (給電腦版測試用)
     dragArea.addEventListener('mousedown', (e) => {
       startY = e.clientY;
       isDraggingSheet = true;
@@ -470,7 +467,6 @@
       }
     });
 
-    // 🌟 電腦版的圖表左右滑鼠拖曳捲動
     let isDownChart = false;
     let startXChart;
     let scrollLeftChart;
