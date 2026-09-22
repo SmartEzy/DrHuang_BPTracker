@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=115">
+  <link rel="manifest" href="manifest.json?v=116">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -135,7 +135,20 @@
     
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     
-    .chart-container { width: 100%; max-width: 500px; margin: 0 auto; padding: 0 20px 10px 20px; box-sizing: border-box; background-color: var(--bg-color); height: 170px; display: block; }
+    /* 🌟 重構圖表容器：外層負責裁切與橫向滑動，內層負責根據資料量自動撐開寬度 */
+    .chart-outer-container { 
+      width: 100%; max-width: 500px; margin: 0 auto; 
+      overflow-x: auto; overflow-y: hidden; 
+      -webkit-overflow-scrolling: touch; /* iOS 原生滑動慣性 */
+      background-color: var(--bg-color); 
+      scrollbar-width: none; /* 隱藏滾動條保持簡潔 */
+    }
+    .chart-outer-container::-webkit-scrollbar { display: none; }
+    
+    .chart-inner-container { 
+      height: 170px; padding: 0 20px 10px 20px; box-sizing: border-box; 
+      min-width: 100%; /* 至少與畫面一樣寬 */
+    }
     
     .list-header { 
       display: grid; grid-template-columns: 75px 48px 20px 1.8fr 1fr 2.5fr 24px; gap: 4px; 
@@ -371,8 +384,11 @@
       </div>
     </div>
     
-    <div id="chartContainer" class="chart-container" style="display: none;">
-      <canvas id="bpChart"></canvas>
+    <!-- 🌟 升級為支援水平滑動的外框與內框結構 -->
+    <div id="chartOuterContainer" class="chart-outer-container" style="display: none;">
+      <div id="chartInnerContainer" class="chart-inner-container">
+        <canvas id="bpChart"></canvas>
+      </div>
     </div>
     
     <div class="container" style="padding-top: 0; padding-bottom: 0px;">
@@ -481,26 +497,30 @@
     }
 
     const toggleChartBtn = document.getElementById('toggleChartBtn');
-    const chartContainer = document.getElementById('chartContainer');
+    const chartOuter = document.getElementById('chartOuterContainer');
     const customLegend = document.getElementById('customLegend');
     
+    // 🌟 圖表展開時，自動將水平捲軸滑到最右側 (最新日期)
     toggleChartBtn.addEventListener('click', () => {
-      if (chartContainer.style.display === 'block') {
-        chartContainer.style.display = 'none'; 
+      if (chartOuter.style.display === 'block') {
+        chartOuter.style.display = 'none'; 
         customLegend.style.display = 'none'; 
         toggleChartBtn.classList.remove('active');
       } else {
-        chartContainer.style.display = 'block'; 
+        chartOuter.style.display = 'block'; 
         customLegend.style.display = 'flex'; 
         toggleChartBtn.classList.add('active');
-        if (bpChartInstance) bpChartInstance.update(); 
+        if (bpChartInstance) {
+          bpChartInstance.update(); 
+          setTimeout(() => { chartOuter.scrollLeft = chartOuter.scrollWidth; }, 10);
+        }
       }
       setTimeout(updateStickyOffset, 50);
     });
 
     document.addEventListener('click', (e) => {
-      if (bpChartInstance && chartContainer.style.display === 'block') {
-        if (!chartContainer.contains(e.target) && !toggleChartBtn.contains(e.target)) {
+      if (bpChartInstance && chartOuter.style.display === 'block') {
+        if (!chartOuter.contains(e.target) && !toggleChartBtn.contains(e.target)) {
           bpChartInstance.setActiveElements([]); 
           bpChartInstance.tooltip.setActiveElements([], {x: 0, y: 0}); 
           bpChartInstance.update();
@@ -593,9 +613,15 @@
       const canvas = document.getElementById('bpChart');
       if (!canvas) return; 
       
+      // 🌟 計算動態寬度：確保每一筆資料至少擁有 20px 的寬度，讓手指有空間點擊
+      const outer = document.getElementById('chartOuterContainer');
+      const inner = document.getElementById('chartInnerContainer');
+      // 至少撐滿螢幕，若資料太多則往外撐開 (每筆 20px 加上 40px padding)
+      const requiredWidth = Math.max(outer.clientWidth || window.innerWidth, displayData.length * 20 + 40);
+      inner.style.width = requiredWidth + 'px';
+      
       const ctx = canvas.getContext('2d');
       
-      // 🌟 純數字月份標記邏輯
       let lastMonth = null;
       const labels = displayData.map((d, index) => { 
         let p = d.date.split('/'); 
@@ -603,9 +629,9 @@
           let currentMonth = parseInt(p[1], 10); 
           if (index === 0 || currentMonth !== lastMonth) {
             lastMonth = currentMonth;
-            return currentMonth.toString(); // 拔除「月」字，只回傳純數字 (如 7, 8, 9)
+            return currentMonth.toString(); 
           } else {
-            return ''; // 同月份的其餘資料留白
+            return ''; 
           }
         }
         return d.date; 
@@ -625,6 +651,7 @@
       const limit130Data = displayData.map(() => 130);
 
       if (bpChartInstance) {
+        bpChartInstance.resize(); // 容器寬度改變後強制重繪
         bpChartInstance.data.labels = labels; 
         bpChartInstance.data.times = times; 
         bpChartInstance.data.fullDates = fullDatesForTooltip; 
@@ -673,10 +700,10 @@
               x: { 
                 grid: { display: false }, 
                 ticks: { 
-                  autoSkip: false, // 🌟 關閉自動隱藏，強制印出我們設定的月份數字
-                  maxRotation: 0, // 確保文字不要傾斜
-                  font: { size: 11, weight: 'bold' }, // 稍微放大加粗
-                  color: '#8FA3B8' // 使用清爽的灰藍色
+                  autoSkip: false, 
+                  maxRotation: 0, 
+                  font: { size: 11, weight: 'bold' }, 
+                  color: '#8FA3B8' 
                 } 
               }, 
               y: { grid: { color: '#E2E8F0' }, beginAtZero: false, suggestedMin: 40, suggestedMax: 160 } 
@@ -684,6 +711,9 @@
           }
         });
       }
+      
+      // 🌟 畫圖完畢後，確保捲軸在最右方
+      setTimeout(() => { outer.scrollLeft = outer.scrollWidth; }, 10);
     }
 
     function renderList() {
