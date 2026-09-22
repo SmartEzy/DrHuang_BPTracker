@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=116">
+  <link rel="manifest" href="manifest.json?v=117">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -135,19 +135,38 @@
     
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     
-    /* 🌟 重構圖表容器：外層負責裁切與橫向滑動，內層負責根據資料量自動撐開寬度 */
     .chart-outer-container { 
       width: 100%; max-width: 500px; margin: 0 auto; 
       overflow-x: auto; overflow-y: hidden; 
-      -webkit-overflow-scrolling: touch; /* iOS 原生滑動慣性 */
+      -webkit-overflow-scrolling: touch; 
       background-color: var(--bg-color); 
-      scrollbar-width: none; /* 隱藏滾動條保持簡潔 */
+      scrollbar-width: none; 
     }
     .chart-outer-container::-webkit-scrollbar { display: none; }
     
+    /* 🌟 電腦版專屬：若是滑鼠裝置，顯示極簡質感的水平捲軸 */
+    @media (pointer: fine) {
+      .chart-outer-container::-webkit-scrollbar {
+        display: block;
+        height: 6px;
+      }
+      .chart-outer-container::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .chart-outer-container::-webkit-scrollbar-thumb {
+        background: rgba(143, 163, 184, 0.4);
+        border-radius: 3px;
+      }
+      .chart-outer-container::-webkit-scrollbar-thumb:hover {
+        background: rgba(143, 163, 184, 0.7);
+      }
+    }
+    
     .chart-inner-container { 
-      height: 170px; padding: 0 20px 10px 20px; box-sizing: border-box; 
-      min-width: 100%; /* 至少與畫面一樣寬 */
+      position: relative; /* 🌟 解決電腦版 Chart.js 擠壓破圖的關鍵 */
+      height: 170px; 
+      padding: 0 20px 10px 20px; 
+      box-sizing: border-box; 
     }
     
     .list-header { 
@@ -384,7 +403,6 @@
       </div>
     </div>
     
-    <!-- 🌟 升級為支援水平滑動的外框與內框結構 -->
     <div id="chartOuterContainer" class="chart-outer-container" style="display: none;">
       <div id="chartInnerContainer" class="chart-inner-container">
         <canvas id="bpChart"></canvas>
@@ -419,6 +437,34 @@
     let allRecords = [];
     let currentFilter = '90days'; 
     let bpChartInstance = null; 
+
+    // 🌟 解決電腦版沒有觸控板時無法滑動圖表的問題：加入「按住拖曳 (Drag to Scroll)」
+    const chartOuter = document.getElementById('chartOuterContainer');
+    let isDown = false;
+    let startX;
+    let scrollLeft;
+
+    chartOuter.addEventListener('mousedown', (e) => {
+      isDown = true;
+      chartOuter.style.cursor = 'grabbing';
+      startX = e.pageX - chartOuter.offsetLeft;
+      scrollLeft = chartOuter.scrollLeft;
+    });
+    chartOuter.addEventListener('mouseleave', () => {
+      isDown = false;
+      chartOuter.style.cursor = 'default';
+    });
+    chartOuter.addEventListener('mouseup', () => {
+      isDown = false;
+      chartOuter.style.cursor = 'default';
+    });
+    chartOuter.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault(); // 防止反白選取文字
+      const x = e.pageX - chartOuter.offsetLeft;
+      const walk = (x - startX) * 1.5; // 控制滑動敏感度
+      chartOuter.scrollLeft = scrollLeft - walk;
+    });
 
     function showLoading(text) {
       document.getElementById('loadingText').innerText = text;
@@ -497,10 +543,8 @@
     }
 
     const toggleChartBtn = document.getElementById('toggleChartBtn');
-    const chartOuter = document.getElementById('chartOuterContainer');
     const customLegend = document.getElementById('customLegend');
     
-    // 🌟 圖表展開時，自動將水平捲軸滑到最右側 (最新日期)
     toggleChartBtn.addEventListener('click', () => {
       if (chartOuter.style.display === 'block') {
         chartOuter.style.display = 'none'; 
@@ -511,6 +555,7 @@
         customLegend.style.display = 'flex'; 
         toggleChartBtn.classList.add('active');
         if (bpChartInstance) {
+          bpChartInstance.resize();
           bpChartInstance.update(); 
           setTimeout(() => { chartOuter.scrollLeft = chartOuter.scrollWidth; }, 10);
         }
@@ -613,12 +658,14 @@
       const canvas = document.getElementById('bpChart');
       if (!canvas) return; 
       
-      // 🌟 計算動態寬度：確保每一筆資料至少擁有 20px 的寬度，讓手指有空間點擊
+      // 🌟 解決電腦版擠壓問題：強制鎖定最小寬度
       const outer = document.getElementById('chartOuterContainer');
       const inner = document.getElementById('chartInnerContainer');
-      // 至少撐滿螢幕，若資料太多則往外撐開 (每筆 20px 加上 40px padding)
-      const requiredWidth = Math.max(outer.clientWidth || window.innerWidth, displayData.length * 20 + 40);
+      
+      // 電腦版即使外框最大 500px，內層圖表依然會根據資料量擴張到 600px 甚至 1800px，並啟動捲軸
+      const requiredWidth = Math.max(500, displayData.length * 20 + 40);
       inner.style.width = requiredWidth + 'px';
+      inner.style.minWidth = requiredWidth + 'px'; // 強制鎖死寬度，解決破圖
       
       const ctx = canvas.getContext('2d');
       
@@ -651,7 +698,7 @@
       const limit130Data = displayData.map(() => 130);
 
       if (bpChartInstance) {
-        bpChartInstance.resize(); // 容器寬度改變後強制重繪
+        bpChartInstance.resize(); 
         bpChartInstance.data.labels = labels; 
         bpChartInstance.data.times = times; 
         bpChartInstance.data.fullDates = fullDatesForTooltip; 
@@ -712,7 +759,7 @@
         });
       }
       
-      // 🌟 畫圖完畢後，確保捲軸在最右方
+      // 更新完成後，自動把捲軸拉到最右邊 (看最新資料)
       setTimeout(() => { outer.scrollLeft = outer.scrollWidth; }, 10);
     }
 
