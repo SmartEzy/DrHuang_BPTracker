@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=127">
+  <link rel="manifest" href="manifest.json?v=128">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -783,9 +783,7 @@
         printedRecords.forEach(r => {
             let sys = parseInt(r.systolic); let dia = parseInt(r.diastolic);
             if (!isNaN(sys) && !isNaN(dia)) { 
-                sumSys += sys; countSys++;
-                sumDia += dia; countDia++;
-                
+                sumSys += sys; countSys++; sumDia += dia; countDia++;
                 if (sys > maxSys) { maxSys = sys; maxRecord = r; }
                 if (sys < minSys) { minSys = sys; minRecord = r; }
                 
@@ -808,43 +806,49 @@
 
         let meanSys = countSys ? Math.round(sumSys / countSys) : '-'; 
         let meanDia = countDia ? Math.round(sumDia / countDia) : '-'; 
-        
-        // 🌟 移除 MAX/MIN 的日期，只留數值
         let maxStr = maxRecord ? `${maxRecord.systolic}/${maxRecord.diastolic}` : '-/-';
         let minStr = minRecord ? `${minRecord.systolic}/${minRecord.diastolic}` : '-/-';
 
         let tableHtml = `<thead>`;
         
-        tableHtml += `<tr><th colspan="${monthCount * 4}" style="position: relative; height: 65px; padding: 0; border-bottom: 1.5px solid #000 !important; background-color: #FFFFFF;">`;
+        // 🌟 極致網格美學表頭 (列高縮減為 54px 防止裁切)
+        tableHtml += `<tr><th colspan="${monthCount * 4}" style="position: relative; height: 54px; padding: 0; border-bottom: 1.5px solid #000 !important; background-color: #FFFFFF; overflow: hidden;">`;
         
-        // 左側：維持大字體的血壓記錄表
-        tableHtml += `<div style="position: absolute; left: 16px; top: 12px; font-size: 30px; letter-spacing: 15px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; text-align: left; line-height: 1;">血壓記錄表</div>`;
+        // 標題靠左下對齊
+        tableHtml += `<div style="position: absolute; left: 16px; bottom: 8px; font-size: 26px; letter-spacing: 12px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; text-align: left; line-height: 1;">血壓記錄表</div>`;
 
-        // 右側：🌟 全新排版的「無框線對齊表格」，保證所有 Label 和 Number 完美對齊
-        tableHtml += `<div style="position: absolute; right: 16px; top: 10px; font-family: Arial, sans-serif;">`;
+        // 隱形無框線對齊表格，保證 Baseline 完美對齊
+        tableHtml += `<div style="position: absolute; right: 12px; bottom: 8px; font-family: Arial, sans-serif;">`;
         tableHtml += `<table style="border: none !important; border-collapse: collapse; margin: 0; padding: 0; background-color: transparent;">`;
+        
+        // 第一列：淺灰 Label (純灰 #999999, size 9px, 靠左)
+        const renderLabel = (text) => `<td style="border: none !important; padding: 0 0 4px 16px; vertical-align: bottom; text-align: left; color: #999999; font-size: 9px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif;">${text}</td>`;
+        
         tableHtml += `<tr>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: bottom; text-align: center; color: #888888; font-size: 10px; font-weight: bold; padding-bottom: 2px;">MEAN</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: bottom; text-align: center; color: #888888; font-size: 10px; font-weight: bold; padding-bottom: 2px;">MAX</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: bottom; text-align: center; color: #888888; font-size: 10px; font-weight: bold; padding-bottom: 2px;">MIN</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: middle;" rowspan="2"><div style="width: 1px; height: 28px; background-color: #E2E8F0;"></div></td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: bottom; text-align: center; color: #888888; font-size: 10px; font-weight: bold; padding-bottom: 2px;">Normal</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: bottom; text-align: center; color: #888888; font-size: 10px; font-weight: bold; padding-bottom: 2px;">Elevated</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: bottom; text-align: center; color: #888888; font-size: 10px; font-weight: bold; padding-bottom: 2px;">Stage 1</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: bottom; text-align: center; color: #888888; font-size: 10px; font-weight: bold; padding-bottom: 2px;">Stage 2</td>`;
+        tableHtml += renderLabel('MEAN');
+        tableHtml += renderLabel('MAX');
+        tableHtml += renderLabel('MIN');
+        tableHtml += `<td style="border: none !important; padding: 0 0 0 14px;" rowspan="2"><div style="width: 1.5px; height: 26px; background-color: #E2E8F0;"></div></td>`;
+        tableHtml += renderLabel('Normal');
+        tableHtml += renderLabel('Elevated');
+        tableHtml += renderLabel('Stage 1');
+        tableHtml += renderLabel('Stage 2');
         tableHtml += `</tr>`;
+        
+        // 第二列：數值 (底部對齊)
+        const renderVal = (text, size, color) => `<td style="border: none !important; padding: 0 0 0 16px; vertical-align: bottom; text-align: left; color: ${color}; font-size: ${size}; font-weight: 900; line-height: 0.85; font-family: Arial, sans-serif;">${text}</td>`;
+        
         tableHtml += `<tr>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: bottom; text-align: center; color: #222222; font-size: 24px; font-weight: 900; line-height: 0.9;">${meanSys}/${meanDia}</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: bottom; text-align: center; color: #495057; font-size: 16px; font-weight: 900; line-height: 0.9;">${maxStr}</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: bottom; text-align: center; color: #495057; font-size: 16px; font-weight: 900; line-height: 0.9;">${minStr}</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: bottom; text-align: center; color: #495057; font-size: 16px; font-weight: 900; line-height: 0.9;">${pctNormal}%</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: bottom; text-align: center; color: #495057; font-size: 16px; font-weight: 900; line-height: 0.9;">${pctElevated}%</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: bottom; text-align: center; color: #495057; font-size: 16px; font-weight: 900; line-height: 0.9;">${pctStage1}%</td>`;
-        tableHtml += `<td style="border: none !important; padding: 0 10px; vertical-align: bottom; text-align: center; color: #495057; font-size: 16px; font-weight: 900; line-height: 0.9;">${pctStage2}%</td>`;
+        tableHtml += renderVal(`${meanSys}/${meanDia}`, '22px', '#111111'); // MEAN最大，黑字
+        tableHtml += renderVal(maxStr, '15px', '#666666'); // MAX 深灰
+        tableHtml += renderVal(minStr, '15px', '#666666'); // MIN 深灰
+        tableHtml += renderVal(`${pctNormal}%`, '15px', '#111111'); // 四分類 黑字
+        tableHtml += renderVal(`${pctElevated}%`, '15px', '#111111');
+        tableHtml += renderVal(`${pctStage1}%`, '15px', '#111111');
+        tableHtml += renderVal(`${pctStage2}%`, '15px', '#111111');
         tableHtml += `</tr>`;
-        tableHtml += `</table>`;
-        tableHtml += `</div>`;
-
+        
+        tableHtml += `</table></div>`;
         tableHtml += `</th></tr>`;
         
         tableHtml += `<tr class="month-row-thick">`;
