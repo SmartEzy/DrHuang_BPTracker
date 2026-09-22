@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=122">
+  <link rel="manifest" href="manifest.json?v=123">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -136,7 +136,13 @@
     .record-row div:last-child { display: flex; justify-content: flex-end; }
     
     .delete-btn { background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; display: flex; justify-content: flex-end; align-items: center; transition: color 0.2s; }
-    .delete-btn:hover { color: var(--danger-color); }
+    
+    /* 🌟 修復手機端 Sticky Hover 殘留問題 */
+    @media (hover: hover) { 
+      .delete-btn:hover { color: var(--danger-color); } 
+    }
+    .delete-btn:active { color: var(--danger-color); }
+    .record-row.highlight-delete .delete-btn { color: var(--danger-color); } /* 確認刪除亮紅燈期間，垃圾桶跟著變紅 */
     
     .sun-col { display: flex; align-items: center; justify-content: center; }
     .bp-col-align { display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center; justify-content: center; }
@@ -851,7 +857,6 @@
           tableHtml += `<tr>`;
           for (let m = 0; m < monthCount; m++) {
             let monthKey = targetMonths[m]; let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null; let rightCls = (m < (monthCount - 1)) ? ' thick-right' : '';
-            // 🌟 終極防呆：直接用 inline-style 把淺灰色蓋上去，不管 html2canvas 怎麼讀都絕對不會變黑
             tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td>${record ? record.systolic : ''}</td><td>${record ? record.diastolic : ''}</td><td class="${rightCls}">${record ? record.heartRate : ''}</td>`;
           }
           tableHtml += `</tr>`;
