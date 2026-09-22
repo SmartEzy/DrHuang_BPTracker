@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=124">
+  <link rel="manifest" href="manifest.json?v=125">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -207,7 +207,7 @@
     #printArea { display: none; width: 210mm; height: 297mm; box-sizing: border-box; padding: 16mm 12mm 5mm 12mm; background-color: #FFFFFF; color: #000; }
     .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: Arial, sans-serif; table-layout: fixed; background-color: #FFFFFF; border: 1.5px solid #000 !important; }
     .print-table th, .print-table td { border: 0.5px solid #000 !important; padding: 0; height: 28.5px; line-height: 28.5px; box-sizing: border-box; overflow: hidden; }
-    .print-table th.print-title { background-color: #FFFFFF; border-bottom: 1.5px solid #000 !important; height: 50px; }
+    
     .print-table tr.month-row-thick th { border-bottom: 1.5px solid #000 !important; }
     .print-table th.thick-right, .print-table td.thick-right { border-right: 1.5px solid #000 !important; }
     .print-table th.month-label { text-align: center; font-weight: bold; border-right: none !important; }
@@ -835,7 +835,6 @@
           targetMonths.push(`${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}`);
         }
 
-        // 🌟 計算準備印出的這張報表的臨床摘要數據
         let printedRecords = [];
         for (let day = 1; day <= 31; day++) {
           for (let m = 0; m < monthCount; m++) {
@@ -861,16 +860,33 @@
         let maxStr = '-';
         if (maxRecord) {
             let dObj = new Date(maxRecord.date.replace(/-/g, '/'));
-            maxStr = `${maxRecord.systolic}/${maxRecord.diastolic} (${String(dObj.getMonth() + 1).padStart(2, '0')}/${String(dObj.getDate()).padStart(2, '0')})`;
+            maxStr = `${maxRecord.systolic}/${maxRecord.diastolic} <span style="font-size: 11px; font-weight: normal; color: #666;">(${String(dObj.getMonth() + 1).padStart(2, '0')}/${String(dObj.getDate()).padStart(2, '0')})</span>`;
         }
 
         let tableHtml = `<thead>`;
-        // 🌟 利用 absolute 定位，將「血壓記錄表」靠左，並把摘要靠右下方對齊，不佔用任何高度
-        tableHtml += `<tr><th colspan="${monthCount * 4}" class="print-title" style="position: relative;">`;
-        tableHtml += `<div style="position: absolute; left: 16px; top: 0; height: 50px; line-height: 50px;">血壓記錄表</div>`;
-        tableHtml += `<div style="position: absolute; right: 16px; bottom: 8px; line-height: 1.2; font-size: 13px; letter-spacing: 0; font-weight: bold; font-family: Arial, sans-serif; color: #495057;">`;
-        tableHtml += `[Mean] ${meanSys}/${meanDia} \u00A0${meanHr} \u00A0\u00A0\u00A0 [Max] ${maxStr} \u00A0\u00A0\u00A0 [SBP&lt;130]${sbpTargetPct}%`;
-        tableHtml += `</div></th></tr>`;
+        
+        // 🌟 醫療儀表板表頭 (Center Title, Left & Right Dashboard Metrics)
+        tableHtml += `<tr><th colspan="${monthCount * 4}" style="position: relative; height: 65px; padding: 0; border-bottom: 1.5px solid #000 !important; background-color: #FFFFFF;">`;
+        
+        // 🌟 左側：HERO Metric (MEAN)
+        tableHtml += `<div style="position: absolute; left: 16px; top: 8px; text-align: left; line-height: 1.1; font-family: Arial, sans-serif;">`;
+        tableHtml += `<div style="color: #8FA3B8; font-size: 11px; font-weight: 900; letter-spacing: 1px;">MEAN</div>`;
+        tableHtml += `<div style="margin-top: 2px;">`;
+        tableHtml += `<span style="font-size: 26px; font-weight: 900; color: #222;">${meanSys}</span>`;
+        tableHtml += `<span style="font-size: 18px; font-weight: 900; color: #666;">/${meanDia}</span>`;
+        tableHtml += `<span style="font-size: 13px; font-weight: bold; color: #666; margin-left: 4px;">${meanHr} bpm</span>`;
+        tableHtml += `</div></div>`;
+
+        // 🌟 中央：對稱的血壓記錄表標題
+        tableHtml += `<div style="position: absolute; left: 0; right: 0; top: 14px; text-align: center; font-size: 28px; letter-spacing: 12px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000;">血壓記錄表</div>`;
+
+        // 🌟 右側：次要指標 (MAX & TARGET) 上下排列
+        tableHtml += `<div style="position: absolute; right: 16px; top: 12px; text-align: right; line-height: 1.5; font-size: 12px; font-family: Arial, sans-serif;">`;
+        tableHtml += `<div><span style="color: #8FA3B8; font-weight: 900; letter-spacing: 0.5px; margin-right: 6px;">MAX</span><span style="font-weight: 900; color: #495057; font-size: 13px;">${maxStr}</span></div>`;
+        tableHtml += `<div><span style="color: #8FA3B8; font-weight: 900; letter-spacing: 0.5px; margin-right: 6px;">SBP&lt;130</span><span style="font-weight: 900; color: #495057; font-size: 13px;">${sbpTargetPct}%</span></div>`;
+        tableHtml += `</div>`;
+
+        tableHtml += `</th></tr>`;
         
         tableHtml += `<tr class="month-row-thick">`;
         for (let i = 0; i < monthCount; i++) {
