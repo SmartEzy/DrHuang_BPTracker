@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=112">
+  <link rel="manifest" href="manifest.json?v=113">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -370,7 +370,7 @@
       </div>
     </div>
     
-    <!-- 🌟 補回遺失的圖表容器，按鈕終於有東西可以控制了！ -->
+    <!-- 🌟 保留圖表容器，按鈕可正常作用 -->
     <div id="chartContainer" class="chart-container" style="display: none;">
       <canvas id="bpChart"></canvas>
     </div>
@@ -388,8 +388,8 @@
     </div>
   </div> 
 
-  <!-- 🌟 解決最後一個月份標題打架的關鍵：加入 65vh 底部留白 (Overscroll) -->
-  <div class="container" style="padding-top: 0; padding-bottom: 65vh;">
+  <!-- 🌟 底部留白改回 80px，不會掉進虛空，也剛好夠緩衝 -->
+  <div class="container" style="padding-top: 0; padding-bottom: 80px;">
     <div id="recordsList">
       <div style="text-align:center; padding: 20px; color: #888;">Loading...</div>
     </div>
