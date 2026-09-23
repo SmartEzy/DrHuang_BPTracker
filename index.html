@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=140">
+  <link rel="manifest" href="manifest.json?v=141">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -826,7 +826,6 @@
 
         let tableHtml = `<thead>`;
         
-        // 🌟 血壓儀表板列 (附加 class dashboard-row) - Padding 上下維持完美對齊
         tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 12px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
         tableHtml += `<div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">`;
         
@@ -834,29 +833,26 @@
 
         tableHtml += `<div style="display: flex; align-items: center; font-family: Arial, sans-serif;">`;
         
-        // 🌟 靠左對齊渲染器 (MEAN, MAX, MIN 使用) - 拔除隱形底行，讓此區塊完美垂直置中
         const renderStatLeft = (lbl, val, color) => `<div style="margin-left: 14px; text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
         
-        // 🌟 置中對齊渲染器 (四分類 AHA 指標使用) - 利用 position: absolute 將淡灰小字「懸浮」塞入下方 Padding 空白處，不撐大版面
-        const renderStatCenter = (lbl, val, color, def) => `<div style="margin-left: 10px; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 7.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 3px; letter-spacing: -0.3px; white-space: nowrap;">${def}</div></div>`;
+        // 🌟 更新：margin-top 設為 2px (與 label 的 margin-bottom 對稱)，字體縮小至 6.5px，文字去除 letter-spacing 擠壓。
+        const renderStatCenter = (lbl, val, color, def) => `<div style="margin-left: 10px; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 2px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
 
         // 左半部
         tableHtml += renderStatLeft('MEAN', `${meanSys}/${meanDia}`, '#111111');
         tableHtml += renderStatLeft('MAX', maxStr, '#666666');
         tableHtml += renderStatLeft('MIN', minStr, '#666666');
         
-        // 直立分隔線 (配合 9px + 18px 的高度，微調至 26px)
         tableHtml += `<div style="width: 1.5px; height: 26px; background-color: #CED4DA; margin: 0 4px 0 16px;"></div>`;
         
-        // 右半部 (完美置中對齊 + 懸浮 AHA 淡灰定義)
-        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120/80');
-        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129/&lt;80');
-        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139/80-89');
-        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140/&ge;90');
+        // 右半部 🌟 斜線前後加入半形空格
+        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80');
+        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80');
+        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89');
+        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90');
         
         tableHtml += `</div></div></th></tr>`;
         
-        // 🌟 月份列
         tableHtml += `<tr class="month-row-thick">`;
         for (let i = 0; i < monthCount; i++) {
           let mVal = targetMonths[i] ? targetMonths[i] : ``; let rightCls = (i < (monthCount - 1)) ? ' thick-right' : ''; 
@@ -889,7 +885,6 @@
         pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);
         const today = new Date(); const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
         
-        // 🌟 檔名更新為 3M / 4M
         pdf.save(`血壓記錄表_${monthCount}M_${dateStr}.pdf`);
 
         printArea.style.display = 'none'; printArea.style.position = ''; printArea.style.left = ''; printArea.style.top = '';
