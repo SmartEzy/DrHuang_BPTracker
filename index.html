@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=157">
+  <link rel="manifest" href="manifest.json?v=158">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -48,7 +48,6 @@
     .banner-content { background-color: var(--primary-dark); flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 10px; }
     .banner-text { font-size: 20px; font-weight: bold; color: #FFFFFF; }
     
-    /* 🌟 按鈕群組間距 */
     .header-actions { display: flex; gap: 8px; align-items: center; }
     .header-btn { background: none; border: none; color: #FFFFFF; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s; }
     .header-btn:active { opacity: 0.6; }
@@ -214,9 +213,8 @@
 
     #printArea { display: none; width: 210mm; height: 297mm; box-sizing: border-box; padding: 16mm 12mm 5mm 12mm; background-color: #FFFFFF; color: #000; }
     
-    /* 🌟 移除 overflow: hidden 確保符號絕對不會被切斷 */
     .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: Arial, sans-serif; table-layout: fixed; background-color: #FFFFFF; border: 1.5px solid #000 !important; }
-    .print-table th, .print-table td { border: 0.5px solid #000 !important; padding: 0; height: 28.5px; line-height: 28.5px; box-sizing: border-box; }
+    .print-table th, .print-table td { border: 0.5px solid #000 !important; padding: 0; height: 28.5px; line-height: 28.5px; box-sizing: border-box; overflow: hidden; }
     
     .print-table tr:first-child th { border-top: 1.5px solid #000 !important; }
     .print-table tr:last-child td { border-bottom: 1.5px solid #000 !important; }
@@ -273,27 +271,22 @@
       <div class="banner-content"> 
         <span class="banner-text">BP Tracker</span>
         
-        <!-- 🌟 全新實用派長方形按鈕設計 (白底黑字PDF, 黑底白框白字JPG) -->
         <div class="header-actions">
-          <!-- JPG 4M -->
           <button id="exportImgBtn4" class="header-btn" onclick="generateReport(4, 'image')" title="Image 4 Months" style="background-color: #111111; color: #FFFFFF; border: 1.5px solid #FFFFFF; border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 40px; box-sizing: border-box;">
             <span style="font-size: 11px; font-weight: bold; line-height: 1.1;">JPG</span>
             <span style="font-size: 13px; font-weight: 900; line-height: 1.1; margin-top: 1px;">4M</span>
           </button>
           
-          <!-- PDF 4M -->
           <button id="exportPdfBtn4" class="header-btn" onclick="generateReport(4, 'pdf')" title="PDF 4 Months" style="background-color: #FFFFFF; color: #111111; border: 1.5px solid #FFFFFF; border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 40px; box-sizing: border-box;">
             <span style="font-size: 11px; font-weight: bold; line-height: 1.1;">PDF</span>
             <span style="font-size: 13px; font-weight: 900; line-height: 1.1; margin-top: 1px;">4M</span>
           </button>
 
-          <!-- JPG 3M -->
           <button id="exportImgBtn3" class="header-btn" onclick="generateReport(3, 'image')" title="Image 3 Months" style="background-color: #111111; color: #FFFFFF; border: 1.5px solid #FFFFFF; border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 40px; box-sizing: border-box;">
             <span style="font-size: 11px; font-weight: bold; line-height: 1.1;">JPG</span>
             <span style="font-size: 13px; font-weight: 900; line-height: 1.1; margin-top: 1px;">3M</span>
           </button>
 
-          <!-- PDF 3M -->
           <button id="exportPdfBtn3" class="header-btn" onclick="generateReport(3, 'pdf')" title="PDF 3 Months" style="background-color: #FFFFFF; color: #111111; border: 1.5px solid #FFFFFF; border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 40px; box-sizing: border-box;">
             <span style="font-size: 11px; font-weight: bold; line-height: 1.1;">PDF</span>
             <span style="font-size: 13px; font-weight: 900; line-height: 1.1; margin-top: 1px;">3M</span>
@@ -728,6 +721,7 @@
             let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
             let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
             
+            // 🌟 針對手機 UI 渲染 AHA 符號 (手機端保留色彩便於辨識)
             let sysStr = item.systolic || '';
             let diaStr = item.diastolic || '';
             let catIconHtml = '';
@@ -872,45 +866,40 @@
         let meanDia = countDia ? Math.round(sumDia / countDia) : '-'; 
         let meanHr = countHr ? Math.round(sumHr / countHr) : '-'; 
         
-        const slash = `<span style="margin: 0 4px;">/</span>`;
+        // 🌟 拔除斜線左右間距
+        const slash = `/`;
         let maxStr = maxRecord ? `${maxRecord.systolic}${slash}${maxRecord.diastolic}` : `-${slash}-`;
         let minStr = minRecord ? `${minRecord.systolic}${slash}${minRecord.diastolic}` : `-${slash}-`;
 
         let tableHtml = `<thead>`;
         tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 12px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
+        tableHtml += `<div style="display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative;">`;
         
-        // 🌟 回歸經典排版：標題置左，數據與 AHA 圖例置右
-        tableHtml += `<div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">`;
+        const renderStatLeft = (lbl, val, color) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
         
-        tableHtml += `<div style="font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
-
-        tableHtml += `<div style="display: flex; align-items: center; font-family: Arial, sans-serif;">`;
-        
-        const renderStatLeft = (lbl, val, color) => `<div style="margin-left: 14px; text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
-        
-        const renderStatCenter = (lbl, val, color, def, ml = '18px', icon = '') => {
-            let lblHtml = icon ? `<div style="display: flex; align-items: center; justify-content: center; gap: 3px;">${icon}<span>${lbl}</span></div>` : lbl;
-            return `<div style="margin-left: ${ml}; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lblHtml}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
+        // 🌟 完全移除圖例參數 (icon)，恢復最簡潔的結構
+        const renderStatCenter = (lbl, val, color, def, ml = '18px') => {
+            return `<div style="margin-left: ${ml}; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
         };
-
-        const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#999999" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
-        const svgStage1 = `<div style="width: 10px; height: 10px; background-color: #999999; color: white; border-radius: 50%; font-size: 7px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">1</div>`;
-        const svgStage2 = `<div style="width: 10px; height: 10px; background-color: #999999; color: white; border-radius: 50%; font-size: 7px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">2</div>`;
 
         let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
         
+        tableHtml += `<div style="display: flex; flex: 1; justify-content: flex-start; gap: 14px;">`;
         tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '#111111');
         tableHtml += renderStatLeft('MAX', maxStr, '#666666');
         tableHtml += renderStatLeft('MIN', minStr, '#666666');
+        tableHtml += `</div>`;
+
+        tableHtml += `<div style="font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; text-align: center; margin: 0 10px;">血壓記錄表</div>`;
+
+        tableHtml += `<div style="display: flex; flex: 1; justify-content: flex-end; gap: 14px;">`;
+        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80', '0px');
+        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80', '18px');
+        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89', '18px');
+        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90', '18px');
+        tableHtml += `</div>`;
         
-        tableHtml += `<div style="width: 1.5px; height: 26px; background-color: #CED4DA; margin: 0 4px 0 16px;"></div>`;
-        
-        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80', '8px');
-        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80', '18px', svgElevatedLegend);
-        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89', '18px', svgStage1);
-        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90', '18px', svgStage2);
-        
-        tableHtml += `</div></div></th></tr>`;
+        tableHtml += `</div></th></tr>`;
         
         tableHtml += `<tr class="month-row-thick">`;
         for (let i = 0; i < monthCount; i++) {
@@ -929,40 +918,14 @@
           for (let m = 0; m < monthCount; m++) {
             let monthKey = targetMonths[m]; let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null; let rightCls = (m < (monthCount - 1)) ? ' thick-right' : '';
             
+            // 🌟 報表渲染：徹底拔除所有符號與圖例，僅保留純數據
             let sysStr = record ? record.systolic : '';
             let diaStr = record ? record.diastolic : '';
-            let catIconHtml = '';
             
-            if (record && sysStr && diaStr && !isNaN(parseInt(sysStr)) && !isNaN(parseInt(diaStr))) {
-                let s = parseInt(sysStr), d = parseInt(diaStr);
-                let sCat = (s < 120) ? 0 : ((s < 130) ? 1 : ((s < 140) ? 2 : 3));
-                let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
-                let cat = Math.max(sCat, dCat);
-                
-                // 🌟 修正：全高 Flex 容器，確保絕對不會被表格裁切 (取代 transform)
-                let iconWrapperStyle = "position: absolute; left: 2px; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center;";
-                
-                if (cat === 1) {
-                    catIconHtml = `<div style="${iconWrapperStyle}"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#333333" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>`;
-                } else if (cat === 2) {
-                    catIconHtml = `<div style="${iconWrapperStyle}"><div style="width: 12px; height: 12px; background-color: #333333; color: white; border-radius: 50%; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">1</div></div>`;
-                } else if (cat === 3) {
-                    catIconHtml = `<div style="${iconWrapperStyle}"><div style="width: 12px; height: 12px; background-color: #333333; color: white; border-radius: 50%; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">2</div></div>`;
-                }
-            }
-            
-            let sysCell = '';
-            if (record) {
-                if (catIconHtml !== '') {
-                    sysCell = `${catIconHtml}<span style="color: #333333; font-weight: bold;">${sysStr}</span>`;
-                } else {
-                    sysCell = `<span style="color: #333333; font-weight: bold;">${sysStr}</span>`;
-                }
-            }
-            
+            let sysCell = record ? `<span style="color: #333333; font-weight: bold;">${sysStr}</span>` : '';
             let diaCell = record ? `<span style="color: #333333; font-weight: bold;">${diaStr}</span>` : '';
             
-            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td style="position: relative;">${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: bold;">${record ? record.heartRate : ''}</td>`;
+            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td>${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: bold;">${record ? record.heartRate : ''}</td>`;
           }
           tableHtml += `</tr>`;
         }
