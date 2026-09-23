@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=145">
+  <link rel="manifest" href="manifest.json?v=146">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -26,7 +26,9 @@
       --bg-color: #F4F6F8; 
       --text-main: #333333; 
       --border-color: #CED4DA; 
-      --danger-color: #D32F2F; 
+      --danger-color: #DC2626; 
+      --warning-color: #D97706; /* 深琥珀色 (Elevated) */
+      --alert-color: #EA580C;   /* 橘色 (Stage 1) */
       --sticky-offset: 240px; 
     }
     
@@ -39,18 +41,16 @@
       scroll-behavior: smooth; 
     }
     
-    .banner-container { display: flex; align-items: stretch; width: 100%; height: 44px; box-sizing: border-box; }
+    .banner-container { display: flex; align-items: stretch; width: 100%; height: 48px; box-sizing: border-box; }
     .banner-left-bar { width: 12px; background-color: var(--primary-dark); }
     .logo-box { background-color: #FFFFFF; padding: 0 4px; display: flex; align-items: center; justify-content: center; }
     .banner-logo { width: 36px; height: 36px; object-fit: contain; }
     .banner-content { background-color: var(--primary-dark); flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 10px; }
     .banner-text { font-size: 20px; font-weight: bold; color: #FFFFFF; }
     
-    /* 🌟 將 gap 縮小至 8px，確保手機螢幕能輕鬆容納 5 顆按鈕 */
-    .header-actions { display: flex; gap: 8px; align-items: center; }
-    .header-btn { background: none; border: none; color: #FFFFFF; cursor: pointer; padding: 0; display: flex; align-items: center; transition: opacity 0.2s; }
-    .header-btn-icon { font-size: 18px; }
-    .header-btn-text { font-size: 13px; font-weight: bold; margin-left: 2px; }
+    .header-actions { display: flex; gap: 10px; align-items: center; }
+    .header-btn { background: none; border: none; color: #FFFFFF; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s; }
+    .header-btn:active { opacity: 0.6; }
     
     .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; }
     
@@ -142,12 +142,17 @@
     .record-row.highlight-delete .delete-btn { color: var(--danger-color); }
     
     .sun-col { display: flex; align-items: center; justify-content: center; }
-    .bp-col-align { display: grid; grid-template-columns: 1fr auto 1fr; gap: 2px; align-items: center; justify-content: center; }
-    .bp-sys { text-align: right; font-weight: bold; }
-    .bp-slash { color: #888; font-weight: normal; } 
-    .bp-dia { text-align: left; font-weight: bold; }
+    .bp-col-align { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0px; align-items: center; justify-content: center; }
+    .bp-sys { text-align: right; }
+    .bp-slash { color: #888; font-weight: normal; margin: 0 2px; } 
+    .bp-dia { text-align: left; }
+    
+    /* 🌟 AHA 分級的專屬色彩 Class */
+    .bp-elevated { color: var(--warning-color); font-weight: bold; }
+    .bp-stage1 { color: var(--alert-color); font-weight: bold; }
+    .bp-stage2 { color: var(--danger-color); font-weight: bold; }
+    
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
-    .high-bp { color: var(--danger-color); font-weight: bold; }
 
     .sheet-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -265,21 +270,52 @@
       <div class="banner-content"> 
         <span class="banner-text">BP Tracker</span>
         <div class="header-actions">
-          <!-- 🌟 加入圖片與 PDF 雙引擎按鈕，排列：圖 4M, PDF 4M, 圖 3M, PDF 3M -->
-          <button class="header-btn" id="exportImgBtn4" onclick="generateReport(4, 'image')" title="Image 4 Months">
-            <span class="header-btn-icon">🖼️</span><span class="header-btn-text">4M</span>
+          
+          <!-- 🌟 圖片 4M -->
+          <button class="header-btn" onclick="generateReport(4, 'image')" title="Image 4 Months">
+            <svg viewBox="0 0 24 32" width="22" height="26" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 2v28h16V10l-8-8H4z"></path>
+              <polyline points="12 2 12 10 20 10"></polyline>
+              <text x="12" y="19" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">JPG</text>
+              <text x="12" y="28" font-size="8" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">4M</text>
+            </svg>
           </button>
-          <button class="header-btn" id="exportPdfBtn4" onclick="generateReport(4, 'pdf')" title="Print 4 Months">
-            <span class="header-btn-icon">🖨️</span><span class="header-btn-text">4M</span>
+          
+          <!-- 🌟 PDF 4M -->
+          <button class="header-btn" onclick="generateReport(4, 'pdf')" title="PDF 4 Months">
+            <svg viewBox="0 0 24 32" width="22" height="26" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 2v28h16V10l-8-8H4z"></path>
+              <polyline points="12 2 12 10 20 10"></polyline>
+              <text x="12" y="19" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">PDF</text>
+              <text x="12" y="28" font-size="8" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">4M</text>
+            </svg>
           </button>
-          <button class="header-btn" id="exportImgBtn3" onclick="generateReport(3, 'image')" title="Image 3 Months">
-            <span class="header-btn-icon">🖼️</span><span class="header-btn-text">3M</span>
+
+          <!-- 🌟 圖片 3M -->
+          <button class="header-btn" onclick="generateReport(3, 'image')" title="Image 3 Months">
+            <svg viewBox="0 0 24 32" width="22" height="26" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 2v28h16V10l-8-8H4z"></path>
+              <polyline points="12 2 12 10 20 10"></polyline>
+              <text x="12" y="19" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">JPG</text>
+              <text x="12" y="28" font-size="8" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">3M</text>
+            </svg>
           </button>
-          <button class="header-btn" id="exportPdfBtn3" onclick="generateReport(3, 'pdf')" title="Print 3 Months">
-            <span class="header-btn-icon">🖨️</span><span class="header-btn-text">3M</span>
+
+          <!-- 🌟 PDF 3M -->
+          <button class="header-btn" onclick="generateReport(3, 'pdf')" title="PDF 3 Months">
+            <svg viewBox="0 0 24 32" width="22" height="26" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 2v28h16V10l-8-8H4z"></path>
+              <polyline points="12 2 12 10 20 10"></polyline>
+              <text x="12" y="19" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">PDF</text>
+              <text x="12" y="28" font-size="8" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">3M</text>
+            </svg>
           </button>
-          <button class="header-btn" onclick="handleRefresh()" title="Refresh Time">
-            <span class="header-btn-icon">↻</span>
+
+          <button class="header-btn" onclick="handleRefresh()" title="Refresh Time" style="margin-left: 4px;">
+            <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+            </svg>
           </button>
         </div>
       </div>
@@ -711,7 +747,21 @@
             let currMonthStr = logical.logicalMonthStr; let currDayStr = logical.logicalDayStr; let formattedDate = logical.logicalStr;
             let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
             let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
-            let sysHtml = (item.systolic >= 130) ? `<span class="high-bp">${item.systolic}</span>` : (item.systolic || '');
+            
+            // 🌟 針對列表渲染 AHA 顏色 (計算當次紀錄的類別)
+            let sysNum = parseInt(item.systolic);
+            let diaNum = parseInt(item.diastolic);
+            let sCat = (sysNum < 120) ? 0 : ((sysNum < 130) ? 1 : ((sysNum < 140) ? 2 : 3));
+            let dCat = (diaNum < 80) ? 0 : ((diaNum < 90) ? 2 : 3);
+            let cat = Math.max(sCat, dCat);
+            
+            let colorClass = '';
+            if (cat === 1) colorClass = 'bp-elevated';
+            else if (cat === 2) colorClass = 'bp-stage1';
+            else if (cat === 3) colorClass = 'bp-stage2';
+            
+            let sysHtml = colorClass ? `<span class="${colorClass}">${item.systolic || ''}</span>` : (item.systolic || '');
+            let diaHtml = colorClass ? `<span class="${colorClass}">${item.diastolic || ''}</span>` : (item.diastolic || '');
             
             let sunSvgHtml = '';
             if (timeParts) {
@@ -735,7 +785,7 @@
             html += `
               <div class="record-row ${isNewDay ? 'new-day' : ''}">
                 <div>${displayDateText}</div><div>${formattedTime}</div><div class="sun-col">${sunSvgHtml}</div>
-                <div class="bp-col-align"><span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${item.diastolic || ''}</span></div>
+                <div class="bp-col-align"><span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${diaHtml}</span></div>
                 <div>${item.heartRate || ''}</div><div class="note-col">${displayNote}</div>
                 <div>
                   <button class="delete-btn" onclick="confirmDelete(this, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}', '${encodedNotes}')" title="Delete">
@@ -757,7 +807,6 @@
       }
     }
 
-    // 🌟 統整雙格式輸出的新函式：generateReport(monthCount, type)
     async function generateReport(monthCount, type = 'pdf') {
       let reportData = [...allRecords].filter(r => r && r.date && String(r.notes || '').includes('[報表]')).sort((a, b) => new Date(String(a.date).replace(/-/g, '/')).getTime() - new Date(String(b.date).replace(/-/g, '/')).getTime());
       if (reportData.length === 0) { alert("目前沒有包含「報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return; }
@@ -835,9 +884,10 @@
         let meanDia = countDia ? Math.round(sumDia / countDia) : '-'; 
         let meanHr = countHr ? Math.round(sumHr / countHr) : '-'; 
         
-        // 🌟 血壓斜線左右加一個空格
-        let maxStr = maxRecord ? `${maxRecord.systolic} /${maxRecord.diastolic}` : '- / -';
-        let minStr = minRecord ? `${minRecord.systolic} /${minRecord.diastolic}` : '- / -';
+        // 🌟 修正：斜線前後加入間距 <span style="margin: 0 2px;">/</span>
+        const slash = `<span style="margin: 0 2px;">/</span>`;
+        let maxStr = maxRecord ? `${maxRecord.systolic}${slash}${maxRecord.diastolic}` : `-${slash}-`;
+        let minStr = minRecord ? `${minRecord.systolic}${slash}${minRecord.diastolic}` : `-${slash}-`;
 
         let tableHtml = `<thead>`;
         tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 12px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
@@ -849,18 +899,16 @@
         
         const renderStatLeft = (lbl, val, color) => `<div style="margin-left: 14px; text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
         
-        // 🌟 修正：margin-top 設為 0px 以完美貼合，同時縮小 Normal 左側的間隔 (利用 ml 參數)
         const renderStatCenter = (lbl, val, color, def, ml = '18px') => `<div style="margin-left: ${ml}; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
 
-        let hrDisplay = meanHr !== '-' ? `&nbsp;&nbsp;${meanHr}` : '';
-        // 🌟 血壓斜線左右加一個空格
-        tableHtml += renderStatLeft('MEAN', `${meanSys} / ${meanDia}${hrDisplay}`, '#111111');
+        // 🌟 修正：HR 左側加入 6px 的留白，與 DBP 精準切開
+        let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
+        tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '#111111');
         tableHtml += renderStatLeft('MAX', maxStr, '#666666');
         tableHtml += renderStatLeft('MIN', minStr, '#666666');
         
         tableHtml += `<div style="width: 1.5px; height: 26px; background-color: #CED4DA; margin: 0 4px 0 16px;"></div>`;
         
-        // 🌟 減少 Normal 的左側間距 (設定為 8px)
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80', '8px');
         tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80');
         tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89');
@@ -884,7 +932,23 @@
           tableHtml += `<tr>`;
           for (let m = 0; m < monthCount; m++) {
             let monthKey = targetMonths[m]; let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null; let rightCls = (m < (monthCount - 1)) ? ' thick-right' : '';
-            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td>${record ? record.systolic : ''}</td><td>${record ? record.diastolic : ''}</td><td class="${rightCls}">${record ? record.heartRate : ''}</td>`;
+            
+            // 🌟 PDF 報表渲染：根據 AHA 類別變更文字顏色
+            let sysStr = record ? record.systolic : '';
+            let diaStr = record ? record.diastolic : '';
+            let colorStyle = '';
+            
+            if (record && !isNaN(parseInt(sysStr)) && !isNaN(parseInt(diaStr))) {
+                let s = parseInt(sysStr), d = parseInt(diaStr);
+                let sCat = (s < 120) ? 0 : ((s < 130) ? 1 : ((s < 140) ? 2 : 3));
+                let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
+                let cat = Math.max(sCat, dCat);
+                if (cat === 1) colorStyle = 'color: #D97706; font-weight: bold;';
+                else if (cat === 2) colorStyle = 'color: #EA580C; font-weight: bold;';
+                else if (cat === 3) colorStyle = 'color: #DC2626; font-weight: bold;';
+            }
+            
+            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td style="${colorStyle}">${sysStr}</td><td style="${colorStyle}">${diaStr}</td><td class="${rightCls}">${record ? record.heartRate : ''}</td>`;
           }
           tableHtml += `</tr>`;
         }
@@ -899,7 +963,6 @@
         const today = new Date(); const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
         const filename = `血壓記錄表_${monthCount}M_${dateStr}`;
         
-        // 🌟 依照按鈕選擇的格式進行匯出
         if (type === 'pdf') {
           const { jsPDF } = window.jspdf;
           const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
