@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=141">
+  <link rel="manifest" href="manifest.json?v=142">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -790,13 +790,14 @@
           }
         }
 
-        let sumSys = 0, sumDia = 0, countSys = 0, countDia = 0;
+        // 🌟 更新：加入 HR (心率) 的統計邏輯
+        let sumSys = 0, sumDia = 0, sumHr = 0, countSys = 0, countDia = 0, countHr = 0;
         let maxSys = -Infinity, minSys = Infinity;
         let maxRecord = null, minRecord = null;
         let countNormal = 0, countElevated = 0, countStage1 = 0, countStage2 = 0;
 
         printedRecords.forEach(r => {
-            let sys = parseInt(r.systolic); let dia = parseInt(r.diastolic);
+            let sys = parseInt(r.systolic); let dia = parseInt(r.diastolic); let hr = parseInt(r.heartRate);
             if (!isNaN(sys) && !isNaN(dia)) { 
                 sumSys += sys; countSys++; sumDia += dia; countDia++;
                 if (sys > maxSys) { maxSys = sys; maxRecord = r; }
@@ -811,6 +812,7 @@
                 else if (category === 2) countStage1++;
                 else if (category === 3) countStage2++;
             }
+            if (!isNaN(hr)) { sumHr += hr; countHr++; }
         });
         
         let totalCat = countNormal + countElevated + countStage1 + countStage2;
@@ -821,6 +823,7 @@
 
         let meanSys = countSys ? Math.round(sumSys / countSys) : '-'; 
         let meanDia = countDia ? Math.round(sumDia / countDia) : '-'; 
+        let meanHr = countHr ? Math.round(sumHr / countHr) : '-'; 
         let maxStr = maxRecord ? `${maxRecord.systolic}/${maxRecord.diastolic}` : '-/-';
         let minStr = minRecord ? `${minRecord.systolic}/${minRecord.diastolic}` : '-/-';
 
@@ -833,22 +836,31 @@
 
         tableHtml += `<div style="display: flex; align-items: center; font-family: Arial, sans-serif;">`;
         
+        // 🌟 靠左對齊渲染器：MEAN 專用，顯示字距調整
         const renderStatLeft = (lbl, val, color) => `<div style="margin-left: 14px; text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
         
-        // 🌟 更新：margin-top 設為 2px (與 label 的 margin-bottom 對稱)，字體縮小至 6.5px，文字去除 letter-spacing 擠壓。
+        // 🌟 置中對齊渲染器：四分類使用，包含極微小的灰色 AHA 定義字體
         const renderStatCenter = (lbl, val, color, def) => `<div style="margin-left: 10px; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 2px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
+        
+        // 🌟 分隔線
+        const divLine = `<div style="width: 1px; height: 18px; background-color: #E2E8F0; margin: 0 6px; margin-bottom: 4px;"></div>`;
 
         // 左半部
-        tableHtml += renderStatLeft('MEAN', `${meanSys}/${meanDia}`, '#111111');
+        // 將 HR 併入 MEAN，並用單一空白格開
+        tableHtml += renderStatLeft('MEAN', `${meanSys}/${meanDia}${meanHr}`, '#111111');
         tableHtml += renderStatLeft('MAX', maxStr, '#666666');
         tableHtml += renderStatLeft('MIN', minStr, '#666666');
         
+        // 區塊直立大分隔線
         tableHtml += `<div style="width: 1.5px; height: 26px; background-color: #CED4DA; margin: 0 4px 0 16px;"></div>`;
         
-        // 右半部 🌟 斜線前後加入半形空格
+        // 右半部：安插極細淡灰垂直分隔線
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80');
+        tableHtml += divLine;
         tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80');
+        tableHtml += divLine;
         tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89');
+        tableHtml += divLine;
         tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90');
         
         tableHtml += `</div></div></th></tr>`;
