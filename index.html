@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=146">
+  <link rel="manifest" href="manifest.json?v=147">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -26,9 +26,10 @@
       --bg-color: #F4F6F8; 
       --text-main: #333333; 
       --border-color: #CED4DA; 
-      --danger-color: #DC2626; 
-      --warning-color: #D97706; /* 深琥珀色 (Elevated) */
-      --alert-color: #EA580C;   /* 橘色 (Stage 1) */
+      /* 🌟 重新定義 AHA 分級色彩，確保視覺區辨度與灰階列印效果 */
+      --danger-color: #DC2626;  /* 深紅色 (Stage 2) */
+      --alert-color: #EA580C;   /* 明橘色 (Stage 1) */
+      --warning-color: #B45309; /* 黃褐色 (Elevated) */
       --sticky-offset: 240px; 
     }
     
@@ -48,7 +49,8 @@
     .banner-content { background-color: var(--primary-dark); flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 10px; }
     .banner-text { font-size: 20px; font-weight: bold; color: #FFFFFF; }
     
-    .header-actions { display: flex; gap: 10px; align-items: center; }
+    /* 🌟 拉寬按鈕間距，避免誤觸 */
+    .header-actions { display: flex; gap: 12px; align-items: center; }
     .header-btn { background: none; border: none; color: #FFFFFF; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s; }
     .header-btn:active { opacity: 0.6; }
     
@@ -147,7 +149,7 @@
     .bp-slash { color: #888; font-weight: normal; margin: 0 2px; } 
     .bp-dia { text-align: left; }
     
-    /* 🌟 AHA 分級的專屬色彩 Class */
+    /* AHA 分級的專屬色彩 Class */
     .bp-elevated { color: var(--warning-color); font-weight: bold; }
     .bp-stage1 { color: var(--alert-color); font-weight: bold; }
     .bp-stage2 { color: var(--danger-color); font-weight: bold; }
@@ -269,48 +271,50 @@
       </div>
       <div class="banner-content"> 
         <span class="banner-text">BP Tracker</span>
+        
+        <!-- 🌟 全新的手繪 SVG 向量按鈕區 (順序: 圖4M, PDF4M, 圖3M, PDF3M) -->
         <div class="header-actions">
-          
-          <!-- 🌟 圖片 4M -->
+          <!-- JPG 4M -->
           <button class="header-btn" onclick="generateReport(4, 'image')" title="Image 4 Months">
-            <svg viewBox="0 0 24 32" width="22" height="26" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 2v28h16V10l-8-8H4z"></path>
-              <polyline points="12 2 12 10 20 10"></polyline>
-              <text x="12" y="19" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">JPG</text>
-              <text x="12" y="28" font-size="8" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">4M</text>
+            <svg viewBox="0 0 32 32" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 2v22h18V8l-6-6H4z"></path>
+              <polyline points="16 2 16 8 22 8"></polyline>
+              <text x="13" y="16" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">JPG</text>
+              <text x="32" y="30" font-size="11" font-weight="900" text-anchor="end" stroke="none" fill="currentColor" font-family="Arial, sans-serif">4M</text>
             </svg>
           </button>
           
-          <!-- 🌟 PDF 4M -->
+          <!-- PDF 4M -->
           <button class="header-btn" onclick="generateReport(4, 'pdf')" title="PDF 4 Months">
-            <svg viewBox="0 0 24 32" width="22" height="26" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 2v28h16V10l-8-8H4z"></path>
-              <polyline points="12 2 12 10 20 10"></polyline>
-              <text x="12" y="19" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">PDF</text>
-              <text x="12" y="28" font-size="8" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">4M</text>
+            <svg viewBox="0 0 32 32" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 2v22h18V8l-6-6H4z"></path>
+              <polyline points="16 2 16 8 22 8"></polyline>
+              <text x="13" y="16" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">PDF</text>
+              <text x="32" y="30" font-size="11" font-weight="900" text-anchor="end" stroke="none" fill="currentColor" font-family="Arial, sans-serif">4M</text>
             </svg>
           </button>
 
-          <!-- 🌟 圖片 3M -->
+          <!-- JPG 3M -->
           <button class="header-btn" onclick="generateReport(3, 'image')" title="Image 3 Months">
-            <svg viewBox="0 0 24 32" width="22" height="26" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 2v28h16V10l-8-8H4z"></path>
-              <polyline points="12 2 12 10 20 10"></polyline>
-              <text x="12" y="19" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">JPG</text>
-              <text x="12" y="28" font-size="8" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">3M</text>
+            <svg viewBox="0 0 32 32" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 2v22h18V8l-6-6H4z"></path>
+              <polyline points="16 2 16 8 22 8"></polyline>
+              <text x="13" y="16" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">JPG</text>
+              <text x="32" y="30" font-size="11" font-weight="900" text-anchor="end" stroke="none" fill="currentColor" font-family="Arial, sans-serif">3M</text>
             </svg>
           </button>
 
-          <!-- 🌟 PDF 3M -->
+          <!-- PDF 3M -->
           <button class="header-btn" onclick="generateReport(3, 'pdf')" title="PDF 3 Months">
-            <svg viewBox="0 0 24 32" width="22" height="26" stroke="currentColor" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 2v28h16V10l-8-8H4z"></path>
-              <polyline points="12 2 12 10 20 10"></polyline>
-              <text x="12" y="19" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">PDF</text>
-              <text x="12" y="28" font-size="8" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">3M</text>
+            <svg viewBox="0 0 32 32" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 2v22h18V8l-6-6H4z"></path>
+              <polyline points="16 2 16 8 22 8"></polyline>
+              <text x="13" y="16" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">PDF</text>
+              <text x="32" y="30" font-size="11" font-weight="900" text-anchor="end" stroke="none" fill="currentColor" font-family="Arial, sans-serif">3M</text>
             </svg>
           </button>
 
+          <!-- 重整按鈕 -->
           <button class="header-btn" onclick="handleRefresh()" title="Refresh Time" style="margin-left: 4px;">
             <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="23 4 23 10 17 10"></polyline>
@@ -505,47 +509,7 @@
       if (!isDraggingSheet) return;
       currentY = e.clientY;
       const deltaY = currentY - startY;
-      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }
-    });
-    window.addEventListener('mouseup', () => {
-      if (!isDraggingSheet) return;
-      isDraggingSheet = false;
-      bottomSheet.classList.remove('dragging');
-      const deltaY = currentY - startY;
-      if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }
-    });
-
-    let isDownChart = false;
-    let startXChart;
-    let scrollLeftChart;
-
-    chartOuter.addEventListener('mousedown', (e) => {
-      isDownChart = true;
-      chartOuter.style.cursor = 'grabbing';
-      startXChart = e.pageX - chartOuter.offsetLeft;
-      scrollLeftChart = chartOuter.scrollLeft;
-    });
-    chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
-    chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
-    chartOuter.addEventListener('mousemove', (e) => {
-      if (!isDownChart) return;
-      e.preventDefault();
-      const x = e.pageX - chartOuter.offsetLeft;
-      const walk = (x - startXChart) * 1.5; 
-      chartOuter.scrollLeft = scrollLeftChart - walk;
-    });
-
-    function showLoading(text) {
-      document.getElementById('loadingText').innerText = text;
-      document.getElementById('loadingOverlay').classList.add('show');
-    }
-    
-    function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
-
-    async function handleRefresh() {
-      showLoading('資料重整中...');
-      let curr = new Date();
-      document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
+      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }     });     window.addEventListener('mouseup', () => {       if (!isDraggingSheet) return;       isDraggingSheet = false;       bottomSheet.classList.remove('dragging');       const deltaY = currentY - startY;       if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }     });      let isDownChart = false;     let startXChart;     let scrollLeftChart;      chartOuter.addEventListener('mousedown', (e) => {       isDownChart = true;       chartOuter.style.cursor = 'grabbing';       startXChart = e.pageX - chartOuter.offsetLeft;       scrollLeftChart = chartOuter.scrollLeft;     });     chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mousemove', (e) => {       if (!isDownChart) return;       e.preventDefault();       const x = e.pageX - chartOuter.offsetLeft;       const walk = (x - startXChart) * 1.5;        chartOuter.scrollLeft = scrollLeftChart - walk;     });      function showLoading(text) {       document.getElementById('loadingText').innerText = text;       document.getElementById('loadingOverlay').classList.add('show');     }          function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }      async function handleRefresh() {       showLoading('資料重整中...');       let curr = new Date();       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
       checkMorningTag();
       try {
@@ -562,29 +526,7 @@
     window.addEventListener('resize', updateStickyOffset);
 
     const now = new Date();
-    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-    document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-    function checkMorningTag() {
-      const timeVal = document.getElementById('time').value;
-      if (!timeVal) return;
-      const h = parseInt(timeVal.split(':')[0], 10);
-      const notesInput = document.getElementById('notes');
-      if (h >= 4 && h < 10) {
-        if (!notesInput.value.includes('[報表]')) {
-          if (notesInput.value.trim() !== '') notesInput.value += ', ';
-          notesInput.value += '[報表]';
-        }
-      }
-    }
-    
-    document.getElementById('time').addEventListener('change', checkMorningTag);
-    checkMorningTag();
-
-    function addQuickTag(tagText) {
-      const notesInput = document.getElementById('notes');
-      if (notesInput.value.trim() === '') { notesInput.value = tagText; } 
-      else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
+    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;      function checkMorningTag() {       const timeVal = document.getElementById('time').value;       if (!timeVal) return;       const h = parseInt(timeVal.split(':')[0], 10);       const notesInput = document.getElementById('notes');       if (h >= 4 && h < 10) {         if (!notesInput.value.includes('[報表]')) {           if (notesInput.value.trim() !== '') notesInput.value += ', ';           notesInput.value += '[報表]';         }       }     }          document.getElementById('time').addEventListener('change', checkMorningTag);     checkMorningTag();      function addQuickTag(tagText) {       const notesInput = document.getElementById('notes');       if (notesInput.value.trim() === '') { notesInput.value = tagText; }        else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
     }
 
     document.querySelectorAll('.capsule-btn').forEach(btn => {
@@ -616,32 +558,7 @@
       const row = btn.closest('.record-row'); row.classList.add('highlight-delete');
       let decodedNotes = decodeURIComponent(encodedNotes);
       setTimeout(() => {
-        if (confirm(`${formattedDate} ${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {
-          let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
-          if (idx !== -1) { allRecords.splice(idx, 1); } 
-          else {
-            let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);
-            if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);
-          }
-          renderList();
-          syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });
-        } else { row.classList.remove('highlight-delete'); }
-      }, 300);
-    }
-
-    function getLogicalDate(dateStr, timeStr) {
-      if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };
-      let d = new Date(String(dateStr).replace(/-/g, '/'));
-      if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };
-      if (timeStr) {
-        let parts = String(timeStr).split(':');
-        if (parts.length >= 2) {
-          let h = parseInt(parts[0], 10);
-          if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); }
-        }
-      }
-      let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');
-      return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
+        if (confirm(`${formattedDate}${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {           let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes \vert{}\vert{} '') === decodedNotes);           if (idx !== -1) { allRecords.splice(idx, 1); }            else {             let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);             if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);           }           renderList();           syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });         } else { row.classList.remove('highlight-delete'); }       }, 300);     }      function getLogicalDate(dateStr, timeStr) {       if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };       let d = new Date(String(dateStr).replace(/-/g, '/'));       if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };       if (timeStr) {         let parts = String(timeStr).split(':');         if (parts.length >= 2) {           let h = parseInt(parts[0], 10);           if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); }         }       }       let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');       return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
     }
 
     function updateChart(displayData) {
@@ -748,7 +665,7 @@
             let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
             let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
             
-            // 🌟 針對列表渲染 AHA 顏色 (計算當次紀錄的類別)
+            // 🌟 針對列表渲染 AHA 顏色
             let sysNum = parseInt(item.systolic);
             let diaNum = parseInt(item.diastolic);
             let sCat = (sysNum < 120) ? 0 : ((sysNum < 130) ? 1 : ((sysNum < 140) ? 2 : 3));
@@ -807,6 +724,7 @@
       }
     }
 
+    // 🌟 下載按鈕觸發函式 (解決手機無法下載圖片的問題)
     async function generateReport(monthCount, type = 'pdf') {
       let reportData = [...allRecords].filter(r => r && r.date && String(r.notes || '').includes('[報表]')).sort((a, b) => new Date(String(a.date).replace(/-/g, '/')).getTime() - new Date(String(b.date).replace(/-/g, '/')).getTime());
       if (reportData.length === 0) { alert("目前沒有包含「報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return; }
@@ -884,8 +802,8 @@
         let meanDia = countDia ? Math.round(sumDia / countDia) : '-'; 
         let meanHr = countHr ? Math.round(sumHr / countHr) : '-'; 
         
-        // 🌟 修正：斜線前後加入間距 <span style="margin: 0 2px;">/</span>
-        const slash = `<span style="margin: 0 2px;">/</span>`;
+        // 🌟 修正：斜線前後加入空白間隔
+        const slash = `<span style="margin: 0 4px;">/</span>`;
         let maxStr = maxRecord ? `${maxRecord.systolic}${slash}${maxRecord.diastolic}` : `-${slash}-`;
         let minStr = minRecord ? `${minRecord.systolic}${slash}${minRecord.diastolic}` : `-${slash}-`;
 
@@ -901,14 +819,15 @@
         
         const renderStatCenter = (lbl, val, color, def, ml = '18px') => `<div style="margin-left: ${ml}; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
 
-        // 🌟 修正：HR 左側加入 6px 的留白，與 DBP 精準切開
-        let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
+        // 🌟 修正：HR 左側加入 8px 的留白，與 DBP 精準切開
+        let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 8px;">${meanHr}</span>` : '';
         tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '#111111');
         tableHtml += renderStatLeft('MAX', maxStr, '#666666');
         tableHtml += renderStatLeft('MIN', minStr, '#666666');
         
         tableHtml += `<div style="width: 1.5px; height: 26px; background-color: #CED4DA; margin: 0 4px 0 16px;"></div>`;
         
+        // 🌟 修正：縮小 Normal 的左側間距為 8px，並在分類之間加入極細的分隔線確保閱讀秩序
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80', '8px');
         tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80');
         tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89');
@@ -933,7 +852,7 @@
           for (let m = 0; m < monthCount; m++) {
             let monthKey = targetMonths[m]; let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null; let rightCls = (m < (monthCount - 1)) ? ' thick-right' : '';
             
-            // 🌟 PDF 報表渲染：根據 AHA 類別變更文字顏色
+            // 🌟 報表渲染：根據 AHA 類別變更文字顏色
             let sysStr = record ? record.systolic : '';
             let diaStr = record ? record.diastolic : '';
             let colorStyle = '';
@@ -943,9 +862,9 @@
                 let sCat = (s < 120) ? 0 : ((s < 130) ? 1 : ((s < 140) ? 2 : 3));
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
-                if (cat === 1) colorStyle = 'color: #D97706; font-weight: bold;';
-                else if (cat === 2) colorStyle = 'color: #EA580C; font-weight: bold;';
-                else if (cat === 3) colorStyle = 'color: #DC2626; font-weight: bold;';
+                if (cat === 1) colorStyle = 'color: #B45309; font-weight: bold;'; // Elevated (黃褐色)
+                else if (cat === 2) colorStyle = 'color: #EA580C; font-weight: bold;'; // Stage 1 (橘色)
+                else if (cat === 3) colorStyle = 'color: #DC2626; font-weight: bold;'; // Stage 2 (深紅色)
             }
             
             tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td style="${colorStyle}">${sysStr}</td><td style="${colorStyle}">${diaStr}</td><td class="${rightCls}">${record ? record.heartRate : ''}</td>`;
@@ -963,6 +882,7 @@
         const today = new Date(); const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
         const filename = `血壓記錄表_${monthCount}M_${dateStr}`;
         
+        // 🌟 強化下載機制：加入 createElement 並 append 到 body 內，破解 iOS Safari 下載阻擋
         if (type === 'pdf') {
           const { jsPDF } = window.jspdf;
           const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
@@ -972,7 +892,9 @@
           const link = document.createElement('a');
           link.download = `${filename}.png`;
           link.href = canvas.toDataURL('image/png');
+          document.body.appendChild(link);
           link.click();
+          document.body.removeChild(link);
         }
 
         printArea.style.display = 'none'; printArea.style.position = ''; printArea.style.left = ''; printArea.style.top = '';
