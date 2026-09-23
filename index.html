@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=153">
+  <link rel="manifest" href="manifest.json?v=154">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -28,7 +28,7 @@
       --border-color: #CED4DA; 
       --danger-color: #DC2626;  
       --alert-color: #EA580C;   
-      --warning-color: #F59E0B; /* 亮黃色 (亮琥珀金) */
+      --warning-color: #F59E0B; 
       --sticky-offset: 240px; 
     }
     
@@ -272,7 +272,6 @@
         <span class="banner-text">BP Tracker</span>
         
         <div class="header-actions">
-          
           <button id="exportImgBtn4" class="header-btn" onclick="generateReport(4, 'image')" title="Image 4 Months">
             <div style="display: flex; align-items: flex-end;">
               <svg viewBox="0 0 24 32" width="20" height="26" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -738,7 +737,6 @@
             let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
             let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
             
-            // 🌟 針對列表渲染 AHA 符號與統一粗體顏色
             let sysStr = item.systolic || '';
             let diaStr = item.diastolic || '';
             let catIconHtml = '';
@@ -749,7 +747,6 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 使用全新的動態折線黃色箭頭與紅色數字圈圈
                 if (cat === 1) {
                     catIconHtml = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 2px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 } else if (cat === 2) {
@@ -881,7 +878,6 @@
         let meanDia = countDia ? Math.round(sumDia / countDia) : '-'; 
         let meanHr = countHr ? Math.round(sumHr / countHr) : '-'; 
         
-        // 🌟 修正：拔除斜線左右的間距
         const slash = `/`;
         let maxStr = maxRecord ? `${maxRecord.systolic}${slash}${maxRecord.diastolic}` : `-${slash}-`;
         let minStr = minRecord ? `${minRecord.systolic}${slash}${minRecord.diastolic}` : `-${slash}-`;
@@ -896,9 +892,17 @@
         
         const renderStatLeft = (lbl, val, color) => `<div style="margin-left: 14px; text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
         
-        const renderStatCenter = (lbl, val, color, def, ml = '18px') => `<div style="margin-left: ${ml}; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
+        // 🌟 更新：支援傳入 icon 參數，讓 AHA 定義標題旁也能顯示圖例符號
+        const renderStatCenter = (lbl, val, color, def, ml = '18px', icon = '') => {
+            let lblHtml = icon ? `<div style="display: flex; align-items: center; justify-content: center; gap: 2px;">${icon}<span>${lbl}</span></div>` : lbl;
+            return `<div style="margin-left: ${ml}; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lblHtml}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
+        };
 
-        // 🌟 修正：BP 與 HR 之間保留 6px 的小空白
+        // 🌟 報表圖例專用的微型黑白符號
+        const svgElevated = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#999999" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+        const svgStage1 = `<div style="width: 10px; height: 10px; background-color: #999999; color: white; border-radius: 50%; font-size: 7px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">1</div>`;
+        const svgStage2 = `<div style="width: 10px; height: 10px; background-color: #999999; color: white; border-radius: 50%; font-size: 7px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">2</div>`;
+
         let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
         tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '#111111');
         tableHtml += renderStatLeft('MAX', maxStr, '#666666');
@@ -907,9 +911,9 @@
         tableHtml += `<div style="width: 1.5px; height: 26px; background-color: #CED4DA; margin: 0 4px 0 16px;"></div>`;
         
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80', '8px');
-        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80');
-        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89');
-        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90');
+        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80', '18px', svgElevated);
+        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89', '18px', svgStage1);
+        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90', '18px', svgStage2);
         
         tableHtml += `</div></div></th></tr>`;
         
@@ -932,8 +936,34 @@
             
             let sysStr = record ? record.systolic : '';
             let diaStr = record ? record.diastolic : '';
+            let catIconHtml = '';
             
-            let sysCell = record ? `<span style="color: #333333; font-weight: bold;">${sysStr}</span>` : '';
+            if (record && sysStr && diaStr && !isNaN(parseInt(sysStr)) && !isNaN(parseInt(diaStr))) {
+                let s = parseInt(sysStr), d = parseInt(diaStr);
+                let sCat = (s < 120) ? 0 : ((s < 130) ? 1 : ((s < 140) ? 2 : 3));
+                let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
+                let cat = Math.max(sCat, dCat);
+                
+                // 🌟 報表專用黑白/灰階符號
+                if (cat === 1) {
+                    catIconHtml = `<svg viewBox="0 0 24 24" width="12" height="12" stroke="#333333" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                } else if (cat === 2) {
+                    catIconHtml = `<div style="width: 13px; height: 13px; background-color: #333333; color: white; border-radius: 50%; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">1</div>`;
+                } else if (cat === 3) {
+                    catIconHtml = `<div style="width: 13px; height: 13px; background-color: #333333; color: white; border-radius: 50%; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">2</div>`;
+                }
+            }
+            
+            // 🌟 將符號與 SBP 結合在同一個格子裡 (懸浮排版)
+            let sysCell = '';
+            if (record) {
+                if (catIconHtml !== '') {
+                    sysCell = `<div style="display: flex; align-items: center; justify-content: center; gap: 3px;">${catIconHtml}<span style="color: #333333; font-weight: bold;">${sysStr}</span></div>`;
+                } else {
+                    sysCell = `<span style="color: #333333; font-weight: bold;">${sysStr}</span>`;
+                }
+            }
+            
             let diaCell = record ? `<span style="color: #333333; font-weight: bold;">${diaStr}</span>` : '';
             
             tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td>${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: bold;">${record ? record.heartRate : ''}</td>`;
