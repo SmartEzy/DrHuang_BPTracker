@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=142">
+  <link rel="manifest" href="manifest.json?v=143">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -206,6 +206,7 @@
 
     #printArea { display: none; width: 210mm; height: 297mm; box-sizing: border-box; padding: 16mm 12mm 5mm 12mm; background-color: #FFFFFF; color: #000; }
     
+    /* 🌟 全面統一為 1.5px 的粗框標準 */
     .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: Arial, sans-serif; table-layout: fixed; background-color: #FFFFFF; border: 1.5px solid #000 !important; }
     .print-table th, .print-table td { border: 0.5px solid #000 !important; padding: 0; height: 28.5px; line-height: 28.5px; box-sizing: border-box; overflow: hidden; }
     
@@ -832,35 +833,29 @@
         tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 12px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
         tableHtml += `<div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">`;
         
-        tableHtml += `<div style="font-size: 28px; letter-spacing: 12px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1;">血壓記錄表</div>`;
+        // 🌟 縮減字距至 8px 並強制不換行，解決標題被擠到下一行的問題
+        tableHtml += `<div style="font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
 
         tableHtml += `<div style="display: flex; align-items: center; font-family: Arial, sans-serif;">`;
         
-        // 🌟 靠左對齊渲染器：MEAN 專用，顯示字距調整
+        // 🌟 靠左對齊渲染器
         const renderStatLeft = (lbl, val, color) => `<div style="margin-left: 14px; text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
         
-        // 🌟 置中對齊渲染器：四分類使用，包含極微小的灰色 AHA 定義字體
-        const renderStatCenter = (lbl, val, color, def) => `<div style="margin-left: 10px; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 2px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
-        
-        // 🌟 分隔線
-        const divLine = `<div style="width: 1px; height: 18px; background-color: #E2E8F0; margin: 0 6px; margin-bottom: 4px;"></div>`;
+        // 🌟 置中對齊渲染器：移除分隔線，將分類間距拉開到 16px
+        const renderStatCenter = (lbl, val, color, def) => `<div style="margin-left: 16px; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 2px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
 
-        // 左半部
-        // 將 HR 併入 MEAN，並用單一空白格開
-        tableHtml += renderStatLeft('MEAN', `${meanSys}/${meanDia}${meanHr}`, '#111111');
+        // 🌟 在舒張壓與心率間加入不換行空格
+        let hrDisplay = meanHr !== '-' ? `&nbsp;&nbsp;${meanHr}` : '';
+        tableHtml += renderStatLeft('MEAN', `${meanSys}/${meanDia}${hrDisplay}`, '#111111');
         tableHtml += renderStatLeft('MAX', maxStr, '#666666');
         tableHtml += renderStatLeft('MIN', minStr, '#666666');
         
-        // 區塊直立大分隔線
         tableHtml += `<div style="width: 1.5px; height: 26px; background-color: #CED4DA; margin: 0 4px 0 16px;"></div>`;
         
-        // 右半部：安插極細淡灰垂直分隔線
+        // 右半部 (完美空白區隔 + 懸浮定義小字)
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80');
-        tableHtml += divLine;
         tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80');
-        tableHtml += divLine;
         tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89');
-        tableHtml += divLine;
         tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90');
         
         tableHtml += `</div></div></th></tr>`;
