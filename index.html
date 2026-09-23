@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=148">
+  <link rel="manifest" href="manifest.json?v=149">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -26,9 +26,6 @@
       --bg-color: #F4F6F8; 
       --text-main: #333333; 
       --border-color: #CED4DA; 
-      --danger-color: #DC2626;  
-      --alert-color: #EA580C;   
-      --warning-color: #B45309; 
       --sticky-offset: 240px; 
     }
     
@@ -48,7 +45,8 @@
     .banner-content { background-color: var(--primary-dark); flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 10px; }
     .banner-text { font-size: 20px; font-weight: bold; color: #FFFFFF; }
     
-    .header-actions { display: flex; gap: 12px; align-items: center; }
+    /* 🌟 微調按鈕群組間距，確保整齊不擁擠 */
+    .header-actions { display: flex; gap: 10px; align-items: center; }
     .header-btn { background: none; border: none; color: #FFFFFF; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; transition: opacity 0.2s; }
     .header-btn:active { opacity: 0.6; }
     
@@ -147,9 +145,10 @@
     .bp-slash { color: #888; font-weight: normal; margin: 0 2px; } 
     .bp-dia { text-align: left; }
     
-    .bp-elevated { color: var(--warning-color); font-weight: bold; }
-    .bp-stage1 { color: var(--alert-color); font-weight: bold; }
-    .bp-stage2 { color: var(--danger-color); font-weight: bold; }
+    /* 🌟 全新醫療級色塊標籤 (高對比、相容黑白列印) */
+    .bp-elevated { color: #854D0E; background-color: #FEF08A; font-weight: bold; padding: 1px 4px; border-radius: 4px; display: inline-block; line-height: 1.1; }
+    .bp-stage1 { color: #B91C1C; background-color: #FECACA; font-weight: bold; padding: 1px 4px; border-radius: 4px; display: inline-block; line-height: 1.1; }
+    .bp-stage2 { color: #FFFFFF; background-color: #DC2626; font-weight: bold; padding: 1px 4px; border-radius: 4px; display: inline-block; line-height: 1.1; }
     
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
 
@@ -269,41 +268,47 @@
       <div class="banner-content"> 
         <span class="banner-text">BP Tracker</span>
         
+        <!-- 🌟 全新排序：圖片 4M → PDF 4M → 圖片 3M → PDF 3M -->
         <div class="header-actions">
+          
+          <!-- 圖片 4M -->
           <button id="exportImgBtn4" class="header-btn" onclick="generateReport(4, 'image')" title="Image 4 Months">
-            <svg viewBox="0 0 32 32" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 2v22h18V8l-6-6H4z"></path>
-              <polyline points="16 2 16 8 22 8"></polyline>
-              <text x="13" y="16" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">JPG</text>
-              <text x="32" y="30" font-size="11" font-weight="900" text-anchor="end" stroke="none" fill="currentColor" font-family="Arial, sans-serif">4M</text>
-            </svg>
+            <div style="display: flex; align-items: flex-end;">
+              <svg viewBox="0 0 24 32" width="20" height="26" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 2v28h18V10l-8-8H3z"></path>
+                <polyline points="13 2 13 10 21 10"></polyline>
+                <text x="12" y="21" font-size="8" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">JPG</text>
+              </svg>
+              <span style="font-size: 11px; font-weight: 900; margin-left: 2px; margin-bottom: 2px;">4M</span>
+            </div>
           </button>
           
+          <!-- PDF 4M -->
           <button id="exportPdfBtn4" class="header-btn" onclick="generateReport(4, 'pdf')" title="PDF 4 Months">
-            <svg viewBox="0 0 32 32" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 2v22h18V8l-6-6H4z"></path>
-              <polyline points="16 2 16 8 22 8"></polyline>
-              <text x="13" y="16" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">PDF</text>
-              <text x="32" y="30" font-size="11" font-weight="900" text-anchor="end" stroke="none" fill="currentColor" font-family="Arial, sans-serif">4M</text>
-            </svg>
+            <div style="display: flex; align-items: flex-end;">
+              <span style="font-size: 24px; line-height: 1;">🖨️</span>
+              <span style="font-size: 11px; font-weight: 900; margin-left: 2px; margin-bottom: 2px;">4M</span>
+            </div>
           </button>
 
+          <!-- 圖片 3M -->
           <button id="exportImgBtn3" class="header-btn" onclick="generateReport(3, 'image')" title="Image 3 Months">
-            <svg viewBox="0 0 32 32" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 2v22h18V8l-6-6H4z"></path>
-              <polyline points="16 2 16 8 22 8"></polyline>
-              <text x="13" y="16" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">JPG</text>
-              <text x="32" y="30" font-size="11" font-weight="900" text-anchor="end" stroke="none" fill="currentColor" font-family="Arial, sans-serif">3M</text>
-            </svg>
+            <div style="display: flex; align-items: flex-end;">
+              <svg viewBox="0 0 24 32" width="20" height="26" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 2v28h18V10l-8-8H3z"></path>
+                <polyline points="13 2 13 10 21 10"></polyline>
+                <text x="12" y="21" font-size="8" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">JPG</text>
+              </svg>
+              <span style="font-size: 11px; font-weight: 900; margin-left: 2px; margin-bottom: 2px;">3M</span>
+            </div>
           </button>
 
+          <!-- PDF 3M -->
           <button id="exportPdfBtn3" class="header-btn" onclick="generateReport(3, 'pdf')" title="PDF 3 Months">
-            <svg viewBox="0 0 32 32" width="28" height="28" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M4 2v22h18V8l-6-6H4z"></path>
-              <polyline points="16 2 16 8 22 8"></polyline>
-              <text x="13" y="16" font-size="7" font-weight="900" text-anchor="middle" stroke="none" fill="currentColor" font-family="Arial, sans-serif">PDF</text>
-              <text x="32" y="30" font-size="11" font-weight="900" text-anchor="end" stroke="none" fill="currentColor" font-family="Arial, sans-serif">3M</text>
-            </svg>
+            <div style="display: flex; align-items: flex-end;">
+              <span style="font-size: 24px; line-height: 1;">🖨️</span>
+              <span style="font-size: 11px; font-weight: 900; margin-left: 2px; margin-bottom: 2px;">3M</span>
+            </div>
           </button>
 
           <button class="header-btn" onclick="handleRefresh()" title="Refresh Time" style="margin-left: 4px;">
@@ -743,6 +748,7 @@
             let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
             let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
             
+            // 🌟 針對列表渲染 AHA 顏色 (使用全新的 Badge 色塊樣式)
             let sysStr = item.systolic || '';
             let diaStr = item.diastolic || '';
             let colorClass = '';
@@ -934,6 +940,7 @@
           for (let m = 0; m < monthCount; m++) {
             let monthKey = targetMonths[m]; let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null; let rightCls = (m < (monthCount - 1)) ? ' thick-right' : '';
             
+            // 🌟 報表渲染：轉換 AHA 背景色塊標籤 (保證黑白列印對比度)
             let sysStr = record ? record.systolic : '';
             let diaStr = record ? record.diastolic : '';
             let colorStyle = '';
@@ -943,12 +950,17 @@
                 let sCat = (s < 120) ? 0 : ((s < 130) ? 1 : ((s < 140) ? 2 : 3));
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
-                if (cat === 1) colorStyle = 'color: #B45309; font-weight: bold;'; 
-                else if (cat === 2) colorStyle = 'color: #EA580C; font-weight: bold;'; 
-                else if (cat === 3) colorStyle = 'color: #DC2626; font-weight: bold;'; 
+                
+                // 行內寫死樣式，確保 html2canvas 截圖不會遺漏
+                if (cat === 1) colorStyle = 'color: #854D0E; background-color: #FEF08A; font-weight: bold; padding: 1px 4px; border-radius: 4px; display: inline-block; line-height: 1.1;'; 
+                else if (cat === 2) colorStyle = 'color: #B91C1C; background-color: #FECACA; font-weight: bold; padding: 1px 4px; border-radius: 4px; display: inline-block; line-height: 1.1;'; 
+                else if (cat === 3) colorStyle = 'color: #FFFFFF; background-color: #DC2626; font-weight: bold; padding: 1px 4px; border-radius: 4px; display: inline-block; line-height: 1.1;'; 
             }
             
-            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td style="${colorStyle}">${sysStr}</td><td style="${colorStyle}">${diaStr}</td><td class="${rightCls}">${record ? record.heartRate : ''}</td>`;
+            let sysCell = colorStyle ? `<span style="${colorStyle}">${sysStr}</span>` : sysStr;
+            let diaCell = colorStyle ? `<span style="${colorStyle}">${diaStr}</span>` : diaStr;
+            
+            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td>${sysCell}</td><td>${diaCell}</td><td class="${rightCls}">${record ? record.heartRate : ''}</td>`;
           }
           tableHtml += `</tr>`;
         }
