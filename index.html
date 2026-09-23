@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=144">
+  <link rel="manifest" href="manifest.json?v=145">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -46,10 +46,11 @@
     .banner-content { background-color: var(--primary-dark); flex: 1; display: flex; align-items: center; justify-content: space-between; padding: 0 16px 0 10px; }
     .banner-text { font-size: 20px; font-weight: bold; color: #FFFFFF; }
     
-    .header-actions { display: flex; gap: 18px; align-items: center; }
+    /* 🌟 將 gap 縮小至 8px，確保手機螢幕能輕鬆容納 5 顆按鈕 */
+    .header-actions { display: flex; gap: 8px; align-items: center; }
     .header-btn { background: none; border: none; color: #FFFFFF; cursor: pointer; padding: 0; display: flex; align-items: center; transition: opacity 0.2s; }
-    .header-btn-icon { font-size: 20px; }
-    .header-btn-text { font-size: 14px; font-weight: bold; margin-left: 2px; }
+    .header-btn-icon { font-size: 18px; }
+    .header-btn-text { font-size: 13px; font-weight: bold; margin-left: 2px; }
     
     .container { width: 100%; max-width: 500px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; }
     
@@ -264,10 +265,17 @@
       <div class="banner-content"> 
         <span class="banner-text">BP Tracker</span>
         <div class="header-actions">
-          <button class="header-btn" id="exportPdfBtn4" onclick="generatePDF(4)" title="Print 4 Months">
+          <!-- 🌟 加入圖片與 PDF 雙引擎按鈕，排列：圖 4M, PDF 4M, 圖 3M, PDF 3M -->
+          <button class="header-btn" id="exportImgBtn4" onclick="generateReport(4, 'image')" title="Image 4 Months">
+            <span class="header-btn-icon">🖼️</span><span class="header-btn-text">4M</span>
+          </button>
+          <button class="header-btn" id="exportPdfBtn4" onclick="generateReport(4, 'pdf')" title="Print 4 Months">
             <span class="header-btn-icon">🖨️</span><span class="header-btn-text">4M</span>
           </button>
-          <button class="header-btn" id="exportPdfBtn3" onclick="generatePDF(3)" title="Print 3 Months">
+          <button class="header-btn" id="exportImgBtn3" onclick="generateReport(3, 'image')" title="Image 3 Months">
+            <span class="header-btn-icon">🖼️</span><span class="header-btn-text">3M</span>
+          </button>
+          <button class="header-btn" id="exportPdfBtn3" onclick="generateReport(3, 'pdf')" title="Print 3 Months">
             <span class="header-btn-icon">🖨️</span><span class="header-btn-text">3M</span>
           </button>
           <button class="header-btn" onclick="handleRefresh()" title="Refresh Time">
@@ -749,13 +757,16 @@
       }
     }
 
-    async function generatePDF(monthCount) {
+    // 🌟 統整雙格式輸出的新函式：generateReport(monthCount, type)
+    async function generateReport(monthCount, type = 'pdf') {
       let reportData = [...allRecords].filter(r => r && r.date && String(r.notes || '').includes('[報表]')).sort((a, b) => new Date(String(a.date).replace(/-/g, '/')).getTime() - new Date(String(b.date).replace(/-/g, '/')).getTime());
       if (reportData.length === 0) { alert("目前沒有包含「報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return; }
-      const btn3 = document.getElementById('exportPdfBtn3'); const btn4 = document.getElementById('exportPdfBtn4');
-      btn3.disabled = true; btn4.disabled = true; 
       
-      showLoading(`報表產生中...`);
+      const btnP3 = document.getElementById('exportPdfBtn3'); const btnP4 = document.getElementById('exportPdfBtn4');
+      const btnI3 = document.getElementById('exportImgBtn3'); const btnI4 = document.getElementById('exportImgBtn4');
+      btnP3.disabled = true; btnP4.disabled = true; btnI3.disabled = true; btnI4.disabled = true; 
+      
+      showLoading(type === 'pdf' ? `PDF 產生中...` : `圖片產生中...`);
       await new Promise(resolve => setTimeout(resolve, 50));
 
       try {
@@ -823,34 +834,34 @@
         let meanSys = countSys ? Math.round(sumSys / countSys) : '-'; 
         let meanDia = countDia ? Math.round(sumDia / countDia) : '-'; 
         let meanHr = countHr ? Math.round(sumHr / countHr) : '-'; 
-        let maxStr = maxRecord ? `${maxRecord.systolic}/${maxRecord.diastolic}` : '-/-';
-        let minStr = minRecord ? `${minRecord.systolic}/${minRecord.diastolic}` : '-/-';
+        
+        // 🌟 血壓斜線左右加一個空格
+        let maxStr = maxRecord ? `${maxRecord.systolic} /${maxRecord.diastolic}` : '- / -';
+        let minStr = minRecord ? `${minRecord.systolic} /${minRecord.diastolic}` : '- / -';
 
         let tableHtml = `<thead>`;
-        
         tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 12px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
         tableHtml += `<div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">`;
         
-        // 🌟 修正字距與強制不換行，解決標題被擠出行的問題
         tableHtml += `<div style="font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
 
         tableHtml += `<div style="display: flex; align-items: center; font-family: Arial, sans-serif;">`;
         
         const renderStatLeft = (lbl, val, color) => `<div style="margin-left: 14px; text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
         
-        // 🌟 移除極細分隔線，純粹使用 margin-left 拉開間距。並調整 AHA 小字的 margin-top 至完美 0px 以貼合百分比。
-        const renderStatCenter = (lbl, val, color, def) => `<div style="margin-left: 18px; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
+        // 🌟 修正：margin-top 設為 0px 以完美貼合，同時縮小 Normal 左側的間隔 (利用 ml 參數)
+        const renderStatCenter = (lbl, val, color, def, ml = '18px') => `<div style="margin-left: ${ml}; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
 
-        // 左半部
         let hrDisplay = meanHr !== '-' ? `&nbsp;&nbsp;${meanHr}` : '';
-        tableHtml += renderStatLeft('MEAN', `${meanSys}/${meanDia}${hrDisplay}`, '#111111');
+        // 🌟 血壓斜線左右加一個空格
+        tableHtml += renderStatLeft('MEAN', `${meanSys} / ${meanDia}${hrDisplay}`, '#111111');
         tableHtml += renderStatLeft('MAX', maxStr, '#666666');
         tableHtml += renderStatLeft('MIN', minStr, '#666666');
         
         tableHtml += `<div style="width: 1.5px; height: 26px; background-color: #CED4DA; margin: 0 4px 0 16px;"></div>`;
         
-        // 右半部 (移除間隔直線，拉寬分類間距)
-        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80');
+        // 🌟 減少 Normal 的左側間距 (設定為 8px)
+        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80', '8px');
         tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80');
         tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89');
         tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90');
@@ -884,16 +895,26 @@
 
         await new Promise(resolve => setTimeout(resolve, 300));
         const canvas = await html2canvas(printArea, { scale: 4, backgroundColor: '#ffffff', useCORS: true });
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
-        pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);
-        const today = new Date(); const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
         
-        pdf.save(`血壓記錄表_${monthCount}M_${dateStr}.pdf`);
+        const today = new Date(); const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
+        const filename = `血壓記錄表_${monthCount}M_${dateStr}`;
+        
+        // 🌟 依照按鈕選擇的格式進行匯出
+        if (type === 'pdf') {
+          const { jsPDF } = window.jspdf;
+          const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+          pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);
+          pdf.save(`${filename}.pdf`);
+        } else if (type === 'image') {
+          const link = document.createElement('a');
+          link.download = `${filename}.png`;
+          link.href = canvas.toDataURL('image/png');
+          link.click();
+        }
 
         printArea.style.display = 'none'; printArea.style.position = ''; printArea.style.left = ''; printArea.style.top = '';
-      } catch (err) { console.error("PDF 產生失敗", err); alert("產生 PDF 時發生錯誤，請稍後再試。");
-      } finally { btn3.disabled = false; btn4.disabled = false; hideLoading(); }
+      } catch (err) { console.error("產生失敗", err); alert("產生檔案時發生錯誤，請稍後再試。");
+      } finally { btnP3.disabled = false; btnP4.disabled = false; btnI3.disabled = false; btnI4.disabled = false; hideLoading(); }
     }
 
     async function loadData() {
