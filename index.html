@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=159">
+  <link rel="manifest" href="manifest.json?v=160">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -783,7 +783,6 @@
       }
     }
 
-    // 🌟 強化圖片輸出的相容性：使用 Blob Object URL + 手機 Web Share 混合策略，並降低 JPG 尺寸
     async function generateReport(monthCount, type = 'pdf') {
       let reportData = [...allRecords].filter(r => r && r.date && String(r.notes || '').includes('[報表]')).sort((a, b) => new Date(String(a.date).replace(/-/g, '/')).getTime() - new Date(String(b.date).replace(/-/g, '/')).getTime());
       if (reportData.length === 0) { alert("目前沒有包含「報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return; }
@@ -874,7 +873,6 @@
         let tableHtml = `<thead>`;
         tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 12px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
         
-        // 🌟 使用 Absolute Center 排版，確保「血壓記錄表」精準置中，兩側左右留白對稱
         tableHtml += `<div style="display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative; height: 38px;">`;
         
         const renderStatLeft = (lbl, val, color) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
@@ -891,7 +889,6 @@
         tableHtml += renderStatLeft('MIN', minStr, '#666666');
         tableHtml += `</div>`;
 
-        // 🌟 絕對置中標題
         tableHtml += `<div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; text-align: center;">血壓記錄表</div>`;
 
         tableHtml += `<div style="display: flex; align-items: center; justify-content: flex-end; gap: 24px; width: 33%;">`;
@@ -923,10 +920,11 @@
             let sysStr = record ? record.systolic : '';
             let diaStr = record ? record.diastolic : '';
             
-            let sysCell = record ? `<span style="color: #333333; font-weight: bold;">${sysStr}</span>` : '';
-            let diaCell = record ? `<span style="color: #333333; font-weight: bold;">${diaStr}</span>` : '';
+            // 🌟 報表數據一律為 normal 字體 (取消 font-weight: bold)
+            let sysCell = record ? `<span style="color: #333333; font-weight: normal;">${sysStr}</span>` : '';
+            let diaCell = record ? `<span style="color: #333333; font-weight: normal;">${diaStr}</span>` : '';
             
-            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td>${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: bold;">${record ? record.heartRate : ''}</td>`;
+            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td>${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: normal;">${record ? record.heartRate : ''}</td>`;
           }
           tableHtml += `</tr>`;
         }
@@ -937,7 +935,6 @@
 
         await new Promise(resolve => setTimeout(resolve, 300));
         
-        // 🌟 解決手機記憶體當機：JPG 縮減縮放比例至 scale: 3，減少記憶體溢出風險
         const scaleVal = (type === 'pdf') ? 4 : 3;
         const canvas = await html2canvas(printArea, { scale: scaleVal, backgroundColor: '#ffffff', useCORS: true });
         
@@ -947,10 +944,9 @@
         if (type === 'pdf') {
           const { jsPDF } = window.jspdf;
           const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
-          pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297); // 🌟 PDF 底圖改用壓縮 jpeg 減少體積
+          pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297); 
           pdf.save(`${filename}.pdf`);
         } else if (type === 'image') {
-          // 🌟 Blob + Web Share 混合技術：解決手機圖片載入與存檔 Bug
           canvas.toBlob(function(blob) {
             if (!blob) { alert("圖片產生失敗，請稍後再試。"); return; }
             
@@ -968,14 +964,12 @@
                 }, 100);
             };
 
-            // 嘗試觸發手機原生分享功能 (iOS Safari 首選)
             if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                 const file = new File([blob], `${filename}.jpg`, { type: 'image/jpeg' });
                 navigator.share({
                     files: [file],
                     title: '血壓記錄表'
                 }).catch(err => {
-                    // 若分享取消或失敗，退回傳統下載
                     fallbackDownload();
                 });
             } else {
