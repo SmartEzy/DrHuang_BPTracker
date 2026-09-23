@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=138">
+  <link rel="manifest" href="manifest.json?v=139">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -835,21 +835,25 @@
 
         tableHtml += `<div style="display: flex; align-items: center; font-family: Arial, sans-serif;">`;
         
-        // 🌟 字體大小統一為 18px，加入字重動態變數 (fw)
-        const renderStatLeft = (lbl, val, color, fw = '900') => `<div style="margin-left: 14px; text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 10px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: ${fw}; line-height: 1;">${val}</div></div>`;
-        const renderStatCenter = (lbl, val, color, fw = '900') => `<div style="margin-left: 14px; text-align: center; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 10px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: ${fw}; line-height: 1;">${val}</div></div>`;
+        // 🌟 加入了一行隱形的底行 (margin-top: 2px, font-size: 7.5px) 以確保和右邊有 AHA 定義的區塊達到完美的垂直高度平衡。
+        const renderStatLeft = (lbl, val, color) => `<div style="margin-left: 14px; text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="font-size: 7.5px; line-height: 1.1; margin-top: 2px;">&nbsp;</div></div>`;
+        
+        // 🌟 四分類加入第三行 AHA 定義小字 (font-size: 7.5px)
+        const renderStatCenter = (lbl, val, color, def) => `<div style="margin-left: 10px; text-align: center; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #A0AAB5; font-size: 7.5px; font-weight: bold; line-height: 1.1; margin-top: 2px; letter-spacing: -0.3px;">${def}</div></div>`;
 
-        // 🌟 MEAN 粗體；MAX, MIN 改為 normal 一般字重
+        // 左半部
         tableHtml += renderStatLeft('MEAN', `${meanSys}/${meanDia}`, '#111111');
-        tableHtml += renderStatLeft('MAX', maxStr, '#666666', 'normal');
-        tableHtml += renderStatLeft('MIN', minStr, '#666666', 'normal');
+        tableHtml += renderStatLeft('MAX', maxStr, '#666666');
+        tableHtml += renderStatLeft('MIN', minStr, '#666666');
         
-        tableHtml += `<div style="width: 1.5px; height: 26px; background-color: #CED4DA; margin: 0 4px 0 16px;"></div>`;
+        // 直立分隔線加高以覆蓋新增加的第三行
+        tableHtml += `<div style="width: 1.5px; height: 32px; background-color: #CED4DA; margin: 0 4px 0 16px;"></div>`;
         
-        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111');
-        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111');
-        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111');
-        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111');
+        // 右半部：完美置中對齊 + 植入 AHA 四分類醫學定義
+        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120/80');
+        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129/&lt;80');
+        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139/80-89');
+        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140/&ge;90');
         
         tableHtml += `</div></div></th></tr>`;
         
