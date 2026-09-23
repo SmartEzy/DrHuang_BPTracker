@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=158">
+  <link rel="manifest" href="manifest.json?v=159">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -272,6 +272,7 @@
         <span class="banner-text">BP Tracker</span>
         
         <div class="header-actions">
+          
           <button id="exportImgBtn4" class="header-btn" onclick="generateReport(4, 'image')" title="Image 4 Months" style="background-color: #111111; color: #FFFFFF; border: 1.5px solid #FFFFFF; border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 40px; box-sizing: border-box;">
             <span style="font-size: 11px; font-weight: bold; line-height: 1.1;">JPG</span>
             <span style="font-size: 13px; font-weight: 900; line-height: 1.1; margin-top: 1px;">4M</span>
@@ -721,7 +722,6 @@
             let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
             let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
             
-            // 🌟 針對手機 UI 渲染 AHA 符號 (手機端保留色彩便於辨識)
             let sysStr = item.systolic || '';
             let diaStr = item.diastolic || '';
             let catIconHtml = '';
@@ -783,6 +783,7 @@
       }
     }
 
+    // 🌟 強化圖片輸出的相容性：使用 Blob Object URL + 手機 Web Share 混合策略，並降低 JPG 尺寸
     async function generateReport(monthCount, type = 'pdf') {
       let reportData = [...allRecords].filter(r => r && r.date && String(r.notes || '').includes('[報表]')).sort((a, b) => new Date(String(a.date).replace(/-/g, '/')).getTime() - new Date(String(b.date).replace(/-/g, '/')).getTime());
       if (reportData.length === 0) { alert("目前沒有包含「報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return; }
@@ -866,37 +867,38 @@
         let meanDia = countDia ? Math.round(sumDia / countDia) : '-'; 
         let meanHr = countHr ? Math.round(sumHr / countHr) : '-'; 
         
-        // 🌟 拔除斜線左右間距
         const slash = `/`;
         let maxStr = maxRecord ? `${maxRecord.systolic}${slash}${maxRecord.diastolic}` : `-${slash}-`;
         let minStr = minRecord ? `${minRecord.systolic}${slash}${minRecord.diastolic}` : `-${slash}-`;
 
         let tableHtml = `<thead>`;
         tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 12px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
-        tableHtml += `<div style="display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative;">`;
+        
+        // 🌟 使用 Absolute Center 排版，確保「血壓記錄表」精準置中，兩側左右留白對稱
+        tableHtml += `<div style="display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative; height: 38px;">`;
         
         const renderStatLeft = (lbl, val, color) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
         
-        // 🌟 完全移除圖例參數 (icon)，恢復最簡潔的結構
-        const renderStatCenter = (lbl, val, color, def, ml = '18px') => {
-            return `<div style="margin-left: ${ml}; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
+        const renderStatCenter = (lbl, val, color, def) => {
+            return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
         };
 
         let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
         
-        tableHtml += `<div style="display: flex; flex: 1; justify-content: flex-start; gap: 14px;">`;
+        tableHtml += `<div style="display: flex; align-items: center; justify-content: flex-start; gap: 16px; width: 33%;">`;
         tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '#111111');
         tableHtml += renderStatLeft('MAX', maxStr, '#666666');
         tableHtml += renderStatLeft('MIN', minStr, '#666666');
         tableHtml += `</div>`;
 
-        tableHtml += `<div style="font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; text-align: center; margin: 0 10px;">血壓記錄表</div>`;
+        // 🌟 絕對置中標題
+        tableHtml += `<div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; text-align: center;">血壓記錄表</div>`;
 
-        tableHtml += `<div style="display: flex; flex: 1; justify-content: flex-end; gap: 14px;">`;
-        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80', '0px');
-        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80', '18px');
-        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89', '18px');
-        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90', '18px');
+        tableHtml += `<div style="display: flex; align-items: center; justify-content: flex-end; gap: 24px; width: 33%;">`;
+        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80');
+        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80');
+        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89');
+        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90');
         tableHtml += `</div>`;
         
         tableHtml += `</div></th></tr>`;
@@ -918,7 +920,6 @@
           for (let m = 0; m < monthCount; m++) {
             let monthKey = targetMonths[m]; let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null; let rightCls = (m < (monthCount - 1)) ? ' thick-right' : '';
             
-            // 🌟 報表渲染：徹底拔除所有符號與圖例，僅保留純數據
             let sysStr = record ? record.systolic : '';
             let diaStr = record ? record.diastolic : '';
             
@@ -935,7 +936,10 @@
         const printArea = document.getElementById('printArea'); printArea.style.display = 'block'; printArea.style.position = 'absolute'; printArea.style.left = '-9999px'; printArea.style.top = '0';
 
         await new Promise(resolve => setTimeout(resolve, 300));
-        const canvas = await html2canvas(printArea, { scale: 4, backgroundColor: '#ffffff', useCORS: true });
+        
+        // 🌟 解決手機記憶體當機：JPG 縮減縮放比例至 scale: 3，減少記憶體溢出風險
+        const scaleVal = (type === 'pdf') ? 4 : 3;
+        const canvas = await html2canvas(printArea, { scale: scaleVal, backgroundColor: '#ffffff', useCORS: true });
         
         const today = new Date(); const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
         const filename = `血壓記錄表_${monthCount}M_${dateStr}`;
@@ -943,15 +947,41 @@
         if (type === 'pdf') {
           const { jsPDF } = window.jspdf;
           const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
-          pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);
+          pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297); // 🌟 PDF 底圖改用壓縮 jpeg 減少體積
           pdf.save(`${filename}.pdf`);
         } else if (type === 'image') {
-          const link = document.createElement('a');
-          link.download = `${filename}.png`;
-          link.href = canvas.toDataURL('image/png');
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
+          // 🌟 Blob + Web Share 混合技術：解決手機圖片載入與存檔 Bug
+          canvas.toBlob(function(blob) {
+            if (!blob) { alert("圖片產生失敗，請稍後再試。"); return; }
+            
+            const fallbackDownload = () => {
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.style.display = 'none';
+                link.href = url;
+                link.download = `${filename}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(url);
+                }, 100);
+            };
+
+            // 嘗試觸發手機原生分享功能 (iOS Safari 首選)
+            if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
+                const file = new File([blob], `${filename}.jpg`, { type: 'image/jpeg' });
+                navigator.share({
+                    files: [file],
+                    title: '血壓記錄表'
+                }).catch(err => {
+                    // 若分享取消或失敗，退回傳統下載
+                    fallbackDownload();
+                });
+            } else {
+                fallbackDownload();
+            }
+          }, 'image/jpeg', 0.95);
         }
 
         printArea.style.display = 'none'; printArea.style.position = ''; printArea.style.left = ''; printArea.style.top = '';
