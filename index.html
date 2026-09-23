@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=131">
+  <link rel="manifest" href="manifest.json?v=132">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -206,7 +206,7 @@
 
     #printArea { display: none; width: 210mm; height: 297mm; box-sizing: border-box; padding: 16mm 12mm 5mm 12mm; background-color: #FFFFFF; color: #000; }
     
-    /* 🌟 修改點 2：外框線加粗 (2px solid #000)，內框線維持 0.5px */
+    /* 🌟 外圍加粗 2px，內部線條維持 0.5px */
     .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: Arial, sans-serif; table-layout: fixed; background-color: #FFFFFF; border: 2px solid #000 !important; }
     .print-table th, .print-table td { border: 0.5px solid #000 !important; padding: 0; height: 28.5px; line-height: 28.5px; box-sizing: border-box; overflow: hidden; }
     
@@ -455,7 +455,47 @@
       if (!isDraggingSheet) return;
       currentY = e.clientY;
       const deltaY = currentY - startY;
-      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }     });     window.addEventListener('mouseup', () => {       if (!isDraggingSheet) return;       isDraggingSheet = false;       bottomSheet.classList.remove('dragging');       const deltaY = currentY - startY;       if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }     });      let isDownChart = false;     let startXChart;     let scrollLeftChart;      chartOuter.addEventListener('mousedown', (e) => {       isDownChart = true;       chartOuter.style.cursor = 'grabbing';       startXChart = e.pageX - chartOuter.offsetLeft;       scrollLeftChart = chartOuter.scrollLeft;     });     chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mousemove', (e) => {       if (!isDownChart) return;       e.preventDefault();       const x = e.pageX - chartOuter.offsetLeft;       const walk = (x - startXChart) * 1.5;        chartOuter.scrollLeft = scrollLeftChart - walk;     });      function showLoading(text) {       document.getElementById('loadingText').innerText = text;       document.getElementById('loadingOverlay').classList.add('show');     }          function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }      async function handleRefresh() {       showLoading('資料重整中...');       let curr = new Date();       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
+      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }
+    });
+    window.addEventListener('mouseup', () => {
+      if (!isDraggingSheet) return;
+      isDraggingSheet = false;
+      bottomSheet.classList.remove('dragging');
+      const deltaY = currentY - startY;
+      if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }
+    });
+
+    let isDownChart = false;
+    let startXChart;
+    let scrollLeftChart;
+
+    chartOuter.addEventListener('mousedown', (e) => {
+      isDownChart = true;
+      chartOuter.style.cursor = 'grabbing';
+      startXChart = e.pageX - chartOuter.offsetLeft;
+      scrollLeftChart = chartOuter.scrollLeft;
+    });
+    chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
+    chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
+    chartOuter.addEventListener('mousemove', (e) => {
+      if (!isDownChart) return;
+      e.preventDefault();
+      const x = e.pageX - chartOuter.offsetLeft;
+      const walk = (x - startXChart) * 1.5; 
+      chartOuter.scrollLeft = scrollLeftChart - walk;
+    });
+
+    function showLoading(text) {
+      document.getElementById('loadingText').innerText = text;
+      document.getElementById('loadingOverlay').classList.add('show');
+    }
+    
+    function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+
+    async function handleRefresh() {
+      showLoading('資料重整中...');
+      let curr = new Date();
+      document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
       checkMorningTag();
       try {
@@ -472,7 +512,29 @@
     window.addEventListener('resize', updateStickyOffset);
 
     const now = new Date();
-    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;      function checkMorningTag() {       const timeVal = document.getElementById('time').value;       if (!timeVal) return;       const h = parseInt(timeVal.split(':')[0], 10);       const notesInput = document.getElementById('notes');       if (h >= 4 && h < 10) {         if (!notesInput.value.includes('[報表]')) {           if (notesInput.value.trim() !== '') notesInput.value += ', ';           notesInput.value += '[報表]';         }       }     }          document.getElementById('time').addEventListener('change', checkMorningTag);     checkMorningTag();      function addQuickTag(tagText) {       const notesInput = document.getElementById('notes');       if (notesInput.value.trim() === '') { notesInput.value = tagText; }        else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
+    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    function checkMorningTag() {
+      const timeVal = document.getElementById('time').value;
+      if (!timeVal) return;
+      const h = parseInt(timeVal.split(':')[0], 10);
+      const notesInput = document.getElementById('notes');
+      if (h >= 4 && h < 10) {
+        if (!notesInput.value.includes('[報表]')) {
+          if (notesInput.value.trim() !== '') notesInput.value += ', ';
+          notesInput.value += '[報表]';
+        }
+      }
+    }
+    
+    document.getElementById('time').addEventListener('change', checkMorningTag);
+    checkMorningTag();
+
+    function addQuickTag(tagText) {
+      const notesInput = document.getElementById('notes');
+      if (notesInput.value.trim() === '') { notesInput.value = tagText; } 
+      else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
     }
 
     document.querySelectorAll('.capsule-btn').forEach(btn => {
@@ -504,7 +566,32 @@
       const row = btn.closest('.record-row'); row.classList.add('highlight-delete');
       let decodedNotes = decodeURIComponent(encodedNotes);
       setTimeout(() => {
-        if (confirm(`${formattedDate}${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {           let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes \vert{}\vert{} '') === decodedNotes);           if (idx !== -1) { allRecords.splice(idx, 1); }            else {             let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);             if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);           }           renderList();           syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });         } else { row.classList.remove('highlight-delete'); }       }, 300);     }      function getLogicalDate(dateStr, timeStr) {       if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };       let d = new Date(String(dateStr).replace(/-/g, '/'));       if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };       if (timeStr) {         let parts = String(timeStr).split(':');         if (parts.length >= 2) {           let h = parseInt(parts[0], 10);           if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); }         }       }       let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');       return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
+        if (confirm(`${formattedDate} ${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {
+          let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
+          if (idx !== -1) { allRecords.splice(idx, 1); } 
+          else {
+            let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);
+            if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);
+          }
+          renderList();
+          syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });
+        } else { row.classList.remove('highlight-delete'); }
+      }, 300);
+    }
+
+    function getLogicalDate(dateStr, timeStr) {
+      if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };
+      let d = new Date(String(dateStr).replace(/-/g, '/'));
+      if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };
+      if (timeStr) {
+        let parts = String(timeStr).split(':');
+        if (parts.length >= 2) {
+          let h = parseInt(parts[0], 10);
+          if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); }
+        }
+      }
+      let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');
+      return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
     }
 
     function updateChart(displayData) {
@@ -733,46 +820,34 @@
 
         let tableHtml = `<thead>`;
         
-        // 🌟 1. 高度縮減：改為 42px，讓上下邊距極度貼合
-        tableHtml += `<tr><th colspan="${monthCount * 4}" style="position: relative; height: 42px; padding: 0; border-bottom: 1.5px solid #000 !important; background-color: #FFFFFF; overflow: hidden;">`;
+        // 🌟 1. 改寫為安全的 Flexbox 原生排版 (取代容易造成當機的巢狀 Table)
+        tableHtml += `<tr><th colspan="${monthCount * 4}" style="height: 52px; padding: 0 16px 6px 16px; border-bottom: 2px solid #000 !important; background-color: #FFFFFF; vertical-align: bottom;">`;
+        tableHtml += `<div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">`;
         
-        // 標題位置對應微調
-        tableHtml += `<div style="position: absolute; left: 16px; bottom: 8px; font-size: 26px; letter-spacing: 12px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; text-align: left; line-height: 1;">血壓記錄表</div>`;
+        // 左側：血壓記錄表標題
+        tableHtml += `<div style="font-size: 28px; letter-spacing: 12px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 0.9;">血壓記錄表</div>`;
+        
+        // 右側：數據儀表板
+        tableHtml += `<div style="display: flex; align-items: flex-end; font-family: Arial, sans-serif;">`;
+        
+        // 🌟 小圖示般貼緊的渲染函數：確保所有數據大小皆為 15px，且 Label 緊貼左上方
+        const renderStat = (lbl, val, color) => `<div style="margin-left: 14px; text-align: left;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 15px; font-weight: 900; line-height: 1;">${val}</div></div>`;
 
-        // 右側數值區
-        tableHtml += `<div style="position: absolute; right: 12px; bottom: 8px; font-family: Arial, sans-serif;">`;
-        tableHtml += `<table style="border: none !important; border-collapse: collapse; margin: 0; padding: 0; background-color: transparent;">`;
+        // 左半部數據
+        tableHtml += renderStat('MEAN', `${meanSys}/${meanDia}`, '#111111');
+        tableHtml += renderStat('MAX', maxStr, '#666666');
+        tableHtml += renderStat('MIN', minStr, '#666666');
         
-        // 🌟 第一列：Label (大幅減少 padding-bottom，讓 Label 直接貼在數字頭上)
-        const renderLabel = (text) => `<td style="border: none !important; padding: 0 0 1px 16px; vertical-align: bottom; text-align: left; color: #999999; font-size: 9px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif;">${text}</td>`;
+        // 🌟 直立分隔線
+        tableHtml += `<div style="width: 1.5px; height: 26px; background-color: #CED4DA; margin: 0 4px 0 16px;"></div>`;
         
-        tableHtml += `<tr>`;
-        tableHtml += renderLabel('MEAN');
-        tableHtml += renderLabel('MAX');
-        tableHtml += renderLabel('MIN');
-        // 🌟 直立分隔線加長，完美貫穿兩區
-        tableHtml += `<td style="border: none !important; padding: 0 0 0 14px;" rowspan="2"><div style="width: 1.5px; height: 28px; background-color: #E2E8F0;"></div></td>`;
-        tableHtml += renderLabel('Normal');
-        tableHtml += renderLabel('Elevated');
-        tableHtml += renderLabel('Stage 1');
-        tableHtml += renderLabel('Stage 2');
-        tableHtml += `</tr>`;
+        // 右半部數據
+        tableHtml += renderStat('Normal', `${pctNormal}%`, '#111111');
+        tableHtml += renderStat('Elevated', `${pctElevated}%`, '#111111');
+        tableHtml += renderStat('Stage 1', `${pctStage1}%`, '#111111');
+        tableHtml += renderStat('Stage 2', `${pctStage2}%`, '#111111');
         
-        // 🌟 第二列：數值 (統一字體大小 15px，顏色精準分層)
-        const renderVal = (text, color) => `<td style="border: none !important; padding: 0 0 0 16px; vertical-align: bottom; text-align: left; color: ${color}; font-size: 15px; font-weight: 900; line-height: 0.85; font-family: Arial, sans-serif;">${text}</td>`;
-        
-        tableHtml += `<tr>`;
-        tableHtml += renderVal(`${meanSys}/${meanDia}`, '#111111'); // MEAN：黑字
-        tableHtml += renderVal(maxStr, '#666666'); // MAX：深灰字
-        tableHtml += renderVal(minStr, '#666666'); // MIN：深灰字
-        tableHtml += renderVal(`${pctNormal}%`, '#111111'); // 四分類：全數黑字
-        tableHtml += renderVal(`${pctElevated}%`, '#111111');
-        tableHtml += renderVal(`${pctStage1}%`, '#111111');
-        tableHtml += renderVal(`${pctStage2}%`, '#111111');
-        tableHtml += `</tr>`;
-        
-        tableHtml += `</table></div>`;
-        tableHtml += `</th></tr>`;
+        tableHtml += `</div></div></th></tr>`;
         
         tableHtml += `<tr class="month-row-thick">`;
         for (let i = 0; i < monthCount; i++) {
