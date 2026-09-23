@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=136">
+  <link rel="manifest" href="manifest.json?v=137">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -206,10 +206,17 @@
 
     #printArea { display: none; width: 210mm; height: 297mm; box-sizing: border-box; padding: 16mm 12mm 5mm 12mm; background-color: #FFFFFF; color: #000; }
     
-    /* 🌟 1. 粗細框線控制區：外圍、儀表板底、月份列底、垂直交界 統一 1.5px，其餘 0.5px */
+    /* 🌟 完美的粗細線條控制系統 */
     .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: Arial, sans-serif; table-layout: fixed; background-color: #FFFFFF; border: 1.5px solid #000 !important; }
     .print-table th, .print-table td { border: 0.5px solid #000 !important; padding: 0; height: 28.5px; line-height: 28.5px; box-sizing: border-box; overflow: hidden; }
     
+    /* 🌟 確保最外圍的四個邊角不被細線覆蓋，強制渲染為 1.5px */
+    .print-table tr:first-child th { border-top: 1.5px solid #000 !important; }
+    .print-table tr:last-child td { border-bottom: 1.5px solid #000 !important; }
+    .print-table tr th:first-child, .print-table tr td:first-child { border-left: 1.5px solid #000 !important; }
+    .print-table tr th:last-child, .print-table tr td:last-child { border-right: 1.5px solid #000 !important; }
+
+    /* 粗框線的特定區域 (1.5px) */
     .print-table tr.dashboard-row th { border-bottom: 1.5px solid #000 !important; }
     .print-table tr.month-row-thick th { border-bottom: 1.5px solid #000 !important; }
     .print-table th.thick-right, .print-table td.thick-right { border-right: 1.5px solid #000 !important; }
@@ -822,7 +829,7 @@
 
         let tableHtml = `<thead>`;
         
-        // 🌟 血壓儀表板列 (附加 class dashboard-row)
+        // 🌟 血壓儀表板列 (賦予 class 讓 CSS 控制底線為 1.5px)
         tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 12px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
         tableHtml += `<div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">`;
         
@@ -830,11 +837,11 @@
 
         tableHtml += `<div style="display: flex; align-items: center; font-family: Arial, sans-serif;">`;
         
-        // 🌟 靠左對齊渲染器 (MEAN, MAX, MIN 使用)
-        const renderStatLeft = (lbl, val, color) => `<div style="margin-left: 14px; text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 15px; font-weight: 900; line-height: 1;">${val}</div></div>`;
+        // 🌟 靠左對齊渲染器 (MEAN, MAX, MIN 使用) - 統一數值大小 20px
+        const renderStatLeft = (lbl, val, color) => `<div style="margin-left: 14px; text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 10px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 20px; font-weight: 900; line-height: 1;">${val}</div></div>`;
         
-        // 🌟 置中對齊渲染器 (四分類 AHA 指標使用)
-        const renderStatCenter = (lbl, val, color) => `<div style="margin-left: 14px; text-align: center; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 15px; font-weight: 900; line-height: 1;">${val}</div></div>`;
+        // 🌟 置中對齊渲染器 (四分類 AHA 指標使用) - 統一數值大小 20px
+        const renderStatCenter = (lbl, val, color) => `<div style="margin-left: 14px; text-align: center; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 10px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 20px; font-weight: 900; line-height: 1;">${val}</div></div>`;
 
         // 左半部
         tableHtml += renderStatLeft('MEAN', `${meanSys}/${meanDia}`, '#111111');
@@ -852,7 +859,7 @@
         
         tableHtml += `</div></div></th></tr>`;
         
-        // 🌟 月份列 (附加 class month-row-thick)
+        // 🌟 月份列 (賦予 class 讓 CSS 控制底線為 1.5px)
         tableHtml += `<tr class="month-row-thick">`;
         for (let i = 0; i < monthCount; i++) {
           let mVal = targetMonths[i] ? targetMonths[i] : ``; let rightCls = (i < (monthCount - 1)) ? ' thick-right' : ''; 
