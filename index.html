@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=150">
+  <link rel="manifest" href="manifest.json?v=151">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -26,7 +26,6 @@
       --bg-color: #F4F6F8; 
       --text-main: #333333; 
       --border-color: #CED4DA; 
-      /* 🌟 調整純文字的高對比分級色彩 */
       --danger-color: #DC2626;  /* 正紅 (Stage 2) */
       --alert-color: #EA580C;   /* 亮橘 (Stage 1) */
       --warning-color: #CA8A04; /* 芥末金 (Elevated) */
@@ -108,7 +107,7 @@
     
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     
-    /* 🌟 鎖死 BP 和 HR 的欄位寬度，徹底解決對齊被推擠的問題 */
+    /* 鎖死 BP 和 HR 的寬度，讓數據垂直完美對齊 */
     .list-header, .record-row { 
       display: grid; 
       grid-template-columns: 65px 45px 22px 85px 40px 1fr 24px; 
@@ -148,18 +147,12 @@
     .delete-btn:active { color: var(--danger-color); }
     .record-row.highlight-delete .delete-btn { color: var(--danger-color); }
     
-    .sun-col { display: flex; align-items: center; justify-content: center; }
+    .cat-col { display: flex; align-items: center; justify-content: center; }
     .bp-col-align { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0px; align-items: center; justify-content: center; width: 100%; }
     
-    /* 🌟 全面恢復血壓數字為粗體 */
-    .bp-sys { text-align: right; font-weight: bold; }
+    .bp-sys { text-align: right; font-weight: bold; color: var(--text-main); }
     .bp-slash { color: #888; font-weight: normal; margin: 0 2px; } 
-    .bp-dia { text-align: left; font-weight: bold; }
-    
-    /* AHA 分級文字色彩 (無底色版本) */
-    .bp-elevated { color: var(--warning-color); }
-    .bp-stage1 { color: var(--alert-color); }
-    .bp-stage2 { color: var(--danger-color); }
+    .bp-dia { text-align: left; font-weight: bold; color: var(--text-main); }
     
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
 
@@ -377,14 +370,6 @@
               <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
             </svg>
           </button>
-          <button class="capsule-btn" data-val="morning" title="Morning Filter">
-            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          </button>
         </div>
       </div>
       
@@ -553,7 +538,6 @@
       let curr = new Date();
       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
-      checkMorningTag();
       try {
         await Promise.all([ new Promise(resolve => setTimeout(resolve, 800)), loadData() ]);
       } catch (err) { console.error("Refresh error", err); } finally { hideLoading(); }
@@ -570,22 +554,6 @@
     const now = new Date();
     document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-    function checkMorningTag() {
-      const timeVal = document.getElementById('time').value;
-      if (!timeVal) return;
-      const h = parseInt(timeVal.split(':')[0], 10);
-      const notesInput = document.getElementById('notes');
-      if (h >= 4 && h < 10) {
-        if (!notesInput.value.includes('[報表]')) {
-          if (notesInput.value.trim() !== '') notesInput.value += ', ';
-          notesInput.value += '[報表]';
-        }
-      }
-    }
-    
-    document.getElementById('time').addEventListener('change', checkMorningTag);
-    checkMorningTag();
 
     function addQuickTag(tagText) {
       const notesInput = document.getElementById('notes');
@@ -722,14 +690,6 @@
         let displayData = [...allRecords].filter(r => r && r.date && String(r.date).trim() !== '');
         
         if (currentFilter === 'report') { displayData = displayData.filter(r => r.notes && String(r.notes).includes('[報表]')); } 
-        else if (currentFilter === 'morning') {
-          displayData = displayData.filter(r => {
-            if (!r.time) return false;
-            let parts = String(r.time).split(':');
-            if (parts.length >= 2) { let h = parseInt(parts[0], 10); return h >= 4 && h < 10; }
-            return false;
-          });
-        } 
         else if (currentFilter === '7days') { let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 7); displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff); } 
         else if (currentFilter === '30days') { let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 30); displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff); } 
         else if (currentFilter === '90days') { let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 90); displayData = displayData.filter(r => new Date(String(r.date).replace(/-/g, '/')) >= cutoff); }
@@ -754,30 +714,27 @@
             let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
             let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
             
-            // 🌟 針對列表渲染 AHA 顏色 (拔除背景色，全面恢復粗體高對比字色)
+            // 🌟 針對列表渲染 AHA 符號 (純淨無色彩干擾的文字)
             let sysStr = item.systolic || '';
             let diaStr = item.diastolic || '';
-            let colorClass = '';
+            let catIconHtml = '';
             
             if (sysStr && diaStr && !isNaN(parseInt(sysStr)) && !isNaN(parseInt(diaStr))) {
                 let s = parseInt(sysStr), d = parseInt(diaStr);
                 let sCat = (s < 120) ? 0 : ((s < 130) ? 1 : ((s < 140) ? 2 : 3));
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
-                if (cat === 1) colorClass = 'bp-elevated';
-                else if (cat === 2) colorClass = 'bp-stage1';
-                else if (cat === 3) colorClass = 'bp-stage2';
+                
+                // 🌟 置入符號：三角形或帶數字的圓形
+                if (cat === 1) {
+                    catIconHtml = `<svg viewBox="0 0 24 24" width="16" height="16" fill="#CA8A04" style="margin-bottom: 2px;"><path d="M12 2L22 20H2z"/></svg>`;
+                } else if (cat === 2) {
+                    catIconHtml = `<div style="width: 17px; height: 17px; background-color: #EA580C; color: white; border-radius: 50%; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">1</div>`;
+                } else if (cat === 3) {
+                    catIconHtml = `<div style="width: 17px; height: 17px; background-color: #DC2626; color: white; border-radius: 50%; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">2</div>`;
+                }
             }
             
-            let sysHtml = colorClass ? `<span class="${colorClass}">${sysStr}</span>` : `<span style="font-weight: bold;">${sysStr}</span>`;
-            let diaHtml = colorClass ? `<span class="${colorClass}">${diaStr}</span>` : `<span style="font-weight: bold;">${diaStr}</span>`;
-            
-            let sunSvgHtml = '';
-            if (timeParts) {
-              let h = parseInt(timeParts[1], 10);
-              if (h >= 4 && h < 10) { sunSvgHtml = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="#495057" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`; }
-            }
-
             let isNewDay = (lastDate !== null && lastDate !== formattedDate);
             let displayDateText = (lastDate !== formattedDate) ? currDayStr : '';
 
@@ -793,8 +750,9 @@
 
             html += `
               <div class="record-row ${isNewDay ? 'new-day' : ''}">
-                <div>${displayDateText}</div><div>${formattedTime}</div><div class="sun-col">${sunSvgHtml}</div>
-                <div class="bp-col-align"><span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${diaHtml}</span></div>
+                <div>${displayDateText}</div><div>${formattedTime}</div>
+                <div class="cat-col">${catIconHtml}</div>
+                <div class="bp-col-align"><span class="bp-sys">${sysStr}</span><span class="bp-slash">/</span><span class="bp-dia">${diaStr}</span></div>
                 <div style="font-weight: bold;">${item.heartRate || ''}</div><div class="note-col">${displayNote}</div>
                 <div>
                   <button class="delete-btn" onclick="confirmDelete(this, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}', '${encodedNotes}')" title="Delete">
@@ -946,26 +904,14 @@
           for (let m = 0; m < monthCount; m++) {
             let monthKey = targetMonths[m]; let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null; let rightCls = (m < (monthCount - 1)) ? ' thick-right' : '';
             
-            // 🌟 報表渲染：全部改回粗體，以文字顏色分級
+            // 🌟 報表渲染：全部以黑色粗體呈現 (依照指示「輸出的報表不要有顏色」)
             let sysStr = record ? record.systolic : '';
             let diaStr = record ? record.diastolic : '';
-            let colorStyle = 'color: #333333; font-weight: bold;';
             
-            if (record && sysStr && diaStr && !isNaN(parseInt(sysStr)) && !isNaN(parseInt(diaStr))) {
-                let s = parseInt(sysStr), d = parseInt(diaStr);
-                let sCat = (s < 120) ? 0 : ((s < 130) ? 1 : ((s < 140) ? 2 : 3));
-                let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
-                let cat = Math.max(sCat, dCat);
-                
-                if (cat === 1) colorStyle = 'color: #CA8A04; font-weight: bold;'; 
-                else if (cat === 2) colorStyle = 'color: #EA580C; font-weight: bold;'; 
-                else if (cat === 3) colorStyle = 'color: #DC2626; font-weight: bold;'; 
-            }
+            let sysCell = record ? `<span style="color: #333333; font-weight: bold;">${sysStr}</span>` : '';
+            let diaCell = record ? `<span style="color: #333333; font-weight: bold;">${diaStr}</span>` : '';
             
-            let sysCell = record ? `<span style="${colorStyle}">${sysStr}</span>` : '';
-            let diaCell = record ? `<span style="${colorStyle}">${diaStr}</span>` : '';
-            
-            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td>${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="font-weight: bold;">${record ? record.heartRate : ''}</td>`;
+            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td>${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: bold;">${record ? record.heartRate : ''}</td>`;
           }
           tableHtml += `</tr>`;
         }
@@ -1023,8 +969,10 @@
       const payload = { action: 'add', date: document.getElementById('date').value, time: document.getElementById('time').value, systolic: document.getElementById('systolic').value, diastolic: document.getElementById('diastolic').value, heartRate: document.getElementById('heartRate').value, notes: document.getElementById('notes').value };
       allRecords.push(payload); renderList(); scrollToBottom(); 
       document.getElementById('bpForm').reset();
+      
+      // 不再自動處理 morning tag 邏輯，全靠手動點擊標籤
       let curr = new Date(); document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`; document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
-      checkMorningTag();
+      
       const originalColor = btn.style.backgroundColor; btn.innerText = '✅ Saved!'; btn.style.backgroundColor = '#4CAF50';
       setTimeout(() => { btn.innerText = 'Save'; btn.style.backgroundColor = originalColor; btn.disabled = false; }, 2000);
       syncToCloud(payload);
