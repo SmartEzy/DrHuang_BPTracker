@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=152">
+  <link rel="manifest" href="manifest.json?v=153">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -26,9 +26,9 @@
       --bg-color: #F4F6F8; 
       --text-main: #333333; 
       --border-color: #CED4DA; 
-      --danger-color: #DC2626;  /* 正紅 (Stage 2) */
-      --alert-color: #EA580C;   /* 亮橘 (Stage 1) */
-      --warning-color: #CA8A04; /* 芥末金 (Elevated) */
+      --danger-color: #DC2626;  
+      --alert-color: #EA580C;   
+      --warning-color: #F59E0B; /* 亮黃色 (亮琥珀金) */
       --sticky-offset: 240px; 
     }
     
@@ -369,14 +369,6 @@
               <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
             </svg>
           </button>
-          <button class="capsule-btn" data-val="morning" title="Morning Filter">
-            <svg viewBox="0 0 24 24" width="15" height="15" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-              <line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-            </svg>
-          </button>
         </div>
       </div>
       
@@ -563,7 +555,6 @@
     document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
 
-    // 🌟 恢復：自動化加入 [報表] 標籤邏輯
     function checkMorningTag() {
       const timeVal = document.getElementById('time').value;
       if (!timeVal) return;
@@ -747,7 +738,7 @@
             let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
             let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
             
-            // 🌟 針對列表渲染 AHA 符號 (無顏色干擾的純黑文字)
+            // 🌟 針對列表渲染 AHA 符號與統一粗體顏色
             let sysStr = item.systolic || '';
             let diaStr = item.diastolic || '';
             let catIconHtml = '';
@@ -758,11 +749,11 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 植入幾何風險符號
+                // 🌟 使用全新的動態折線黃色箭頭與紅色數字圈圈
                 if (cat === 1) {
-                    catIconHtml = `<svg viewBox="0 0 24 24" width="16" height="16" fill="#CA8A04" style="margin-bottom: 2px;"><path d="M12 2L22 20H2z"/></svg>`;
+                    catIconHtml = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 2px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 } else if (cat === 2) {
-                    catIconHtml = `<div style="width: 17px; height: 17px; background-color: #EA580C; color: white; border-radius: 50%; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">1</div>`;
+                    catIconHtml = `<div style="width: 17px; height: 17px; background-color: #DC2626; color: white; border-radius: 50%; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">1</div>`;
                 } else if (cat === 3) {
                     catIconHtml = `<div style="width: 17px; height: 17px; background-color: #DC2626; color: white; border-radius: 50%; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">2</div>`;
                 }
@@ -890,7 +881,8 @@
         let meanDia = countDia ? Math.round(sumDia / countDia) : '-'; 
         let meanHr = countHr ? Math.round(sumHr / countHr) : '-'; 
         
-        const slash = `<span style="margin: 0 4px;">/</span>`;
+        // 🌟 修正：拔除斜線左右的間距
+        const slash = `/`;
         let maxStr = maxRecord ? `${maxRecord.systolic}${slash}${maxRecord.diastolic}` : `-${slash}-`;
         let minStr = minRecord ? `${minRecord.systolic}${slash}${minRecord.diastolic}` : `-${slash}-`;
 
@@ -906,7 +898,8 @@
         
         const renderStatCenter = (lbl, val, color, def, ml = '18px') => `<div style="margin-left: ${ml}; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
 
-        let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 8px;">${meanHr}</span>` : '';
+        // 🌟 修正：BP 與 HR 之間保留 6px 的小空白
+        let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
         tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '#111111');
         tableHtml += renderStatLeft('MAX', maxStr, '#666666');
         tableHtml += renderStatLeft('MIN', minStr, '#666666');
@@ -937,7 +930,6 @@
           for (let m = 0; m < monthCount; m++) {
             let monthKey = targetMonths[m]; let record = monthKey && monthMap[monthKey] ? monthMap[monthKey][day] : null; let rightCls = (m < (monthCount - 1)) ? ' thick-right' : '';
             
-            // 🌟 報表渲染：純黑白無色彩列印版
             let sysStr = record ? record.systolic : '';
             let diaStr = record ? record.diastolic : '';
             
@@ -1005,7 +997,6 @@
       
       let curr = new Date(); document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`; document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
       
-      // 🌟 提交表單後，立即執行早晨標籤判定
       checkMorningTag();
       
       const originalColor = btn.style.backgroundColor; btn.innerText = '✅ Saved!'; btn.style.backgroundColor = '#4CAF50';
