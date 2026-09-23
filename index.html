@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=155">
+  <link rel="manifest" href="manifest.json?v=156">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -26,9 +26,8 @@
       --bg-color: #F4F6F8; 
       --text-main: #333333; 
       --border-color: #CED4DA; 
-      --danger-color: #DC2626;  
-      --alert-color: #EA580C;   
-      --warning-color: #F59E0B; 
+      --danger-color: #DC2626;  /* Stage 1 & 2 統一使用正紅色 */
+      --warning-color: #F59E0B; /* Elevated 使用亮琥珀金 */
       --sticky-offset: 240px; 
     }
     
@@ -152,10 +151,6 @@
     .bp-sys { text-align: right; font-weight: bold; color: var(--text-main); }
     .bp-slash { color: #888; font-weight: normal; margin: 0 2px; } 
     .bp-dia { text-align: left; font-weight: bold; color: var(--text-main); }
-    
-    .bp-elevated { color: var(--warning-color); }
-    .bp-stage1 { color: var(--danger-color); } /* 皆改為紅色 */
-    .bp-stage2 { color: var(--danger-color); }
     
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
 
@@ -499,7 +494,47 @@
       if (!isDraggingSheet) return;
       currentY = e.clientY;
       const deltaY = currentY - startY;
-      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }     });     window.addEventListener('mouseup', () => {       if (!isDraggingSheet) return;       isDraggingSheet = false;       bottomSheet.classList.remove('dragging');       const deltaY = currentY - startY;       if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }     });      let isDownChart = false;     let startXChart;     let scrollLeftChart;      chartOuter.addEventListener('mousedown', (e) => {       isDownChart = true;       chartOuter.style.cursor = 'grabbing';       startXChart = e.pageX - chartOuter.offsetLeft;       scrollLeftChart = chartOuter.scrollLeft;     });     chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mousemove', (e) => {       if (!isDownChart) return;       e.preventDefault();       const x = e.pageX - chartOuter.offsetLeft;       const walk = (x - startXChart) * 1.5;        chartOuter.scrollLeft = scrollLeftChart - walk;     });      function showLoading(text) {       document.getElementById('loadingText').innerText = text;       document.getElementById('loadingOverlay').classList.add('show');     }          function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }      async function handleRefresh() {       showLoading('資料重整中...');       let curr = new Date();       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
+      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }
+    });
+    window.addEventListener('mouseup', () => {
+      if (!isDraggingSheet) return;
+      isDraggingSheet = false;
+      bottomSheet.classList.remove('dragging');
+      const deltaY = currentY - startY;
+      if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }
+    });
+
+    let isDownChart = false;
+    let startXChart;
+    let scrollLeftChart;
+
+    chartOuter.addEventListener('mousedown', (e) => {
+      isDownChart = true;
+      chartOuter.style.cursor = 'grabbing';
+      startXChart = e.pageX - chartOuter.offsetLeft;
+      scrollLeftChart = chartOuter.scrollLeft;
+    });
+    chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
+    chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
+    chartOuter.addEventListener('mousemove', (e) => {
+      if (!isDownChart) return;
+      e.preventDefault();
+      const x = e.pageX - chartOuter.offsetLeft;
+      const walk = (x - startXChart) * 1.5; 
+      chartOuter.scrollLeft = scrollLeftChart - walk;
+    });
+
+    function showLoading(text) {
+      document.getElementById('loadingText').innerText = text;
+      document.getElementById('loadingOverlay').classList.add('show');
+    }
+    
+    function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+
+    async function handleRefresh() {
+      showLoading('資料重整中...');
+      let curr = new Date();
+      document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
       checkMorningTag();
       try {
@@ -515,8 +550,31 @@
     }
     window.addEventListener('resize', updateStickyOffset);
 
+    // 🌟 確保初次載入時，日期時間欄位有值
     const now = new Date();
-    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;      function checkMorningTag() {       const timeVal = document.getElementById('time').value;       if (!timeVal) return;       const h = parseInt(timeVal.split(':')[0], 10);       const notesInput = document.getElementById('notes');       if (h >= 4 && h < 10) {         if (!notesInput.value.includes('[報表]')) {           if (notesInput.value.trim() !== '') notesInput.value += ', ';           notesInput.value += '[報表]';         }       }     }          document.getElementById('time').addEventListener('change', checkMorningTag);     checkMorningTag();      function addQuickTag(tagText) {       const notesInput = document.getElementById('notes');       if (notesInput.value.trim() === '') { notesInput.value = tagText; }        else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
+    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+    document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+
+    function checkMorningTag() {
+      const timeVal = document.getElementById('time').value;
+      if (!timeVal) return;
+      const h = parseInt(timeVal.split(':')[0], 10);
+      const notesInput = document.getElementById('notes');
+      if (h >= 4 && h < 10) {
+        if (!notesInput.value.includes('[報表]')) {
+          if (notesInput.value.trim() !== '') notesInput.value += ', ';
+          notesInput.value += '[報表]';
+        }
+      }
+    }
+    
+    document.getElementById('time').addEventListener('change', checkMorningTag);
+    checkMorningTag();
+
+    function addQuickTag(tagText) {
+      const notesInput = document.getElementById('notes');
+      if (notesInput.value.trim() === '') { notesInput.value = tagText; } 
+      else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
     }
 
     document.querySelectorAll('.capsule-btn').forEach(btn => {
@@ -548,7 +606,32 @@
       const row = btn.closest('.record-row'); row.classList.add('highlight-delete');
       let decodedNotes = decodeURIComponent(encodedNotes);
       setTimeout(() => {
-        if (confirm(`${formattedDate}${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {           let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes \vert{}\vert{} '') === decodedNotes);           if (idx !== -1) { allRecords.splice(idx, 1); }            else {             let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);             if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);           }           renderList();           syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });         } else { row.classList.remove('highlight-delete'); }       }, 300);     }      function getLogicalDate(dateStr, timeStr) {       if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };       let d = new Date(String(dateStr).replace(/-/g, '/'));       if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };       if (timeStr) {         let parts = String(timeStr).split(':');         if (parts.length >= 2) {           let h = parseInt(parts[0], 10);           if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); }         }       }       let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');       return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
+        if (confirm(`${formattedDate} ${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {
+          let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
+          if (idx !== -1) { allRecords.splice(idx, 1); } 
+          else {
+            let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);
+            if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);
+          }
+          renderList();
+          syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });
+        } else { row.classList.remove('highlight-delete'); }
+      }, 300);
+    }
+
+    function getLogicalDate(dateStr, timeStr) {
+      if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };
+      let d = new Date(String(dateStr).replace(/-/g, '/'));
+      if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };
+      if (timeStr) {
+        let parts = String(timeStr).split(':');
+        if (parts.length >= 2) {
+          let h = parseInt(parts[0], 10);
+          if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); }
+        }
+      }
+      let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');
+      return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
     }
 
     function updateChart(displayData) {
@@ -655,6 +738,7 @@
             let timeParts = item.time ? String(item.time).match(/(\d+):(\d+)/) : null;
             let formattedTime = timeParts ? `${timeParts[1].padStart(2, '0')}:${timeParts[2].padStart(2, '0')}` : (item.time || '');
             
+            // 🌟 針對列表渲染 AHA 符號 
             let sysStr = item.systolic || '';
             let diaStr = item.diastolic || '';
             let catIconHtml = '';
@@ -665,6 +749,7 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
+                // 🌟 更新：Elevated 使用亮黃折線，Stage1 與 Stage2 皆使用正紅圓圈
                 if (cat === 1) {
                     catIconHtml = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 2px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 } else if (cat === 2) {
@@ -673,6 +758,10 @@
                     catIconHtml = `<div style="width: 17px; height: 17px; background-color: #DC2626; color: white; border-radius: 50%; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">2</div>`;
                 }
             }
+            
+            // 🌟 修正：拔除 undefined 變數 colorClass，全面寫入黑色粗體字樣
+            let sysHtml = `<span style="font-weight: bold; color: #333333;">${sysStr}</span>`;
+            let diaHtml = `<span style="font-weight: bold; color: #333333;">${diaStr}</span>`;
             
             let isNewDay = (lastDate !== null && lastDate !== formattedDate);
             let displayDateText = (lastDate !== formattedDate) ? currDayStr : '';
@@ -691,8 +780,8 @@
               <div class="record-row ${isNewDay ? 'new-day' : ''}">
                 <div>${displayDateText}</div><div>${formattedTime}</div>
                 <div class="cat-col">${catIconHtml}</div>
-                <div class="bp-col-align"><span class="bp-sys">${sysStr}</span><span class="bp-slash">/</span><span class="bp-dia">${diaStr}</span></div>
-                <div style="font-weight: bold;">${item.heartRate || ''}</div><div class="note-col">${displayNote}</div>
+                <div class="bp-col-align"><span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${diaHtml}</span></div>
+                <div style="font-weight: bold; color: #333333;">${item.heartRate || ''}</div><div class="note-col">${displayNote}</div>
                 <div>
                   <button class="delete-btn" onclick="confirmDelete(this, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}', '${encodedNotes}')" title="Delete">
                     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
@@ -796,45 +885,44 @@
         let meanDia = countDia ? Math.round(sumDia / countDia) : '-'; 
         let meanHr = countHr ? Math.round(sumHr / countHr) : '-'; 
         
+        // 🌟 修正：拔除斜線左右的間距
         const slash = `/`;
         let maxStr = maxRecord ? `${maxRecord.systolic}${slash}${maxRecord.diastolic}` : `-${slash}-`;
         let minStr = minRecord ? `${minRecord.systolic}${slash}${minRecord.diastolic}` : `-${slash}-`;
 
         let tableHtml = `<thead>`;
         tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 12px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
-        
-        // 🌟 經典三聯畫 (Triptych) 儀表板排版：左數據、中標題、右分類
         tableHtml += `<div style="display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative;">`;
         
         const renderStatLeft = (lbl, val, color) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
-        const renderStatCenter = (lbl, val, color, def, icon = '') => {
+        
+        // 🌟 修正：確保 renderStatCenter 正確接收並使用所有參數
+        const renderStatCenter = (lbl, val, color, def, ml = '18px', icon = '') => {
             let lblHtml = icon ? `<div style="display: flex; align-items: center; justify-content: center; gap: 3px;">${icon}<span>${lbl}</span></div>` : lbl;
-            return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lblHtml}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 2px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
+            return `<div style="margin-left: ${ml}; text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lblHtml}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 2px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
         };
 
-        // 🌟 小巧思：儀表板上的「迷你圖例」
-        const svgElevated = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#999999" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+        const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#999999" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
         const svgStage1 = `<svg viewBox="0 0 20 20" width="8" height="8"><circle cx="10" cy="10" r="10" fill="#999999"/><text x="10" y="14.5" font-size="13" font-weight="900" fill="white" text-anchor="middle" font-family="Arial, sans-serif">1</text></svg>`;
         const svgStage2 = `<svg viewBox="0 0 20 20" width="8" height="8"><circle cx="10" cy="10" r="10" fill="#999999"/><text x="10" y="14.5" font-size="13" font-weight="900" fill="white" text-anchor="middle" font-family="Arial, sans-serif">2</text></svg>`;
 
+        // 🌟 修正：BP 與 HR 之間保留 6px 的小空白
         let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
         
-        // 【左側區塊】：極值數據
         tableHtml += `<div style="display: flex; flex: 1; justify-content: flex-start; gap: 14px;">`;
         tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '#111111');
         tableHtml += renderStatLeft('MAX', maxStr, '#666666');
         tableHtml += renderStatLeft('MIN', minStr, '#666666');
         tableHtml += `</div>`;
 
-        // 【中央區塊】：完美置中標題
         tableHtml += `<div style="font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; text-align: center; margin: 0 10px;">血壓記錄表</div>`;
 
-        // 【右側區塊】：AHA 四大分類與圖例
         tableHtml += `<div style="display: flex; flex: 1; justify-content: flex-end; gap: 14px;">`;
-        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80');
-        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80', svgElevated);
-        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89', svgStage1);
-        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90', svgStage2);
+        // 🌟 修正：精確傳入圖例參數，並補上 missing 變數
+        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80', '0px');
+        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80', '18px', svgElevatedLegend);
+        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89', '18px', svgStage1);
+        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90', '18px', svgStage2);
         tableHtml += `</div>`;
         
         tableHtml += `</div></th></tr>`;
@@ -866,7 +954,6 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 報表專用黑白/灰階符號 (Absolute 懸浮定位，絕不推擠數字！)
                 if (cat === 1) {
                     catIconHtml = `<svg viewBox="0 0 24 24" width="12" height="12" stroke="#333333" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="position: absolute; left: 1px; top: 50%; transform: translateY(-50%);"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 } else if (cat === 2) {
@@ -876,8 +963,15 @@
                 }
             }
             
-            // 🌟 SBP 儲存格宣告為 relative，讓圖示可以在裡面自由懸浮
-            let sysCell = record ? `${catIconHtml}<span style="color: #333333; font-weight: bold;">${sysStr}</span>` : '';
+            let sysCell = '';
+            if (record) {
+                if (catIconHtml !== '') {
+                    sysCell = `${catIconHtml}<span style="color: #333333; font-weight: bold;">${sysStr}</span>`;
+                } else {
+                    sysCell = `<span style="color: #333333; font-weight: bold;">${sysStr}</span>`;
+                }
+            }
+            
             let diaCell = record ? `<span style="color: #333333; font-weight: bold;">${diaStr}</span>` : '';
             
             tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td style="position: relative;">${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: bold;">${record ? record.heartRate : ''}</td>`;
