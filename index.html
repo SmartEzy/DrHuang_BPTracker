@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=132">
+  <link rel="manifest" href="manifest.json?v=133">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -206,8 +206,8 @@
 
     #printArea { display: none; width: 210mm; height: 297mm; box-sizing: border-box; padding: 16mm 12mm 5mm 12mm; background-color: #FFFFFF; color: #000; }
     
-    /* 🌟 外圍加粗 2px，內部線條維持 0.5px */
-    .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: Arial, sans-serif; table-layout: fixed; background-color: #FFFFFF; border: 2px solid #000 !important; }
+    /* 🌟 全面統一為 1.5px 的粗框標準，不再有粗細不一的情況 */
+    .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: Arial, sans-serif; table-layout: fixed; background-color: #FFFFFF; border: 1.5px solid #000 !important; }
     .print-table th, .print-table td { border: 0.5px solid #000 !important; padding: 0; height: 28.5px; line-height: 28.5px; box-sizing: border-box; overflow: hidden; }
     
     .print-table tr.month-row-thick th { border-bottom: 1.5px solid #000 !important; }
@@ -820,28 +820,28 @@
 
         let tableHtml = `<thead>`;
         
-        // 🌟 1. 改寫為安全的 Flexbox 原生排版 (取代容易造成當機的巢狀 Table)
-        tableHtml += `<tr><th colspan="${monthCount * 4}" style="height: 52px; padding: 0 16px 6px 16px; border-bottom: 2px solid #000 !important; background-color: #FFFFFF; vertical-align: bottom;">`;
-        tableHtml += `<div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">`;
+        // 🌟 完美置中與統一粗線框 (1.5px solid #000)
+        tableHtml += `<tr><th colspan="${monthCount * 4}" style="padding: 12px 16px; border: 1.5px solid #000 !important; background-color: #FFFFFF; vertical-align: middle;">`;
+        tableHtml += `<div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">`;
         
-        // 左側：血壓記錄表標題
-        tableHtml += `<div style="font-size: 28px; letter-spacing: 12px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 0.9;">血壓記錄表</div>`;
-        
-        // 右側：數據儀表板
-        tableHtml += `<div style="display: flex; align-items: flex-end; font-family: Arial, sans-serif;">`;
-        
-        // 🌟 小圖示般貼緊的渲染函數：確保所有數據大小皆為 15px，且 Label 緊貼左上方
-        const renderStat = (lbl, val, color) => `<div style="margin-left: 14px; text-align: left;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 15px; font-weight: 900; line-height: 1;">${val}</div></div>`;
+        // 標題
+        tableHtml += `<div style="font-size: 28px; letter-spacing: 12px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1;">血壓記錄表</div>`;
 
-        // 左半部數據
+        // 儀表板數據區
+        tableHtml += `<div style="display: flex; align-items: center; font-family: Arial, sans-serif;">`;
+        
+        // 🌟 小圖示貼緊渲染：統一放大為 18px，讓視覺更具份量
+        const renderStat = (lbl, val, color) => `<div style="margin-left: 14px; text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
+
+        // 左半部
         tableHtml += renderStat('MEAN', `${meanSys}/${meanDia}`, '#111111');
         tableHtml += renderStat('MAX', maxStr, '#666666');
         tableHtml += renderStat('MIN', minStr, '#666666');
         
-        // 🌟 直立分隔線
-        tableHtml += `<div style="width: 1.5px; height: 26px; background-color: #CED4DA; margin: 0 4px 0 16px;"></div>`;
+        // 直立分隔線微調高度以匹配新字級
+        tableHtml += `<div style="width: 1.5px; height: 28px; background-color: #CED4DA; margin: 0 4px 0 16px;"></div>`;
         
-        // 右半部數據
+        // 右半部
         tableHtml += renderStat('Normal', `${pctNormal}%`, '#111111');
         tableHtml += renderStat('Elevated', `${pctElevated}%`, '#111111');
         tableHtml += renderStat('Stage 1', `${pctStage1}%`, '#111111');
@@ -880,7 +880,9 @@
         const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
         pdf.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, 297);
         const today = new Date(); const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
-        pdf.save(`血壓記錄表_${monthCount}個月版_${dateStr}.pdf`);
+        
+        // 🌟 檔名更新為 3M / 4M
+        pdf.save(`血壓記錄表_${monthCount}M_${dateStr}.pdf`);
 
         printArea.style.display = 'none'; printArea.style.position = ''; printArea.style.left = ''; printArea.style.top = '';
       } catch (err) { console.error("PDF 產生失敗", err); alert("產生 PDF 時發生錯誤，請稍後再試。");
