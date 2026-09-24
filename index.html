@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=161">
+  <link rel="manifest" href="manifest.json?v=162">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -107,10 +107,10 @@
     
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     
-    /* 🌟 放寬圖示欄位寬度至 28px，確保完美置中不偏左 */
+    /* 🌟 微調圖示區 (30px) 與時間區 (48px)，移除不必要的推移，實現絕對置中 */
     .list-header, .record-row { 
       display: grid; 
-      grid-template-columns: 65px 45px 28px 85px 40px 1fr 24px; 
+      grid-template-columns: 65px 48px 30px 85px 40px 1fr 24px; 
       gap: 4px; 
       align-items: center; 
       text-align: center; 
@@ -147,16 +147,13 @@
     .delete-btn:active { color: var(--danger-color); }
     .record-row.highlight-delete .delete-btn { color: var(--danger-color); }
     
+    /* 🌟 圖示完美置中 */
     .cat-col { display: flex; align-items: center; justify-content: center; }
     .bp-col-align { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0px; align-items: center; justify-content: center; width: 100%; }
     
     .bp-sys { text-align: right; font-weight: bold; color: var(--text-main); }
     .bp-slash { color: #888; font-weight: normal; margin: 0 2px; } 
     .bp-dia { text-align: left; font-weight: bold; color: var(--text-main); }
-    
-    .bp-elevated { color: var(--warning-color); }
-    .bp-stage1 { color: var(--danger-color); }
-    .bp-stage2 { color: var(--danger-color); }
     
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
 
@@ -649,7 +646,7 @@
         const hrData = displayData.map(d => parseInt(d.heartRate));
         const limit130Data = displayData.map(() => 130);
 
-        // 🌟 動態計算雙 Y 軸的最大與最小值，確保左右刻度完全一致且不會切到數據
+        // 🌟 自動偵測雙 Y 軸最大最小值，保證刻度完美同步
         let chartMax = 180;
         let chartMin = 40;
         displayData.forEach(d => {
@@ -693,11 +690,12 @@
                   }
                 }
               },
-              // 🌟 啟動雙 Y 軸，並且強制鎖定相同的 min/max 確保完美同步
               scales: { 
-                x: { grid: { display: false }, ticks: { autoSkip: false, maxRotation: 0, font: { size: 11, weight: 'bold' }, color: '#8FA3B8' } }, 
+                // 🌟 X 軸加入 "月" 標籤
+                x: { grid: { display: false }, ticks: { autoSkip: false, maxRotation: 0, font: { size: 11, weight: 'bold' }, color: '#8FA3B8' }, title: { display: true, text: '月', color: '#8FA3B8', font: { size: 11, weight: 'bold' }, align: 'end' } }, 
                 y: { type: 'linear', display: true, position: 'left', grid: { color: '#E2E8F0' }, min: chartMin, max: chartMax },
-                yRight: { type: 'linear', display: true, position: 'right', grid: { display: false }, min: chartMin, max: chartMax, ticks: { color: '#8FA3B8', font: { size: 10, weight: 'bold' } } }
+                // 🌟 啟動右側隱藏 Y 軸 (鎖定相同 min/max)
+                yRight: { type: 'linear', display: true, position: 'right', grid: { display: false }, min: chartMin, max: chartMax, ticks: { color: '#CBD5E1', font: { size: 10, weight: 'bold' } } }
               }
             }
           });
@@ -754,7 +752,7 @@
                 let cat = Math.max(sCat, dCat);
                 
                 if (cat === 1) {
-                    catIconHtml = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="#CA8A04" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 2px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                    catIconHtml = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 2px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 } else if (cat === 2) {
                     catIconHtml = `<div style="width: 17px; height: 17px; background-color: #DC2626; color: white; border-radius: 50%; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">1</div>`;
                 } else if (cat === 3) {
@@ -892,43 +890,43 @@
         let minStr = minRecord ? `${minRecord.systolic}${slash}${minRecord.diastolic}` : `-${slash}-`;
 
         let tableHtml = `<thead>`;
-        tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 14px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
+        // 🌟 加大報表抬頭底部的 padding，讓表頭不擁擠 (原本是 padding: 12px 16px)
+        tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 16px 16px 20px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
         
-        // 🌟 報表的三層次水平完美對齊架構
-        tableHtml += `<div style="display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative;">`;
+        // 🌟 全新三聯畫 (Triptych) 網格排版，強勢將標題釘在正中央
+        tableHtml += `<div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; width: 100%;">`;
         
-        // 🌟 統一的渲染器，將數字、標題與說明垂直完美置中
-        const renderStat = (lbl, val, color, def = '&nbsp;', icon = '') => {
+        // 🌟 將 MEAN/MAX/MIN 內容與標題完美靠左對齊，不再使用 center
+        const renderStatLeft = (lbl, val, color) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
+        
+        // 🌟 修正定義區文字的 spacing，包含 < > - 的前後空白
+        const renderStatCenter = (lbl, val, color, def, icon = '') => {
             let lblHtml = icon ? `<div style="display: flex; align-items: center; justify-content: center; gap: 3px;">${icon}<span>${lbl}</span></div>` : lbl;
-            return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: center; min-width: 60px;">
-                      <div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 4px;">${lblHtml}</div>
-                      <div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div>
-                      <div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1.1; margin-top: 4px; letter-spacing: 0px; white-space: nowrap;">${def}</div>
-                    </div>`;
+            return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lblHtml}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 2px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
         };
 
-        let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
-        
-        // 🌟 左側群組
-        tableHtml += `<div style="display: flex; gap: 16px;">`;
-        tableHtml += renderStat('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '#111111');
-        tableHtml += renderStat('MAX', maxStr, '#666666');
-        tableHtml += renderStat('MIN', minStr, '#666666');
-        tableHtml += `</div>`;
-
-        // 🌟 中央標題 (利用 flex 置中)
-        tableHtml += `<div style="font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
-
-        // 🌟 右側群組
         const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#999999" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
         const svgStage1 = `<div style="width: 10px; height: 10px; background-color: #999999; color: white; border-radius: 50%; font-size: 7px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">1</div>`;
         const svgStage2 = `<div style="width: 10px; height: 10px; background-color: #999999; color: white; border-radius: 50%; font-size: 7px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">2</div>`;
 
-        tableHtml += `<div style="display: flex; gap: 12px;">`;
-        tableHtml += renderStat('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80');
-        tableHtml += renderStat('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80', svgElevatedLegend);
-        tableHtml += renderStat('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89', svgStage1);
-        tableHtml += renderStat('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90', svgStage2);
+        let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
+        
+        // 【左側區塊】: Flex-start
+        tableHtml += `<div style="display: flex; justify-content: flex-start; gap: 16px;">`;
+        tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '#111111');
+        tableHtml += renderStatLeft('MAX', maxStr, '#666666');
+        tableHtml += renderStatLeft('MIN', minStr, '#666666');
+        tableHtml += `</div>`;
+
+        // 【中央區塊】
+        tableHtml += `<div style="font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; text-align: center; margin: 0 10px;">血壓記錄表</div>`;
+
+        // 【右側區塊】: Flex-end (加入空白定義)
+        tableHtml += `<div style="display: flex; justify-content: flex-end; gap: 16px;">`;
+        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
+        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80', svgElevatedLegend);
+        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130 - 139 / 80 - 89', svgStage1);
+        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge; 140 / &ge; 90', svgStage2);
         tableHtml += `</div>`;
         
         tableHtml += `</div></th></tr>`;
@@ -960,15 +958,15 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 報表專用黑白符號，絕對懸浮定位以防推擠數字
-                let iconWrapperStyle = "position: absolute; left: 2px; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center;";
+                // 🌟 修正：使用 margin: auto + top/bottom 0 來進行垂直精準置中，取代容易出錯的 transform
+                let iconWrapperStyle = "position: absolute; left: 4px; top: 0; bottom: 0; margin: auto; height: 13px; display: flex; align-items: center; justify-content: center;";
                 
                 if (cat === 1) {
                     catIconHtml = `<div style="${iconWrapperStyle}"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#333333" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>`;
                 } else if (cat === 2) {
-                    catIconHtml = `<div style="${iconWrapperStyle}"><div style="width: 12px; height: 12px; background-color: #333333; color: white; border-radius: 50%; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">1</div></div>`;
+                    catIconHtml = `<div style="${iconWrapperStyle}"><div style="width: 13px; height: 13px; background-color: #333333; color: white; border-radius: 50%; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">1</div></div>`;
                 } else if (cat === 3) {
-                    catIconHtml = `<div style="${iconWrapperStyle}"><div style="width: 12px; height: 12px; background-color: #333333; color: white; border-radius: 50%; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">2</div></div>`;
+                    catIconHtml = `<div style="${iconWrapperStyle}"><div style="width: 13px; height: 13px; background-color: #333333; color: white; border-radius: 50%; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">2</div></div>`;
                 }
             }
             
