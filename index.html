@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=160">
+  <link rel="manifest" href="manifest.json?v=161">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -107,9 +107,10 @@
     
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     
+    /* 🌟 放寬圖示欄位寬度至 28px，確保完美置中不偏左 */
     .list-header, .record-row { 
       display: grid; 
-      grid-template-columns: 65px 45px 22px 85px 40px 1fr 24px; 
+      grid-template-columns: 65px 45px 28px 85px 40px 1fr 24px; 
       gap: 4px; 
       align-items: center; 
       text-align: center; 
@@ -152,6 +153,10 @@
     .bp-sys { text-align: right; font-weight: bold; color: var(--text-main); }
     .bp-slash { color: #888; font-weight: normal; margin: 0 2px; } 
     .bp-dia { text-align: left; font-weight: bold; color: var(--text-main); }
+    
+    .bp-elevated { color: var(--warning-color); }
+    .bp-stage1 { color: var(--danger-color); }
+    .bp-stage2 { color: var(--danger-color); }
     
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
 
@@ -644,7 +649,18 @@
         const hrData = displayData.map(d => parseInt(d.heartRate));
         const limit130Data = displayData.map(() => 130);
 
+        // 🌟 動態計算雙 Y 軸的最大與最小值，確保左右刻度完全一致且不會切到數據
+        let chartMax = 180;
+        let chartMin = 40;
+        displayData.forEach(d => {
+            if (d.systolic && parseInt(d.systolic) + 20 > chartMax) chartMax = parseInt(d.systolic) + 20;
+            if (d.heartRate && parseInt(d.heartRate) > 0 && parseInt(d.heartRate) - 10 < chartMin) chartMin = parseInt(d.heartRate) - 10;
+        });
+
         if (bpChartInstance) {
+          bpChartInstance.options.scales.y.min = chartMin; bpChartInstance.options.scales.y.max = chartMax;
+          bpChartInstance.options.scales.yRight.min = chartMin; bpChartInstance.options.scales.yRight.max = chartMax;
+          
           bpChartInstance.resize(); bpChartInstance.data.labels = labels; bpChartInstance.data.times = times; bpChartInstance.data.fullDates = fullDatesForTooltip; 
           bpChartInstance.data.datasets[0].data = bpRangeData; bpChartInstance.data.datasets[1].data = hrData; bpChartInstance.data.datasets[2].data = limit130Data; 
           bpChartInstance.update();
@@ -653,9 +669,9 @@
             data: {
               labels: labels, times: times, fullDates: fullDatesForTooltip, 
               datasets: [
-                { type: 'bar', label: 'BP Range', data: bpRangeData, backgroundColor: '#7895B2', borderRadius: 100, barThickness: 6, order: 2 },
-                { type: 'line', label: 'HR', data: hrData, borderColor: '#CBD5E1', borderWidth: 1.5, tension: 0, pointRadius: 1.5, order: 3 },
-                { type: 'line', label: '130 Limit', data: limit130Data, borderColor: 'rgba(211, 47, 47, 0.4)', borderWidth: 1, borderDash: [4, 4], pointRadius: 0, fill: false, order: 1 }
+                { type: 'bar', label: 'BP Range', data: bpRangeData, backgroundColor: '#7895B2', borderRadius: 100, barThickness: 6, order: 2, yAxisID: 'y' },
+                { type: 'line', label: 'HR', data: hrData, borderColor: '#CBD5E1', borderWidth: 1.5, tension: 0, pointRadius: 1.5, order: 3, yAxisID: 'yRight' },
+                { type: 'line', label: '130 Limit', data: limit130Data, borderColor: 'rgba(211, 47, 47, 0.4)', borderWidth: 1, borderDash: [4, 4], pointRadius: 0, fill: false, order: 1, yAxisID: 'y' }
               ]
             },
             options: {
@@ -677,7 +693,12 @@
                   }
                 }
               },
-              scales: { x: { grid: { display: false }, ticks: { autoSkip: false, maxRotation: 0, font: { size: 11, weight: 'bold' }, color: '#8FA3B8' } }, y: { grid: { color: '#E2E8F0' }, beginAtZero: false, suggestedMin: 40, suggestedMax: 160 } }
+              // 🌟 啟動雙 Y 軸，並且強制鎖定相同的 min/max 確保完美同步
+              scales: { 
+                x: { grid: { display: false }, ticks: { autoSkip: false, maxRotation: 0, font: { size: 11, weight: 'bold' }, color: '#8FA3B8' } }, 
+                y: { type: 'linear', display: true, position: 'left', grid: { color: '#E2E8F0' }, min: chartMin, max: chartMax },
+                yRight: { type: 'linear', display: true, position: 'right', grid: { display: false }, min: chartMin, max: chartMax, ticks: { color: '#8FA3B8', font: { size: 10, weight: 'bold' } } }
+              }
             }
           });
         }
@@ -733,7 +754,7 @@
                 let cat = Math.max(sCat, dCat);
                 
                 if (cat === 1) {
-                    catIconHtml = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 2px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                    catIconHtml = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="#CA8A04" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 2px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 } else if (cat === 2) {
                     catIconHtml = `<div style="width: 17px; height: 17px; background-color: #DC2626; color: white; border-radius: 50%; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">1</div>`;
                 } else if (cat === 3) {
@@ -871,31 +892,43 @@
         let minStr = minRecord ? `${minRecord.systolic}${slash}${minRecord.diastolic}` : `-${slash}-`;
 
         let tableHtml = `<thead>`;
-        tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 12px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
+        tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 14px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
         
-        tableHtml += `<div style="display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative; height: 38px;">`;
+        // 🌟 報表的三層次水平完美對齊架構
+        tableHtml += `<div style="display: flex; justify-content: space-between; align-items: center; width: 100%; position: relative;">`;
         
-        const renderStatLeft = (lbl, val, color) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: center;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
-        
-        const renderStatCenter = (lbl, val, color, def) => {
-            return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: center; position: relative;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div><div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); margin-top: 0px; letter-spacing: 0px; white-space: nowrap;">${def}</div></div>`;
+        // 🌟 統一的渲染器，將數字、標題與說明垂直完美置中
+        const renderStat = (lbl, val, color, def = '&nbsp;', icon = '') => {
+            let lblHtml = icon ? `<div style="display: flex; align-items: center; justify-content: center; gap: 3px;">${icon}<span>${lbl}</span></div>` : lbl;
+            return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: center; min-width: 60px;">
+                      <div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 4px;">${lblHtml}</div>
+                      <div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div>
+                      <div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1.1; margin-top: 4px; letter-spacing: 0px; white-space: nowrap;">${def}</div>
+                    </div>`;
         };
 
         let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
         
-        tableHtml += `<div style="display: flex; align-items: center; justify-content: flex-start; gap: 16px; width: 33%;">`;
-        tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '#111111');
-        tableHtml += renderStatLeft('MAX', maxStr, '#666666');
-        tableHtml += renderStatLeft('MIN', minStr, '#666666');
+        // 🌟 左側群組
+        tableHtml += `<div style="display: flex; gap: 16px;">`;
+        tableHtml += renderStat('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '#111111');
+        tableHtml += renderStat('MAX', maxStr, '#666666');
+        tableHtml += renderStat('MIN', minStr, '#666666');
         tableHtml += `</div>`;
 
-        tableHtml += `<div style="position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; text-align: center;">血壓記錄表</div>`;
+        // 🌟 中央標題 (利用 flex 置中)
+        tableHtml += `<div style="font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
 
-        tableHtml += `<div style="display: flex; align-items: center; justify-content: flex-end; gap: 24px; width: 33%;">`;
-        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80');
-        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80');
-        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89');
-        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90');
+        // 🌟 右側群組
+        const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#999999" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+        const svgStage1 = `<div style="width: 10px; height: 10px; background-color: #999999; color: white; border-radius: 50%; font-size: 7px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">1</div>`;
+        const svgStage2 = `<div style="width: 10px; height: 10px; background-color: #999999; color: white; border-radius: 50%; font-size: 7px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">2</div>`;
+
+        tableHtml += `<div style="display: flex; gap: 12px;">`;
+        tableHtml += renderStat('Normal', `${pctNormal}%`, '#111111', '&lt;120 / 80');
+        tableHtml += renderStat('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt;80', svgElevatedLegend);
+        tableHtml += renderStat('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89', svgStage1);
+        tableHtml += renderStat('Stage 2', `${pctStage2}%`, '#111111', '&ge;140 / &ge;90', svgStage2);
         tableHtml += `</div>`;
         
         tableHtml += `</div></th></tr>`;
@@ -919,12 +952,38 @@
             
             let sysStr = record ? record.systolic : '';
             let diaStr = record ? record.diastolic : '';
+            let catIconHtml = '';
             
-            // 🌟 報表數據一律為 normal 字體 (取消 font-weight: bold)
-            let sysCell = record ? `<span style="color: #333333; font-weight: normal;">${sysStr}</span>` : '';
+            if (record && sysStr && diaStr && !isNaN(parseInt(sysStr)) && !isNaN(parseInt(diaStr))) {
+                let s = parseInt(sysStr), d = parseInt(diaStr);
+                let sCat = (s < 120) ? 0 : ((s < 130) ? 1 : ((s < 140) ? 2 : 3));
+                let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
+                let cat = Math.max(sCat, dCat);
+                
+                // 🌟 報表專用黑白符號，絕對懸浮定位以防推擠數字
+                let iconWrapperStyle = "position: absolute; left: 2px; top: 0; bottom: 0; display: flex; align-items: center; justify-content: center;";
+                
+                if (cat === 1) {
+                    catIconHtml = `<div style="${iconWrapperStyle}"><svg viewBox="0 0 24 24" width="10" height="10" stroke="#333333" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>`;
+                } else if (cat === 2) {
+                    catIconHtml = `<div style="${iconWrapperStyle}"><div style="width: 12px; height: 12px; background-color: #333333; color: white; border-radius: 50%; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">1</div></div>`;
+                } else if (cat === 3) {
+                    catIconHtml = `<div style="${iconWrapperStyle}"><div style="width: 12px; height: 12px; background-color: #333333; color: white; border-radius: 50%; font-size: 9px; font-weight: bold; display: flex; align-items: center; justify-content: center; line-height: 1;">2</div></div>`;
+                }
+            }
+            
+            let sysCell = '';
+            if (record) {
+                if (catIconHtml !== '') {
+                    sysCell = `${catIconHtml}<span style="color: #333333; font-weight: normal;">${sysStr}</span>`;
+                } else {
+                    sysCell = `<span style="color: #333333; font-weight: normal;">${sysStr}</span>`;
+                }
+            }
+            
             let diaCell = record ? `<span style="color: #333333; font-weight: normal;">${diaStr}</span>` : '';
             
-            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td>${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: normal;">${record ? record.heartRate : ''}</td>`;
+            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td style="position: relative;">${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: normal;">${record ? record.heartRate : ''}</td>`;
           }
           tableHtml += `</tr>`;
         }
@@ -944,7 +1003,7 @@
         if (type === 'pdf') {
           const { jsPDF } = window.jspdf;
           const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
-          pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297); 
+          pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
           pdf.save(`${filename}.pdf`);
         } else if (type === 'image') {
           canvas.toBlob(function(blob) {
