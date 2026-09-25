@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=166">
+  <link rel="manifest" href="manifest.json?v=167">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -107,11 +107,11 @@
     
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     
-    /* 🌟 圖示完美置中網格分配 */
+    /* 🌟 圖示完美置中網格分配，不再擠壓左側或右側 */
     .list-header, .record-row { 
       display: grid; 
-      grid-template-columns: 65px 48px 36px 78px 40px 1fr 24px; 
-      gap: 0px; 
+      grid-template-columns: 65px 45px 24px 85px 40px 1fr 24px; 
+      gap: 4px; 
       align-items: center; 
       text-align: center; 
     }
@@ -147,6 +147,7 @@
     .delete-btn:active { color: var(--danger-color); }
     .record-row.highlight-delete .delete-btn { color: var(--danger-color); }
     
+    /* 🌟 圖示區塊保證置中 */
     .cat-col { display: flex; align-items: center; justify-content: center; }
     .bp-col-align { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0px; align-items: center; justify-content: center; width: 100%; }
     
@@ -163,7 +164,7 @@
     }
     .sheet-overlay.show { opacity: 1; pointer-events: auto; }
 
-    /* 🌟 全功能輸出預覽視窗 (PDF & JPG 共用) */
+    /* 🌟 全新 iPad 友善的預覽視窗 (允許滾動，移除多餘標題) */
     .image-preview-modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.85); z-index: 10000; display: none; 
@@ -173,7 +174,7 @@
     }
     .image-preview-modal.show { opacity: 1; }
     .preview-header {
-      width: 100%; max-width: 500px; display: flex; justify-content: space-between; align-items: center; 
+      width: 100%; max-width: 500px; display: flex; justify-content: flex-end; align-items: center; 
       padding: 16px 24px; box-sizing: border-box; margin-top: max(env(safe-area-inset-top), 10px);
     }
     .preview-close-btn {
@@ -183,22 +184,25 @@
     }
     .preview-close-btn:active { background: rgba(255,255,255,0.4); transform: scale(0.9); }
     .preview-content {
-      flex: 1; width: 100%; padding: 0 20px; box-sizing: border-box; display: flex; 
-      flex-direction: column; align-items: center; overflow: hidden; margin-top: 10px; margin-bottom: 20px;
+      flex: 1; width: 100%; padding: 0 16px; box-sizing: border-box; display: block; 
+      overflow-y: auto; -webkit-overflow-scrolling: touch; 
+      margin-top: 10px; margin-bottom: 20px; text-align: center;
     }
     #previewImg {
-      max-width: 100%; max-height: calc(100vh - 180px); object-fit: contain; 
-      border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      width: 100%; height: auto; max-width: 600px; object-fit: contain; 
+      border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: inline-block;
     }
     .preview-action-bar {
       width: 100%; display: flex; justify-content: center; padding-bottom: max(env(safe-area-inset-bottom), 30px);
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
     }
     .preview-action-btn {
-      background: #4A90E2; color: white; border: none; padding: 14px 36px; 
+      background: #7895B2; color: white; border: none; padding: 14px 36px; 
       border-radius: 28px; font-size: 16px; font-weight: 900; letter-spacing: 1px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; transition: all 0.2s;
+      display: flex; align-items: center; gap: 8px;
     }
-    .preview-action-btn:active { transform: scale(0.96); background: #357ABD; }
+    .preview-action-btn:active { transform: scale(0.96); background: #607D8B; }
 
     .bottom-sheet {
       position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
@@ -304,24 +308,29 @@
   <div id="loadingOverlay" class="loading-overlay">
     <div class="loading-box">
       <div class="spinner"></div>
-      <div id="loadingText" class="loading-text">請稍候...</div>
+      <div id="loadingText" class="loading-text">處理中...</div>
     </div>
   </div>
 
   <div id="toastMsg" class="toast-msg"></div>
 
-  <!-- 🌟 統一的全功能預覽視窗 (供 JPG & PDF 共用) -->
+  <!-- 🌟 升級版全預覽視窗 (無多餘標題、支援長圖捲動) -->
   <div id="imagePreviewModal" class="image-preview-modal">
     <div class="preview-header">
-      <span style="color: white; font-size: 16px; font-weight: bold;">報表預覽</span>
       <button class="preview-close-btn" onclick="closeImagePreview()">✕</button>
     </div>
     <div class="preview-content">
       <img id="previewImg" />
     </div>
     <div class="preview-action-bar">
+      <!-- 🌟 灰藍色質感按鈕 + 方形箭頭 SVG -->
       <button id="modalActionBtn" class="preview-action-btn" onclick="executeExport()">
-        儲存 / 分享
+        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+          <polyline points="16 6 12 2 8 6"></polyline>
+          <line x1="12" y1="2" x2="12" y2="15"></line>
+        </svg>
+        <span id="modalActionText">儲存 / 分享 JPG</span>
       </button>
     </div>
   </div>
@@ -475,10 +484,10 @@
     let currentFilter = '90days'; 
     let bpChartInstance = null; 
     
-    // 🌟 全局變數供輸出預覽使用
     let currentExportCanvas = null;
     let currentExportType = null;
     let currentExportFilename = '';
+    let pdfBlobGlobal = null; 
 
     const sheetOverlay = document.getElementById('chartSheetOverlay');
     const bottomSheet = document.getElementById('chartBottomSheet');
@@ -515,7 +524,6 @@
       setTimeout(() => { toast.classList.remove('show'); }, 3000);
     }
     
-    // 🌟 關閉預覽 Modal
     function closeImagePreview() {
         const modal = document.getElementById('imagePreviewModal');
         modal.classList.remove('show');
@@ -833,13 +841,13 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 使用最單純的 flexbox 保證 1 和 2 絕對居中，無額外 padding
+                // 🌟 使用純文字標記，絕對垂直與水平置中
                 if (cat === 1) {
                     catIconHtml = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 } else if (cat === 2) {
-                    catIconHtml = `<div style="width: 17px; height: 17px; background-color: #D32F2F; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; line-height: 1;">1</div>`;
+                    catIconHtml = `<span style="color: #D32F2F; font-size: 14px; font-weight: 900; line-height: 1; display: flex; align-items: center; justify-content: center;">1</span>`;
                 } else if (cat === 3) {
-                    catIconHtml = `<div style="width: 17px; height: 17px; background-color: #D32F2F; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: bold; line-height: 1;">2</div>`;
+                    catIconHtml = `<span style="color: #D32F2F; font-size: 14px; font-weight: 900; line-height: 1; display: flex; align-items: center; justify-content: center;">2</span>`;
                 }
             }
             
@@ -885,7 +893,7 @@
       }
     }
 
-    // 🌟 全新統一的預覽機制 (PDF & JPG 共用)
+    // 🌟 全新統一預覽機制 (PDF & JPG 都先開啟彈窗預覽，再決定存檔或分享)
     async function generateReport(monthCount, type = 'pdf') {
       let reportData = [...allRecords].filter(r => r && r.date && String(r.notes || '').includes('[報表]')).sort((a, b) => new Date(String(a.date).replace(/-/g, '/')).getTime() - new Date(String(b.date).replace(/-/g, '/')).getTime());
       if (reportData.length === 0) { alert("目前沒有包含「報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return; }
@@ -900,7 +908,7 @@
       if(btnI3) btnI3.disabled = true; 
       if(btnI4) btnI4.disabled = true; 
       
-      showLoading(`處理報表資料中...`);
+      showLoading(type === 'pdf' ? `PDF 產生中...` : `JPG 產生中...`);
       await new Promise(resolve => setTimeout(resolve, 50));
 
       try {
@@ -974,34 +982,21 @@
         let minStr = minRecord ? `${minRecord.systolic}${slash}${minRecord.diastolic}` : `-${slash}-`;
 
         let tableHtml = `<thead>`;
-        // 加大表頭下方留白 (padding-bottom 24px)
         tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 16px 16px 24px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
         
-        // 🌟 嚴格切割為 33% - 34% - 33% 確保中央標題絕對對稱
+        // 🌟 強制切為精準的 33% 34% 33%，確保絕對對稱
         tableHtml += `<div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">`;
         
-        // 🌟 左側群組 (33% 寬度)
-        const renderStatLeft = (lbl, val, color) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: flex-end; padding-top: 14px;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
-        let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
+        const renderStatLeft = (lbl, val, color) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: flex-end;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
         
-        tableHtml += `<div style="width: 33%; display: flex; justify-content: flex-start; gap: 14px; padding-left: 10px; box-sizing: border-box;">`;
-        tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '#111111');
-        tableHtml += renderStatLeft('MAX', maxStr, '#999999'); 
-        tableHtml += renderStatLeft('MIN', minStr, '#999999'); 
-        tableHtml += `</div>`;
-
-        // 🌟 中央標題 (34% 寬度)
-        tableHtml += `<div style="width: 34%; text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
-
-        // 🌟 右側群組 (33% 寬度)
         const renderStatCenter = (lbl, val, color, def, icon = '') => {
-            // 圖示絕對置於頂部 (bottom: 100%)，完全不佔據實體高度推擠下方排版
-            let iconHtml = icon ? `<div style="position: absolute; bottom: 100%; left: 50%; transform: translate(-50%, -4px); display: flex; justify-content: center; align-items: center;">${icon}</div>` : '';
-            return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: flex-end; position: relative; padding-top: 14px;">
+            // 圖示絕對定位在上方，完全不影響列高
+            let iconHtml = icon ? `<div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); display: flex; justify-content: center; align-items: center;">${icon}</div>` : '';
+            return `<div style="text-align: center; display: flex; flex-direction: column; align-items: center; position: relative;">
                         ${iconHtml}
                         <div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div>
                         <div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div>
-                        <div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; transform: translateX(-50%); left: 50%; margin-top: 3px; letter-spacing: 0px; white-space: nowrap;">${def}</div>
+                        <div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; transform: translateX(-50%); left: 50%; margin-top: 2px; letter-spacing: 0px; white-space: nowrap;">${def}</div>
                     </div>`;
         };
 
@@ -1009,7 +1004,17 @@
         const spanStage1 = `<span style="color: #D32F2F; font-size: 9px; font-weight: bold; font-family: Arial, sans-serif; line-height: 1;">1</span>`;
         const spanStage2 = `<span style="color: #D32F2F; font-size: 9px; font-weight: bold; font-family: Arial, sans-serif; line-height: 1;">2</span>`;
 
-        tableHtml += `<div style="width: 33%; display: flex; justify-content: flex-end; gap: 16px; padding-right: 10px; box-sizing: border-box;">`;
+        let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
+        
+        tableHtml += `<div style="width: 33.33%; display: flex; justify-content: flex-start; gap: 12px; padding-left: 8px; box-sizing: border-box;">`;
+        tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '#111111');
+        tableHtml += renderStatLeft('MAX', maxStr, '#999999'); 
+        tableHtml += renderStatLeft('MIN', minStr, '#999999'); 
+        tableHtml += `</div>`;
+
+        tableHtml += `<div style="width: 33.33%; text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
+
+        tableHtml += `<div style="width: 33.33%; display: flex; justify-content: flex-end; gap: 16px; padding-right: 8px; box-sizing: border-box;">`;
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
         tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80', svgElevatedLegend);
         tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130 - 139 / 80 - 89', spanStage1);
@@ -1045,30 +1050,25 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 報表數字去圓框：純文字上標，完美懸浮於左上角
-                let iconWrapperStyle = "position: absolute; left: 3px; top: 3px; font-size: 8px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif;";
-                
+                // 🌟 絕對懸浮，完美置於左上角，完全不干擾排版
                 if (cat === 1) {
-                    catIconHtml = `<div style="${iconWrapperStyle} color: #F59E0B;"><svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>`;
+                    catIconHtml = `<span style="position: absolute; right: 100%; top: -2px; margin-right: 2px; color: #F59E0B;"><svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>`;
                 } else if (cat === 2) {
-                    catIconHtml = `<div style="${iconWrapperStyle} color: #D32F2F;">1</div>`;
+                    catIconHtml = `<span style="position: absolute; right: 100%; top: -2px; margin-right: 2px; color: #D32F2F; font-size: 8px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif;">1</span>`;
                 } else if (cat === 3) {
-                    catIconHtml = `<div style="${iconWrapperStyle} color: #D32F2F;">2</div>`;
+                    catIconHtml = `<span style="position: absolute; right: 100%; top: -2px; margin-right: 2px; color: #D32F2F; font-size: 8px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif;">2</span>`;
                 }
             }
             
             let sysCell = '';
             if (record) {
-                if (catIconHtml !== '') {
-                    sysCell = `${catIconHtml}<span style="color: #333333; font-weight: normal;">${sysStr}</span>`;
-                } else {
-                    sysCell = `<span style="color: #333333; font-weight: normal;">${sysStr}</span>`;
-                }
+                // 🌟 透過 inline-block 結合 absolute，保護對齊線
+                sysCell = `<div style="position: relative; display: inline-block;">${catIconHtml}<span style="color: #333333; font-weight: normal;">${sysStr}</span></div>`;
             }
             
             let diaCell = record ? `<span style="color: #333333; font-weight: normal;">${diaStr}</span>` : '';
             
-            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td style="position: relative;">${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: normal;">${record ? record.heartRate : ''}</td>`;
+            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td>${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: normal;">${record ? record.heartRate : ''}</td>`;
           }
           tableHtml += `</tr>`;
         }
@@ -1085,7 +1085,6 @@
         const today = new Date(); const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
         const filename = `血壓記錄表_${monthCount}M_${dateStr}`;
         
-        // 🌟 核心：將資料存在全域變數，呼叫 Modal 預覽，等待使用者點擊「儲存/分享」
         currentExportCanvas = canvas;
         currentExportType = type;
         currentExportFilename = filename;
@@ -1094,11 +1093,8 @@
         previewImg.src = canvas.toDataURL('image/jpeg', 0.95);
 
         const actionBtn = document.getElementById('modalActionBtn');
-        if(type === 'pdf') {
-            actionBtn.innerHTML = `📄 儲存 / 分享 PDF`;
-        } else {
-            actionBtn.innerHTML = `🖼️ 儲存 / 分享 JPG`;
-        }
+        const actionText = document.getElementById('modalActionText');
+        if(type === 'pdf') { actionText.innerText = `儲存 / 分享 PDF`; } else { actionText.innerText = `儲存 / 分享 JPG`; }
 
         const modal = document.getElementById('imagePreviewModal');
         modal.style.display = 'flex';
@@ -1110,7 +1106,6 @@
           console.error("預覽生成失敗", err); 
           alert("產生報表預覽時發生錯誤，請稍後再試。"); 
       } finally {
-          // 確保防呆解鎖
           if(btnP3) btnP3.disabled = false; 
           if(btnP4) btnP4.disabled = false; 
           if(btnI3) btnI3.disabled = false; 
@@ -1119,12 +1114,13 @@
       }
     }
 
-    // 🌟 在 Modal 中點擊「儲存/分享」時真正執行輸出的邏輯
+    // 🌟 點擊「儲存/分享」按鈕，觸發 PDF 或 JPG 的匯出與原生分享 (支援重覆使用)
     async function executeExport() {
         if (!currentExportCanvas) return;
         const btn = document.getElementById('modalActionBtn');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '處理中...';
+        const originalHtml = btn.innerHTML;
+        const textSpan = document.getElementById('modalActionText');
+        textSpan.innerText = '處理中...';
         btn.disabled = true;
 
         try {
@@ -1132,12 +1128,32 @@
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
                 pdf.addImage(currentExportCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
-                pdf.save(`${currentExportFilename}.pdf`);
-                showToast('✅ PDF 儲存成功！');
-                closeImagePreview();
+                const pdfBlob = pdf.output('blob');
+
+                const fallbackDownload = () => {
+                    pdf.save(`${currentExportFilename}.pdf`);
+                    showToast('✅ PDF 儲存成功！');
+                    closeImagePreview();
+                };
+
+                // 原生分享支援
+                if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
+                    try {
+                        const file = new File([pdfBlob], `${currentExportFilename}.pdf`, { type: 'application/pdf' });
+                        await navigator.share({ files: [file], title: '血壓記錄表' });
+                        showToast('✅ PDF 儲存 / 分享成功！');
+                        closeImagePreview();
+                    } catch (err) {
+                        if (err.name !== 'AbortError') fallbackDownload();
+                        else closeImagePreview();
+                    }
+                } else {
+                    fallbackDownload();
+                }
             } else {
+                // JPG 邏輯
                 currentExportCanvas.toBlob(async function(blob) {
-                    if (!blob) { alert("圖片存取失敗"); btn.innerHTML = originalText; btn.disabled = false; return; }
+                    if (!blob) { alert("圖片存取失敗"); btn.innerHTML = originalHtml; btn.disabled = false; return; }
                     
                     const fallbackDownload = () => {
                         const url = window.URL.createObjectURL(blob);
@@ -1146,7 +1162,7 @@
                         document.body.appendChild(link); link.click();
                         setTimeout(() => { 
                             document.body.removeChild(link); window.URL.revokeObjectURL(url); 
-                            showToast('✅ 圖檔已下載！'); closeImagePreview(); 
+                            showToast('✅ JPG 儲存成功！'); closeImagePreview(); 
                         }, 100);
                     };
 
@@ -1154,11 +1170,11 @@
                         try {
                             const file = new File([blob], `${currentExportFilename}.jpg`, { type: 'image/jpeg' });
                             await navigator.share({ files: [file], title: '血壓記錄表' });
-                            showToast('✅ 圖檔分享成功！');
+                            showToast('✅ JPG 儲存 / 分享成功！');
                             closeImagePreview();
                         } catch (err) {
                             if (err.name !== 'AbortError') fallbackDownload();
-                            else closeImagePreview(); // 使用者主動取消分享
+                            else closeImagePreview(); 
                         }
                     } else {
                         fallbackDownload();
@@ -1169,8 +1185,7 @@
             console.error(e);
             alert("輸出失敗，請重試");
         } finally {
-            // 恢復按鈕狀態，避免卡死
-            btn.innerHTML = originalText;
+            btn.innerHTML = originalHtml;
             btn.disabled = false;
         }
     }
