@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=170">
+  <link rel="manifest" href="manifest.json?v=171">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -107,10 +107,10 @@
     
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     
-    /* 🌟 將圖示(Cat)與血壓(BP)合併為一個大網格 120px，內部再用 Flex 置中，解決留白過大問題 */
+    /* 🌟 圖示完美置中，縮減多餘空白 (30px)，並給予 BP 足夠的寬度 (82px) */
     .list-header, .record-row { 
       display: grid; 
-      grid-template-columns: 65px 48px 120px 40px 1fr 24px; 
+      grid-template-columns: 65px 48px 30px 82px 40px 1fr 24px; 
       gap: 0px; 
       align-items: center; 
       text-align: center; 
@@ -119,10 +119,8 @@
       padding-bottom: 4px; border-bottom: 2px solid var(--primary-dark); 
       font-weight: bold; font-size: 14px; color: var(--primary-dark); 
     }
-    /* Header 裡的 BP 標題置中 */
-    .list-header div:nth-child(3) { text-align: center; }
-    .list-header div:nth-child(4) { text-align: center; padding: 0; } 
-    .list-header div:nth-child(5) { text-align: left; padding-left: 12px; }
+    .list-header div:nth-child(5) { text-align: center; padding: 0; } 
+    .list-header div:nth-child(6) { text-align: left; padding-left: 12px; }
 
     .month-section { position: relative; }
     
@@ -140,8 +138,8 @@
     }
     .record-row.new-day { border-top: 1px solid transparent; }
     .record-row.highlight-delete { background-color: rgba(211, 47, 47, 0.2); border-radius: 6px; }
-    .record-row div:nth-child(4) { text-align: center; padding: 0; font-weight: bold; } 
-    .record-row div:nth-child(5) { text-align: left; padding-left: 12px; }
+    .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
+    .record-row div:nth-child(6) { text-align: left; padding-left: 12px; }
     .record-row div:last-child { display: flex; justify-content: flex-end; padding-right: 4px;}
     
     .delete-btn { background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; display: flex; justify-content: flex-end; align-items: center; transition: color 0.2s; }
@@ -149,8 +147,8 @@
     .delete-btn:active { color: var(--danger-color); }
     .record-row.highlight-delete .delete-btn { color: var(--danger-color); }
     
-    /* 🌟 圖示與 BP 結合的 Flex 容器 */
-    .bp-combo-col { display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; height: 100%; }
+    .cat-col { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+    .bp-col-align { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0px; align-items: center; justify-content: center; width: 100%; }
     
     .bp-sys { text-align: right; font-weight: bold; color: var(--text-main); }
     .bp-slash { color: #888; font-weight: normal; margin: 0 2px; } 
@@ -165,7 +163,6 @@
     }
     .sheet-overlay.show { opacity: 1; pointer-events: auto; }
 
-    /* 🌟 全新純淨預覽視窗 (無 Native Share Sheet 衝突) */
     .image-preview-modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.85); z-index: 10000; display: none; 
@@ -199,6 +196,7 @@
     .preview-action-bar {
       width: 100%; display: flex; justify-content: center; padding-bottom: max(env(safe-area-inset-bottom), 30px);
     }
+    /* 🌟 純圖示灰藍色按鈕 */
     .preview-action-btn {
       background: #7895B2; color: white; border: none; width: 60px; height: 60px; 
       border-radius: 30px; display: flex; justify-content: center; align-items: center;
@@ -255,7 +253,8 @@
       padding: 0 20px 0 20px; box-sizing: border-box; 
     }
 
-    #printArea { display: none; width: 210mm; height: 297mm; box-sizing: border-box; padding: 0mm 12mm 5mm 12mm; background-color: #FFFFFF; color: #000; }
+    /* 🌟 恢復報表上邊界 (padding-top: 16mm)，保證印表機邊緣不裁切 */
+    #printArea { display: none; width: 210mm; height: 297mm; box-sizing: border-box; padding: 16mm 12mm 5mm 12mm; background-color: #FFFFFF; color: #000; }
     
     .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: Arial, sans-serif; table-layout: fixed; background-color: #FFFFFF; border: 1.5px solid #000 !important; }
     .print-table th, .print-table td { border: 0.5px solid #000 !important; padding: 0; height: 28.5px; line-height: 28.5px; box-sizing: border-box; overflow: hidden; }
@@ -310,12 +309,13 @@
   <div id="loadingOverlay" class="loading-overlay">
     <div class="loading-box">
       <div class="spinner"></div>
-      <div id="loadingText" class="loading-text">請稍候...</div>
+      <div id="loadingText" class="loading-text">處理中...</div>
     </div>
   </div>
 
   <div id="toastMsg" class="toast-msg"></div>
 
+  <!-- 🌟 升級版全預覽視窗 (供 JPG & PDF 共用，無多餘文字，只有圖與按鈕) -->
   <div id="imagePreviewModal" class="image-preview-modal">
     <div class="preview-header">
       <button class="preview-close-btn" onclick="closeImagePreview()">✕</button>
@@ -324,7 +324,6 @@
       <img id="previewImg" />
     </div>
     <div class="preview-action-bar">
-      <!-- 🌟 純方形向上箭頭，灰藍色按鈕 -->
       <button id="modalActionBtn" class="preview-action-btn" onclick="executeExport()">
         <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
@@ -487,7 +486,6 @@
     let currentExportCanvas = null;
     let currentExportType = null;
     let currentExportFilename = '';
-    let pdfBlobGlobal = null; 
 
     const sheetOverlay = document.getElementById('chartSheetOverlay');
     const bottomSheet = document.getElementById('chartBottomSheet');
@@ -841,7 +839,7 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 使用斜體純紅 S1 / S2 與 黃色折線 (絕對居中，無推擠)
+                // 🌟 S1 / S2 全面改為無框斜體純紅字
                 let flexCenter = "display: flex; align-items: center; justify-content: center;";
                 if (cat === 1) {
                     catIconHtml = `<div style="${flexCenter}"><svg viewBox="0 0 24 24" width="16" height="16" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>`;
@@ -852,11 +850,8 @@
                 }
             }
             
-            // 🌟 讓 BP Combo 容器完整包裹圖示與數值
-            let bpCombo = `<div class="bp-combo-col">
-                              <div style="width: 24px;">${catIconHtml}</div>
-                              <div class="bp-col-align"><span class="bp-sys">${sysStr}</span><span class="bp-slash">/</span><span class="bp-dia">${diaStr}</span></div>
-                           </div>`;
+            let sysHtml = `<span style="font-weight: bold; color: #333333;">${sysStr}</span>`;
+            let diaHtml = `<span style="font-weight: bold; color: #333333;">${diaStr}</span>`;
             
             let isNewDay = (lastDate !== null && lastDate !== formattedDate);
             let displayDateText = (lastDate !== formattedDate) ? currDayStr : '';
@@ -873,7 +868,9 @@
 
             html += `
               <div class="record-row ${isNewDay ? 'new-day' : ''}">
-                <div>${displayDateText}</div><div>${formattedTime}</div>${bpCombo}
+                <div>${displayDateText}</div><div>${formattedTime}</div>
+                <div class="cat-col">${catIconHtml}</div>
+                <div class="bp-col-align"><span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${diaHtml}</span></div>
                 <div style="font-weight: bold; color: #333333;">${item.heartRate || ''}</div><div class="note-col">${displayNote}</div>
                 <div>
                   <button class="delete-btn" onclick="confirmDelete(this, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}', '${encodedNotes}')" title="Delete">
@@ -895,6 +892,7 @@
       }
     }
 
+    // 🌟 全新統一預覽機制
     async function generateReport(monthCount, type = 'pdf') {
       let reportData = [...allRecords].filter(r => r && r.date && String(r.notes || '').includes('[報表]')).sort((a, b) => new Date(String(a.date).replace(/-/g, '/')).getTime() - new Date(String(b.date).replace(/-/g, '/')).getTime());
       if (reportData.length === 0) { alert("目前沒有包含「報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return; }
@@ -983,27 +981,28 @@
         let minStr = minRecord ? `${minRecord.systolic}${slash}${minRecord.diastolic}` : `-${slash}-`;
 
         let tableHtml = `<thead>`;
-        // 🌟 刪除標題上方空白 (移除 padding-top: 16px，改為 6px)
-        tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 6px 0px 16px 0px; background-color: #FFFFFF; vertical-align: middle;">`;
+        // 🌟 刪除標題區上方多餘空白
+        tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 8px 12px 16px 12px; background-color: #FFFFFF; vertical-align: middle; position: relative;">`;
         
-        // 🌟 精準控制 33% 左右寬度，並確保中央的血壓記錄表置中
+        // 🌟 儀表板：絕對分配 33.3% 33.4% 33.3%
         tableHtml += `<div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">`;
         
-        // 🌟 縮小 MAX / MIN 為 15px
+        // 🌟 左側群組：向左看齊，間距縮小
         const renderStatLeft = (lbl, val, valSize) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: flex-end;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: #111111; font-size: ${valSize}; font-weight: 900; line-height: 1;">${val}</div></div>`;
         let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
         
-        tableHtml += `<div style="width: 33%; display: flex; justify-content: flex-start; gap: 12px; padding-left: 12px; box-sizing: border-box;">`;
+        tableHtml += `<div style="flex: 1; display: flex; justify-content: space-between; max-width: 33.33%; padding-left: 4px; padding-right: 12px; box-sizing: border-box;">`;
         tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '18px');
-        tableHtml += renderStatLeft('MAX', `<span style="color:#999999">${maxStr}</span>`, '15px'); 
-        tableHtml += renderStatLeft('MIN', `<span style="color:#999999">${minStr}</span>`, '15px'); 
+        tableHtml += renderStatLeft('MAX', `<span style="color:#999999">${maxStr}</span>`, '18px'); 
+        tableHtml += renderStatLeft('MIN', `<span style="color:#999999">${minStr}</span>`, '18px'); 
         tableHtml += `</div>`;
 
-        tableHtml += `<div style="width: 34%; text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
+        // 🌟 中央標題
+        tableHtml += `<div style="flex: 1; text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
 
-        // 🌟 AHA 定義前後補上空格，警示圖示貼齊標題 (-14px)
+        // 🌟 右側群組：均勻分配，絕對置中不影響列高
         const renderStatCenter = (lbl, val, color, def, icon = '') => {
-            let iconHtml = icon ? `<div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); display: flex; justify-content: center; align-items: center; margin-bottom: 0px;">${icon}</div>` : '';
+            let iconHtml = icon ? `<div style="position: absolute; bottom: 100%; left: 50%; transform: translate(-50%, -2px); display: flex; justify-content: center; align-items: center; margin-bottom: 0px;">${icon}</div>` : '';
             return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: flex-end; position: relative;">
                         ${iconHtml}
                         <div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div>
@@ -1013,10 +1012,10 @@
         };
 
         const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
-        const spanStage1 = `<span style="font-size: 9px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; font-style: italic; color: #D32F2F;">S1</span>`;
-        const spanStage2 = `<span style="font-size: 9px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; font-style: italic; color: #D32F2F;">S2</span>`;
+        const spanStage1 = `<span style="font-size: 10px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; font-style: italic; color: #D32F2F;">S1</span>`;
+        const spanStage2 = `<span style="font-size: 10px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; font-style: italic; color: #D32F2F;">S2</span>`;
 
-        tableHtml += `<div style="width: 33%; display: flex; justify-content: flex-end; gap: 14px; padding-right: 12px; box-sizing: border-box;">`;
+        tableHtml += `<div style="flex: 1; display: flex; justify-content: space-between; max-width: 33.33%; padding-left: 12px; padding-right: 4px; box-sizing: border-box;">`;
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
         tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80', svgElevatedLegend);
         tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130 - 139 / 80 - 89', spanStage1);
@@ -1052,8 +1051,8 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 絕對懸浮，完美置於左上角 (top: 2px)
-                let iconWrapperStyle = "position: absolute; right: 100%; top: 2px; margin-right: 1px; font-size: 8px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif;";
+                // 🌟 報表每日圖示往左往上一點點，不貼齊上框線
+                let iconWrapperStyle = "position: absolute; right: 100%; top: 1px; margin-right: 2px; font-size: 8px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif;";
                 
                 if (cat === 1) {
                     catIconHtml = `<span style="${iconWrapperStyle} color: #F59E0B;"><svg viewBox="0 0 24 24" width="7" height="7" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>`;
@@ -1113,7 +1112,7 @@
       }
     }
 
-    // 🌟 在 Modal 點擊分享鈕：直接透過傳統下載強制觸發原生選單，拔除 navigator.share 解決 iPad 黑畫面與產出 txt 的 bug
+    // 🌟 在 Modal 點擊分享鈕：直接透過原生 navigator.share 分享 (不含 title 以免變成 txt)，完全不再跳轉其他預覽頁
     async function executeExport() {
         if (!currentExportCanvas) return;
         const btn = document.getElementById('modalActionBtn');
@@ -1127,28 +1126,57 @@
                 const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
                 pdf.addImage(currentExportCanvas.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
                 const pdfBlob = pdf.output('blob');
-                
-                const url = window.URL.createObjectURL(pdfBlob);
-                const link = document.createElement('a');
-                link.style.display = 'none'; link.href = url; link.download = `${currentExportFilename}.pdf`;
-                document.body.appendChild(link); link.click();
-                setTimeout(() => { 
-                    document.body.removeChild(link); window.URL.revokeObjectURL(url); 
-                    showToast('✅ Finished!'); closeImagePreview(); 
-                }, 100);
 
-            } else {
-                currentExportCanvas.toBlob(function(blob) {
-                    if (!blob) { alert("圖片存取失敗"); btn.innerHTML = originalHtml; btn.disabled = false; return; }
-                    
-                    const url = window.URL.createObjectURL(blob);
+                const fallbackDownload = () => {
+                    const url = window.URL.createObjectURL(pdfBlob);
                     const link = document.createElement('a');
-                    link.style.display = 'none'; link.href = url; link.download = `${currentExportFilename}.jpg`;
+                    link.style.display = 'none'; link.href = url; link.download = `${currentExportFilename}.pdf`;
                     document.body.appendChild(link); link.click();
                     setTimeout(() => { 
                         document.body.removeChild(link); window.URL.revokeObjectURL(url); 
-                        showToast('✅ Finished!'); closeImagePreview(); 
+                        showToast('Finished!'); closeImagePreview(); 
                     }, 100);
+                };
+
+                if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
+                    try {
+                        const file = new File([pdfBlob], `${currentExportFilename}.pdf`, { type: 'application/pdf' });
+                        await navigator.share({ files: [file] }); // 移除了 title 以防產出 txt
+                        showToast('Finished!');
+                        closeImagePreview();
+                    } catch (err) {
+                        if (err.name !== 'AbortError') fallbackDownload();
+                    }
+                } else {
+                    fallbackDownload();
+                }
+            } else {
+                currentExportCanvas.toBlob(async function(blob) {
+                    if (!blob) { alert("圖片存取失敗"); btn.innerHTML = originalHtml; btn.disabled = false; return; }
+                    
+                    const fallbackDownload = () => {
+                        const url = window.URL.createObjectURL(blob);
+                        const link = document.createElement('a');
+                        link.style.display = 'none'; link.href = url; link.download = `${currentExportFilename}.jpg`;
+                        document.body.appendChild(link); link.click();
+                        setTimeout(() => { 
+                            document.body.removeChild(link); window.URL.revokeObjectURL(url); 
+                            showToast('Finished!'); closeImagePreview(); 
+                        }, 100);
+                    };
+
+                    if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
+                        try {
+                            const file = new File([blob], `${currentExportFilename}.jpg`, { type: 'image/jpeg' });
+                            await navigator.share({ files: [file] }); // 移除了 title 以防產出 txt
+                            showToast('Finished!');
+                            closeImagePreview();
+                        } catch (err) {
+                            if (err.name !== 'AbortError') fallbackDownload();
+                        }
+                    } else {
+                        fallbackDownload();
+                    }
                 }, 'image/jpeg', 0.95);
             }
         } catch (e) {
