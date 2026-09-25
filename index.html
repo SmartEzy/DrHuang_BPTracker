@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=167">
+  <link rel="manifest" href="manifest.json?v=168">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -107,11 +107,11 @@
     
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     
-    /* 🌟 圖示完美置中網格分配，不再擠壓左側或右側 */
+    /* 🌟 圖示區完美置中：微縮間距，給予圖示獨立空間 */
     .list-header, .record-row { 
       display: grid; 
-      grid-template-columns: 65px 45px 24px 85px 40px 1fr 24px; 
-      gap: 4px; 
+      grid-template-columns: 65px 50px 24px 80px 40px 1fr 24px; 
+      gap: 0px; 
       align-items: center; 
       text-align: center; 
     }
@@ -147,8 +147,7 @@
     .delete-btn:active { color: var(--danger-color); }
     .record-row.highlight-delete .delete-btn { color: var(--danger-color); }
     
-    /* 🌟 圖示區塊保證置中 */
-    .cat-col { display: flex; align-items: center; justify-content: center; }
+    .cat-col { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
     .bp-col-align { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0px; align-items: center; justify-content: center; width: 100%; }
     
     .bp-sys { text-align: right; font-weight: bold; color: var(--text-main); }
@@ -164,7 +163,7 @@
     }
     .sheet-overlay.show { opacity: 1; pointer-events: auto; }
 
-    /* 🌟 全新 iPad 友善的預覽視窗 (允許滾動，移除多餘標題) */
+    /* 🌟 預覽視窗升級：iPad 完美滾動 + 純圖示分享鈕 */
     .image-preview-modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.85); z-index: 10000; display: none; 
@@ -173,8 +172,9 @@
       opacity: 0; transition: opacity 0.25s ease;
     }
     .image-preview-modal.show { opacity: 1; }
+    
     .preview-header {
-      width: 100%; max-width: 500px; display: flex; justify-content: flex-end; align-items: center; 
+      width: 100%; display: flex; justify-content: flex-end; align-items: center; 
       padding: 16px 24px; box-sizing: border-box; margin-top: max(env(safe-area-inset-top), 10px);
     }
     .preview-close-btn {
@@ -183,26 +183,27 @@
       display: flex; align-items: center; justify-content: center; transition: all 0.2s;
     }
     .preview-close-btn:active { background: rgba(255,255,255,0.4); transform: scale(0.9); }
+    
     .preview-content {
       flex: 1; width: 100%; padding: 0 16px; box-sizing: border-box; display: block; 
       overflow-y: auto; -webkit-overflow-scrolling: touch; 
-      margin-top: 10px; margin-bottom: 20px; text-align: center;
+      margin-top: 4px; margin-bottom: 20px; text-align: center;
     }
     #previewImg {
       width: 100%; height: auto; max-width: 600px; object-fit: contain; 
       border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: inline-block;
     }
+    
     .preview-action-bar {
       width: 100%; display: flex; justify-content: center; padding-bottom: max(env(safe-area-inset-bottom), 30px);
-      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
     }
+    /* 🌟 純圖示灰藍色按鈕 */
     .preview-action-btn {
-      background: #7895B2; color: white; border: none; padding: 14px 36px; 
-      border-radius: 28px; font-size: 16px; font-weight: 900; letter-spacing: 1px;
+      background: #7895B2; color: white; border: none; width: 60px; height: 60px; 
+      border-radius: 30px; display: flex; justify-content: center; align-items: center;
       box-shadow: 0 4px 12px rgba(0,0,0,0.3); cursor: pointer; transition: all 0.2s;
-      display: flex; align-items: center; gap: 8px;
     }
-    .preview-action-btn:active { transform: scale(0.96); background: #607D8B; }
+    .preview-action-btn:active { transform: scale(0.92); background: #607D8B; }
 
     .bottom-sheet {
       position: fixed; bottom: 0; left: 50%; transform: translateX(-50%) translateY(100%);
@@ -308,7 +309,7 @@
   <div id="loadingOverlay" class="loading-overlay">
     <div class="loading-box">
       <div class="spinner"></div>
-      <div id="loadingText" class="loading-text">處理中...</div>
+      <div id="loadingText" class="loading-text">請稍候...</div>
     </div>
   </div>
 
@@ -323,14 +324,13 @@
       <img id="previewImg" />
     </div>
     <div class="preview-action-bar">
-      <!-- 🌟 灰藍色質感按鈕 + 方形箭頭 SVG -->
+      <!-- 🌟 純圖示灰藍色按鈕 -->
       <button id="modalActionBtn" class="preview-action-btn" onclick="executeExport()">
-        <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
           <polyline points="16 6 12 2 8 6"></polyline>
           <line x1="12" y1="2" x2="12" y2="15"></line>
         </svg>
-        <span id="modalActionText">儲存 / 分享 JPG</span>
       </button>
     </div>
   </div>
@@ -484,10 +484,10 @@
     let currentFilter = '90days'; 
     let bpChartInstance = null; 
     
+    // 🌟 全局變數供輸出預覽使用
     let currentExportCanvas = null;
     let currentExportType = null;
     let currentExportFilename = '';
-    let pdfBlobGlobal = null; 
 
     const sheetOverlay = document.getElementById('chartSheetOverlay');
     const bottomSheet = document.getElementById('chartBottomSheet');
@@ -524,6 +524,7 @@
       setTimeout(() => { toast.classList.remove('show'); }, 3000);
     }
     
+    // 🌟 關閉預覽 Modal
     function closeImagePreview() {
         const modal = document.getElementById('imagePreviewModal');
         modal.classList.remove('show');
@@ -570,47 +571,7 @@
       if (!isDraggingSheet) return;
       currentY = e.clientY;
       const deltaY = currentY - startY;
-      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }
-    });
-    window.addEventListener('mouseup', () => {
-      if (!isDraggingSheet) return;
-      isDraggingSheet = false;
-      bottomSheet.classList.remove('dragging');
-      const deltaY = currentY - startY;
-      if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }
-    });
-
-    let isDownChart = false;
-    let startXChart;
-    let scrollLeftChart;
-
-    chartOuter.addEventListener('mousedown', (e) => {
-      isDownChart = true;
-      chartOuter.style.cursor = 'grabbing';
-      startXChart = e.pageX - chartOuter.offsetLeft;
-      scrollLeftChart = chartOuter.scrollLeft;
-    });
-    chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
-    chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
-    chartOuter.addEventListener('mousemove', (e) => {
-      if (!isDownChart) return;
-      e.preventDefault();
-      const x = e.pageX - chartOuter.offsetLeft;
-      const walk = (x - startXChart) * 1.5; 
-      chartOuter.scrollLeft = scrollLeftChart - walk;
-    });
-
-    function showLoading(text) {
-      document.getElementById('loadingText').innerText = text;
-      document.getElementById('loadingOverlay').classList.add('show');
-    }
-    
-    function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
-
-    async function handleRefresh() {
-      showLoading('資料同步中...');
-      let curr = new Date();
-      document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
+      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }     });     window.addEventListener('mouseup', () => {       if (!isDraggingSheet) return;       isDraggingSheet = false;       bottomSheet.classList.remove('dragging');       const deltaY = currentY - startY;       if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }     });      let isDownChart = false;     let startXChart;     let scrollLeftChart;      chartOuter.addEventListener('mousedown', (e) => {       isDownChart = true;       chartOuter.style.cursor = 'grabbing';       startXChart = e.pageX - chartOuter.offsetLeft;       scrollLeftChart = chartOuter.scrollLeft;     });     chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mousemove', (e) => {       if (!isDownChart) return;       e.preventDefault();       const x = e.pageX - chartOuter.offsetLeft;       const walk = (x - startXChart) * 1.5;        chartOuter.scrollLeft = scrollLeftChart - walk;     });      function showLoading(text) {       document.getElementById('loadingText').innerText = text;       document.getElementById('loadingOverlay').classList.add('show');     }          function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }      async function handleRefresh() {       showLoading('資料同步中...');       let curr = new Date();       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
       checkMorningTag();
       try {
@@ -627,29 +588,7 @@
     window.addEventListener('resize', updateStickyOffset);
 
     const now = new Date();
-    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-    document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-    function checkMorningTag() {
-      const timeVal = document.getElementById('time').value;
-      if (!timeVal) return;
-      const h = parseInt(timeVal.split(':')[0], 10);
-      const notesInput = document.getElementById('notes');
-      if (h >= 4 && h < 10) {
-        if (!notesInput.value.includes('[報表]')) {
-          if (notesInput.value.trim() !== '') notesInput.value += ', ';
-          notesInput.value += '[報表]';
-        }
-      }
-    }
-    
-    document.getElementById('time').addEventListener('change', checkMorningTag);
-    checkMorningTag();
-
-    function addQuickTag(tagText) {
-      const notesInput = document.getElementById('notes');
-      if (notesInput.value.trim() === '') { notesInput.value = tagText; } 
-      else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
+    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;      function checkMorningTag() {       const timeVal = document.getElementById('time').value;       if (!timeVal) return;       const h = parseInt(timeVal.split(':')[0], 10);       const notesInput = document.getElementById('notes');       if (h >= 4 && h < 10) {         if (!notesInput.value.includes('[報表]')) {           if (notesInput.value.trim() !== '') notesInput.value += ', ';           notesInput.value += '[報表]';         }       }     }          document.getElementById('time').addEventListener('change', checkMorningTag);     checkMorningTag();      function addQuickTag(tagText) {       const notesInput = document.getElementById('notes');       if (notesInput.value.trim() === '') { notesInput.value = tagText; }        else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
     }
 
     document.querySelectorAll('.capsule-btn').forEach(btn => {
@@ -681,32 +620,7 @@
       const row = btn.closest('.record-row'); row.classList.add('highlight-delete');
       let decodedNotes = decodeURIComponent(encodedNotes);
       setTimeout(() => {
-        if (confirm(`${formattedDate} ${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {
-          let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
-          if (idx !== -1) { allRecords.splice(idx, 1); } 
-          else {
-            let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);
-            if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);
-          }
-          renderList();
-          syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });
-        } else { row.classList.remove('highlight-delete'); }
-      }, 300);
-    }
-
-    function getLogicalDate(dateStr, timeStr) {
-      if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };
-      let d = new Date(String(dateStr).replace(/-/g, '/'));
-      if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };
-      if (timeStr) {
-        let parts = String(timeStr).split(':');
-        if (parts.length >= 2) {
-          let h = parseInt(parts[0], 10);
-          if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); }
-        }
-      }
-      let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');
-      return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
+        if (confirm(`${formattedDate}${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {           let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes \vert{}\vert{} '') === decodedNotes);           if (idx !== -1) { allRecords.splice(idx, 1); }            else {             let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);             if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);           }           renderList();           syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });         } else { row.classList.remove('highlight-delete'); }       }, 300);     }      function getLogicalDate(dateStr, timeStr) {       if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };       let d = new Date(String(dateStr).replace(/-/g, '/'));       if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };       if (timeStr) {         let parts = String(timeStr).split(':');         if (parts.length >= 2) {           let h = parseInt(parts[0], 10);           if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); }         }       }       let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');       return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
     }
 
     function updateChart(displayData) {
@@ -841,13 +755,13 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 使用純文字標記，絕對垂直與水平置中
+                // 🌟 使用無底色 S1 / S2 與 黃色折線 (絕對居中，無推擠)
                 if (cat === 1) {
                     catIconHtml = `<svg viewBox="0 0 24 24" width="16" height="16" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 } else if (cat === 2) {
-                    catIconHtml = `<span style="color: #D32F2F; font-size: 14px; font-weight: 900; line-height: 1; display: flex; align-items: center; justify-content: center;">1</span>`;
+                    catIconHtml = `<span style="font-size: 13px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; display: flex; align-items: center; justify-content: center;"><span style="color: #999999;">S</span><span style="color: #D32F2F;">1</span></span>`;
                 } else if (cat === 3) {
-                    catIconHtml = `<span style="color: #D32F2F; font-size: 14px; font-weight: 900; line-height: 1; display: flex; align-items: center; justify-content: center;">2</span>`;
+                    catIconHtml = `<span style="font-size: 13px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; display: flex; align-items: center; justify-content: center;"><span style="color: #999999;">S</span><span style="color: #D32F2F;">2</span></span>`;
                 }
             }
             
@@ -893,7 +807,7 @@
       }
     }
 
-    // 🌟 全新統一預覽機制 (PDF & JPG 都先開啟彈窗預覽，再決定存檔或分享)
+    // 🌟 全新統一預覽機制 (雙平台：先開啟全螢幕預覽，再決定存檔或分享)
     async function generateReport(monthCount, type = 'pdf') {
       let reportData = [...allRecords].filter(r => r && r.date && String(r.notes || '').includes('[報表]')).sort((a, b) => new Date(String(a.date).replace(/-/g, '/')).getTime() - new Date(String(b.date).replace(/-/g, '/')).getTime());
       if (reportData.length === 0) { alert("目前沒有包含「報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return; }
@@ -982,39 +896,39 @@
         let minStr = minRecord ? `${minRecord.systolic}${slash}${minRecord.diastolic}` : `-${slash}-`;
 
         let tableHtml = `<thead>`;
-        tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 16px 16px 24px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
-        
-        // 🌟 強制切為精準的 33% 34% 33%，確保絕對對稱
+        // 🌟 嚴格切割為 33% - 34% - 33% 確保中央標題絕對對稱，不影響列高
+        tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 16px 16px 20px 16px; background-color: #FFFFFF; vertical-align: middle;">`;
         tableHtml += `<div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">`;
         
+        // 🌟 左側群組：限制在 33%
         const renderStatLeft = (lbl, val, color) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: flex-end;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div></div>`;
-        
-        const renderStatCenter = (lbl, val, color, def, icon = '') => {
-            // 圖示絕對定位在上方，完全不影響列高
-            let iconHtml = icon ? `<div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); display: flex; justify-content: center; align-items: center;">${icon}</div>` : '';
-            return `<div style="text-align: center; display: flex; flex-direction: column; align-items: center; position: relative;">
-                        ${iconHtml}
-                        <div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div>
-                        <div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div>
-                        <div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; transform: translateX(-50%); left: 50%; margin-top: 2px; letter-spacing: 0px; white-space: nowrap;">${def}</div>
-                    </div>`;
-        };
-
-        const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
-        const spanStage1 = `<span style="color: #D32F2F; font-size: 9px; font-weight: bold; font-family: Arial, sans-serif; line-height: 1;">1</span>`;
-        const spanStage2 = `<span style="color: #D32F2F; font-size: 9px; font-weight: bold; font-family: Arial, sans-serif; line-height: 1;">2</span>`;
-
         let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
         
-        tableHtml += `<div style="width: 33.33%; display: flex; justify-content: flex-start; gap: 12px; padding-left: 8px; box-sizing: border-box;">`;
+        tableHtml += `<div style="width: 33%; display: flex; justify-content: flex-start; gap: 14px; padding-left: 8px; box-sizing: border-box;">`;
         tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '#111111');
         tableHtml += renderStatLeft('MAX', maxStr, '#999999'); 
         tableHtml += renderStatLeft('MIN', minStr, '#999999'); 
         tableHtml += `</div>`;
 
-        tableHtml += `<div style="width: 33.33%; text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
+        // 🌟 中央標題 (34% 寬度)
+        tableHtml += `<div style="width: 34%; text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
 
-        tableHtml += `<div style="width: 33.33%; display: flex; justify-content: flex-end; gap: 16px; padding-right: 8px; box-sizing: border-box;">`;
+        // 🌟 右側群組 (33% 寬度)：圖示絕對定位懸浮，絕不推擠列高
+        const renderStatCenter = (lbl, val, color, def, icon = '') => {
+            let iconHtml = icon ? `<div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); display: flex; justify-content: center; align-items: center;">${icon}</div>` : '';
+            return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: flex-end; position: relative; padding-top: 6px;">
+                        ${iconHtml}
+                        <div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div>
+                        <div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div>
+                        <div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; transform: translateX(-50%); left: 50%; margin-top: 3px; letter-spacing: 0px; white-space: nowrap;">${def}</div>
+                    </div>`;
+        };
+
+        const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+        const spanStage1 = `<span style="font-size: 8px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; display: flex;"><span style="color: #999999;">S</span><span style="color: #D32F2F;">1</span></span>`;
+        const spanStage2 = `<span style="font-size: 8px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; display: flex;"><span style="color: #999999;">S</span><span style="color: #D32F2F;">2</span></span>`;
+
+        tableHtml += `<div style="width: 33%; display: flex; justify-content: flex-end; gap: 14px; padding-right: 8px; box-sizing: border-box;">`;
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
         tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80', svgElevatedLegend);
         tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130 - 139 / 80 - 89', spanStage1);
@@ -1050,25 +964,27 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 絕對懸浮，完美置於左上角，完全不干擾排版
+                // 🌟 報表每日資料 S1/S2 上標，完美懸浮於左上角
+                let iconWrapperStyle = "position: absolute; left: 1px; top: 1px; font-size: 7px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif;";
+                
                 if (cat === 1) {
-                    catIconHtml = `<span style="position: absolute; right: 100%; top: -2px; margin-right: 2px; color: #F59E0B;"><svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>`;
+                    catIconHtml = `<div style="${iconWrapperStyle} color: #F59E0B;"><svg viewBox="0 0 24 24" width="7" height="7" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>`;
                 } else if (cat === 2) {
-                    catIconHtml = `<span style="position: absolute; right: 100%; top: -2px; margin-right: 2px; color: #D32F2F; font-size: 8px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif;">1</span>`;
+                    catIconHtml = `<div style="${iconWrapperStyle} display: flex;"><span style="color: #999999;">S</span><span style="color: #D32F2F;">1</span></div>`;
                 } else if (cat === 3) {
-                    catIconHtml = `<span style="position: absolute; right: 100%; top: -2px; margin-right: 2px; color: #D32F2F; font-size: 8px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif;">2</span>`;
+                    catIconHtml = `<div style="${iconWrapperStyle} display: flex;"><span style="color: #999999;">S</span><span style="color: #D32F2F;">2</span></div>`;
                 }
             }
             
             let sysCell = '';
             if (record) {
-                // 🌟 透過 inline-block 結合 absolute，保護對齊線
+                // 🌟 透過 inline-block 結合 absolute，保護對齊線不被推擠
                 sysCell = `<div style="position: relative; display: inline-block;">${catIconHtml}<span style="color: #333333; font-weight: normal;">${sysStr}</span></div>`;
             }
             
             let diaCell = record ? `<span style="color: #333333; font-weight: normal;">${diaStr}</span>` : '';
             
-            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td>${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: normal;">${record ? record.heartRate : ''}</td>`;
+            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td style="position: relative; vertical-align: middle;">${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: normal;">${record ? record.heartRate : ''}</td>`;
           }
           tableHtml += `</tr>`;
         }
@@ -1092,10 +1008,6 @@
         const previewImg = document.getElementById('previewImg');
         previewImg.src = canvas.toDataURL('image/jpeg', 0.95);
 
-        const actionBtn = document.getElementById('modalActionBtn');
-        const actionText = document.getElementById('modalActionText');
-        if(type === 'pdf') { actionText.innerText = `儲存 / 分享 PDF`; } else { actionText.innerText = `儲存 / 分享 JPG`; }
-
         const modal = document.getElementById('imagePreviewModal');
         modal.style.display = 'flex';
         setTimeout(() => { modal.classList.add('show'); }, 10);
@@ -1114,13 +1026,12 @@
       }
     }
 
-    // 🌟 點擊「儲存/分享」按鈕，觸發 PDF 或 JPG 的匯出與原生分享 (支援重覆使用)
+    // 🌟 在 Modal 中點擊「分享/儲存」按鈕：不再跳出預覽，直接呼叫 Native Share Sheet
     async function executeExport() {
         if (!currentExportCanvas) return;
         const btn = document.getElementById('modalActionBtn');
         const originalHtml = btn.innerHTML;
-        const textSpan = document.getElementById('modalActionText');
-        textSpan.innerText = '處理中...';
+        btn.innerHTML = `<span style="font-size: 16px; font-weight: bold;">處理中...</span>`;
         btn.disabled = true;
 
         try {
@@ -1132,7 +1043,7 @@
 
                 const fallbackDownload = () => {
                     pdf.save(`${currentExportFilename}.pdf`);
-                    showToast('✅ PDF 儲存成功！');
+                    showToast('✅ Finished!');
                     closeImagePreview();
                 };
 
@@ -1140,8 +1051,8 @@
                 if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                     try {
                         const file = new File([pdfBlob], `${currentExportFilename}.pdf`, { type: 'application/pdf' });
-                        await navigator.share({ files: [file], title: '血壓記錄表' });
-                        showToast('✅ PDF 儲存 / 分享成功！');
+                        await navigator.share({ files: [file] });
+                        showToast('✅ Finished!');
                         closeImagePreview();
                     } catch (err) {
                         if (err.name !== 'AbortError') fallbackDownload();
@@ -1151,7 +1062,6 @@
                     fallbackDownload();
                 }
             } else {
-                // JPG 邏輯
                 currentExportCanvas.toBlob(async function(blob) {
                     if (!blob) { alert("圖片存取失敗"); btn.innerHTML = originalHtml; btn.disabled = false; return; }
                     
@@ -1162,15 +1072,15 @@
                         document.body.appendChild(link); link.click();
                         setTimeout(() => { 
                             document.body.removeChild(link); window.URL.revokeObjectURL(url); 
-                            showToast('✅ JPG 儲存成功！'); closeImagePreview(); 
+                            showToast('✅ Finished!'); closeImagePreview(); 
                         }, 100);
                     };
 
                     if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                         try {
                             const file = new File([blob], `${currentExportFilename}.jpg`, { type: 'image/jpeg' });
-                            await navigator.share({ files: [file], title: '血壓記錄表' });
-                            showToast('✅ JPG 儲存 / 分享成功！');
+                            await navigator.share({ files: [file] });
+                            showToast('✅ Finished!');
                             closeImagePreview();
                         } catch (err) {
                             if (err.name !== 'AbortError') fallbackDownload();
