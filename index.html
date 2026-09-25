@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=171">
+  <link rel="manifest" href="manifest.json?v=173">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -107,10 +107,10 @@
     
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     
-    /* 🌟 圖示完美置中，縮減多餘空白 (30px)，並給予 BP 足夠的寬度 (82px) */
+    /* 🌟 圖示完美縮減間距：Time(56px) + Cat(20px) + BP(76px) 緊密置中不留白 */
     .list-header, .record-row { 
       display: grid; 
-      grid-template-columns: 65px 48px 30px 82px 40px 1fr 24px; 
+      grid-template-columns: 65px 56px 20px 76px 40px 1fr 24px; 
       gap: 0px; 
       align-items: center; 
       text-align: center; 
@@ -196,7 +196,6 @@
     .preview-action-bar {
       width: 100%; display: flex; justify-content: center; padding-bottom: max(env(safe-area-inset-bottom), 30px);
     }
-    /* 🌟 純圖示灰藍色按鈕 */
     .preview-action-btn {
       background: #7895B2; color: white; border: none; width: 60px; height: 60px; 
       border-radius: 30px; display: flex; justify-content: center; align-items: center;
@@ -253,7 +252,7 @@
       padding: 0 20px 0 20px; box-sizing: border-box; 
     }
 
-    /* 🌟 恢復報表上邊界 (padding-top: 16mm)，保證印表機邊緣不裁切 */
+    /* 🌟 恢復列印上邊界保護 */
     #printArea { display: none; width: 210mm; height: 297mm; box-sizing: border-box; padding: 16mm 12mm 5mm 12mm; background-color: #FFFFFF; color: #000; }
     
     .print-table { width: 100%; border-collapse: collapse; text-align: center; font-family: Arial, sans-serif; table-layout: fixed; background-color: #FFFFFF; border: 1.5px solid #000 !important; }
@@ -295,10 +294,11 @@
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     .loading-text { margin-top: 16px; font-size: 15px; color: var(--primary-dark); font-weight: 800; letter-spacing: 1px; }
 
+    /* 🌟 純文字版 Finished 提示框 */
     .toast-msg {
       position: fixed; top: max(env(safe-area-inset-top), 60px); left: 50%; transform: translateX(-50%) translateY(-20px);
       background-color: #4CAF50; color: white; padding: 12px 24px; border-radius: 24px;
-      font-size: 14px; font-weight: bold; opacity: 0; transition: all 0.3s ease; z-index: 10000;
+      font-size: 15px; font-weight: bold; letter-spacing: 1px; opacity: 0; transition: all 0.3s ease; z-index: 10000;
       pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
     .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
@@ -315,7 +315,6 @@
 
   <div id="toastMsg" class="toast-msg"></div>
 
-  <!-- 🌟 升級版全預覽視窗 (供 JPG & PDF 共用，無多餘文字，只有圖與按鈕) -->
   <div id="imagePreviewModal" class="image-preview-modal">
     <div class="preview-header">
       <button class="preview-close-btn" onclick="closeImagePreview()">✕</button>
@@ -839,7 +838,7 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 S1 / S2 全面改為無框斜體純紅字
+                // 🌟 統一 S1/S2 為紅色斜體字
                 let flexCenter = "display: flex; align-items: center; justify-content: center;";
                 if (cat === 1) {
                     catIconHtml = `<div style="${flexCenter}"><svg viewBox="0 0 24 24" width="16" height="16" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>`;
@@ -892,7 +891,6 @@
       }
     }
 
-    // 🌟 全新統一預覽機制
     async function generateReport(monthCount, type = 'pdf') {
       let reportData = [...allRecords].filter(r => r && r.date && String(r.notes || '').includes('[報表]')).sort((a, b) => new Date(String(a.date).replace(/-/g, '/')).getTime() - new Date(String(b.date).replace(/-/g, '/')).getTime());
       if (reportData.length === 0) { alert("目前沒有包含「報表」標籤的紀錄喔！請先在要給醫師看的紀錄加上此標籤。"); return; }
@@ -981,28 +979,28 @@
         let minStr = minRecord ? `${minRecord.systolic}${slash}${minRecord.diastolic}` : `-${slash}-`;
 
         let tableHtml = `<thead>`;
-        // 🌟 刪除標題區上方多餘空白
-        tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 8px 12px 16px 12px; background-color: #FFFFFF; vertical-align: middle; position: relative;">`;
+        // 🌟 刪除標題區上方空白，padding-top 設為 0
+        tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 0px 12px 16px 12px; background-color: #FFFFFF; vertical-align: middle; position: relative;">`;
         
-        // 🌟 儀表板：絕對分配 33.3% 33.4% 33.3%
+        // 🌟 儀表板三分區，間距散佈
         tableHtml += `<div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">`;
         
-        // 🌟 左側群組：向左看齊，間距縮小
+        // 🌟 左側群組
         const renderStatLeft = (lbl, val, valSize) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: flex-end;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: #111111; font-size: ${valSize}; font-weight: 900; line-height: 1;">${val}</div></div>`;
         let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
         
-        tableHtml += `<div style="flex: 1; display: flex; justify-content: space-between; max-width: 33.33%; padding-left: 4px; padding-right: 12px; box-sizing: border-box;">`;
+        tableHtml += `<div style="width: 33.33%; display: flex; justify-content: space-between; padding-left: 4px; padding-right: 16px; box-sizing: border-box;">`;
         tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '18px');
         tableHtml += renderStatLeft('MAX', `<span style="color:#999999">${maxStr}</span>`, '18px'); 
         tableHtml += renderStatLeft('MIN', `<span style="color:#999999">${minStr}</span>`, '18px'); 
         tableHtml += `</div>`;
 
         // 🌟 中央標題
-        tableHtml += `<div style="flex: 1; text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
+        tableHtml += `<div style="width: 33.34%; text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
 
-        // 🌟 右側群組：均勻分配，絕對置中不影響列高
+        // 🌟 右側群組
         const renderStatCenter = (lbl, val, color, def, icon = '') => {
-            let iconHtml = icon ? `<div style="position: absolute; bottom: 100%; left: 50%; transform: translate(-50%, -2px); display: flex; justify-content: center; align-items: center; margin-bottom: 0px;">${icon}</div>` : '';
+            let iconHtml = icon ? `<div style="position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); margin-bottom: 2px; display: flex; justify-content: center; align-items: center;">${icon}</div>` : '';
             return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: flex-end; position: relative;">
                         ${iconHtml}
                         <div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div>
@@ -1012,10 +1010,10 @@
         };
 
         const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
-        const spanStage1 = `<span style="font-size: 10px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; font-style: italic; color: #D32F2F;">S1</span>`;
-        const spanStage2 = `<span style="font-size: 10px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; font-style: italic; color: #D32F2F;">S2</span>`;
+        const spanStage1 = `<span style="font-size: 9px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; font-style: italic; color: #D32F2F;">S1</span>`;
+        const spanStage2 = `<span style="font-size: 9px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; font-style: italic; color: #D32F2F;">S2</span>`;
 
-        tableHtml += `<div style="flex: 1; display: flex; justify-content: space-between; max-width: 33.33%; padding-left: 12px; padding-right: 4px; box-sizing: border-box;">`;
+        tableHtml += `<div style="width: 33.33%; display: flex; justify-content: space-between; padding-left: 16px; padding-right: 4px; box-sizing: border-box;">`;
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
         tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80', svgElevatedLegend);
         tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130 - 139 / 80 - 89', spanStage1);
@@ -1051,8 +1049,8 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 報表每日圖示往左往上一點點，不貼齊上框線
-                let iconWrapperStyle = "position: absolute; right: 100%; top: 1px; margin-right: 2px; font-size: 8px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif;";
+                // 🌟 絕對懸浮，完美置於左上角，往左往上移，不碰上框線
+                let iconWrapperStyle = "position: absolute; right: 100%; top: 1px; margin-right: 4px; font-size: 8px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif; display: flex; align-items: center;";
                 
                 if (cat === 1) {
                     catIconHtml = `<span style="${iconWrapperStyle} color: #F59E0B;"><svg viewBox="0 0 24 24" width="7" height="7" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>`;
@@ -1112,7 +1110,7 @@
       }
     }
 
-    // 🌟 在 Modal 點擊分享鈕：直接透過原生 navigator.share 分享 (不含 title 以免變成 txt)，完全不再跳轉其他預覽頁
+    // 🌟 在 Modal 點擊分享鈕：保證純淨分享，且精準處理中斷(Cancel)錯誤
     async function executeExport() {
         if (!currentExportCanvas) return;
         const btn = document.getElementById('modalActionBtn');
@@ -1141,11 +1139,12 @@
                 if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                     try {
                         const file = new File([pdfBlob], `${currentExportFilename}.pdf`, { type: 'application/pdf' });
-                        await navigator.share({ files: [file] }); // 移除了 title 以防產出 txt
+                        await navigator.share({ files: [file] }); // 無 title
                         showToast('Finished!');
                         closeImagePreview();
                     } catch (err) {
                         if (err.name !== 'AbortError') fallbackDownload();
+                        // 取消分享不會觸發 Finished!
                     }
                 } else {
                     fallbackDownload();
@@ -1168,11 +1167,12 @@
                     if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                         try {
                             const file = new File([blob], `${currentExportFilename}.jpg`, { type: 'image/jpeg' });
-                            await navigator.share({ files: [file] }); // 移除了 title 以防產出 txt
+                            await navigator.share({ files: [file] }); // 無 title
                             showToast('Finished!');
                             closeImagePreview();
                         } catch (err) {
                             if (err.name !== 'AbortError') fallbackDownload();
+                            // 取消分享不會觸發 Finished!
                         }
                     } else {
                         fallbackDownload();
