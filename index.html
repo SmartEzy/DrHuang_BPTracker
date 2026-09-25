@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=176">
+  <link rel="manifest" href="manifest.json?v=177">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -107,10 +107,10 @@
     
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     
-    /* 恢復 v173 的網格寬度配置，確保警示圖完美置中 */
+    /* 🌟 圖示完美等距置中：將圖示區寬度縮至極限 20px，並徹底移除 transform */
     .list-header, .record-row { 
       display: grid; 
-      grid-template-columns: 65px 50px 40px 80px 40px 1fr 24px; 
+      grid-template-columns: 65px 50px 20px 80px 40px 1fr 24px; 
       gap: 0px; 
       align-items: center; 
       text-align: center; 
@@ -978,20 +978,22 @@
         let tableHtml = `<thead>`;
         tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 16px 12px 16px 12px; background-color: #FFFFFF; vertical-align: middle; position: relative;">`;
         
-        // 🌟 1fr auto 1fr 確保中央標題無條件絕對置中
-        tableHtml += `<div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: flex-end; width: 100%;">`;
+        // 🌟 使用 Grid 強制精準均分，保證 Center 區絕對置中，Left / Right 等長
+        tableHtml += `<div style="display: grid; grid-template-columns: 1fr auto 1fr; align-items: flex-end; width: 100%; gap: 10px;">`;
         
         const renderStatLeft = (lbl, val, valSize) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: flex-end;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: #111111; font-size: ${valSize}; font-weight: 900; line-height: 1;">${val}</div></div>`;
         let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
         
-        tableHtml += `<div style="display: flex; justify-content: flex-start; gap: 16px; padding-left: 4px; box-sizing: border-box;">`;
+        tableHtml += `<div style="display: flex; justify-content: flex-start; gap: 20px;">`;
         tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '18px');
         tableHtml += renderStatLeft('MAX', `<span style="color:#999999">${maxStr}</span>`, '18px'); 
         tableHtml += renderStatLeft('MIN', `<span style="color:#999999">${minStr}</span>`, '18px'); 
         tableHtml += `</div>`;
 
-        tableHtml += `<div style="text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
+        // 🌟 中間標題
+        tableHtml += `<div style="text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; padding: 0 10px;">血壓記錄表</div>`;
 
+        // 🌟 縮小文字與數字間距，右側均勻分散
         const renderStatCenter = (lbl, val, color, def, icon = '') => {
             let iconHtml = icon ? `<div style="position: absolute; bottom: 100%; left: 50%; transform: translate(-50%, -2px); display: flex; justify-content: center; align-items: center; margin-bottom: 0px;">${icon}</div>` : '';
             return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: flex-end; position: relative;">
@@ -1006,7 +1008,7 @@
         const spanStage1 = `<span style="font-size: 9px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">S1</span>`;
         const spanStage2 = `<span style="font-size: 9px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">S2</span>`;
 
-        tableHtml += `<div style="display: flex; justify-content: flex-end; gap: 14px; padding-right: 2px; box-sizing: border-box;">`;
+        tableHtml += `<div style="display: flex; justify-content: space-between; width: 100%; padding-left: 24px; box-sizing: border-box;">`;
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
         tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80', svgElevatedLegend);
         tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130 - 139 / 80 - 89', spanStage1);
@@ -1042,7 +1044,7 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 絕對定位於整個 TD 儲存格的左上角
+                // 🌟 絕對定位相對於 TD，完美置於等距左上角 (top: 1px, left: 1px)
                 let iconWrapperStyle = "position: absolute; left: 1px; top: 1px; font-size: 8px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif; display: flex; align-items: center;";
                 
                 if (cat === 1) {
@@ -1057,7 +1059,7 @@
             let sysCell = record ? `<span style="color: #333333; font-weight: normal;">${sysStr}</span>` : '';
             let diaCell = record ? `<span style="color: #333333; font-weight: normal;">${diaStr}</span>` : '';
             
-            // 🌟 讓 catIconHtml 直接依附於相對定位的 td
+            // 🌟 確保 TD 是 relative，圖示依附於 TD 邊界
             tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td style="position: relative; vertical-align: middle;">${catIconHtml}${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: normal;">${record ? record.heartRate : ''}</td>`;
           }
           tableHtml += `</tr>`;
@@ -1075,6 +1077,17 @@
         const today = new Date(); const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
         const filename = `血壓記錄表_${monthCount}M_${dateStr}`;
         
+        const isIPad = /Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1;
+
+        if (isIPad) {
+            currentExportCanvas = canvas;
+            currentExportType = type;
+            currentExportFilename = filename;
+            printArea.style.display = 'none';
+            await executeExport(null);
+            return;
+        }
+
         currentExportCanvas = canvas;
         currentExportType = type;
         currentExportFilename = filename;
@@ -1127,7 +1140,7 @@
                     }, 100);
                 };
 
-                if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
+                if (navigator.share && /mobile|android|iphone|ipad|Macintosh/i.test(navigator.userAgent)) {
                     try {
                         const file = new File([pdfBlob], `${currentExportFilename}.pdf`, { type: 'application/pdf' });
                         await navigator.share({ files: [file] });
@@ -1135,6 +1148,7 @@
                         closeImagePreview();
                     } catch (err) {
                         if (err.name === 'AbortError' || (err.message && err.message.toLowerCase().includes('cancel'))) {
+                            closeImagePreview();
                             return; 
                         }
                         fallbackDownload();
@@ -1157,7 +1171,7 @@
                         }, 100);
                     };
 
-                    if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
+                    if (navigator.share && /mobile|android|iphone|ipad|Macintosh/i.test(navigator.userAgent)) {
                         try {
                             const file = new File([blob], `${currentExportFilename}.jpg`, { type: 'image/jpeg' });
                             await navigator.share({ files: [file] });
@@ -1165,6 +1179,7 @@
                             closeImagePreview();
                         } catch (err) {
                             if (err.name === 'AbortError' || (err.message && err.message.toLowerCase().includes('cancel'))) {
+                                closeImagePreview();
                                 return; 
                             }
                             fallbackDownload();
