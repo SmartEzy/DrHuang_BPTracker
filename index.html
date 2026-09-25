@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=178">
+  <link rel="manifest" href="manifest.json?v=179">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -839,9 +839,9 @@
                 if (cat === 1) {
                     catIconHtml = `<div style="${flexCenter}"><svg viewBox="0 0 24 24" width="16" height="16" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>`;
                 } else if (cat === 2) {
-                    catIconHtml = `<div style="${flexCenter} font-size: 13px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; font-style: italic; color: #D32F2F;">S1</div>`;
+                    catIconHtml = `<div style="${flexCenter} font-size: 13px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">1</div>`;
                 } else if (cat === 3) {
-                    catIconHtml = `<div style="${flexCenter} font-size: 13px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; font-style: italic; color: #D32F2F;">S2</div>`;
+                    catIconHtml = `<div style="${flexCenter} font-size: 13px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">2</div>`;
                 }
             }
             
@@ -975,20 +975,20 @@
         let minStr = minRecord ? `${minRecord.systolic}${slash}${minRecord.diastolic}` : `-${slash}-`;
 
         let tableHtml = `<thead>`;
-        tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 16px 12px 16px 12px; background-color: #FFFFFF; vertical-align: middle; position: relative;">`;
+        tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 16px 8px 16px 8px; background-color: #FFFFFF; vertical-align: middle; position: relative;">`;
         
-        tableHtml += `<div style="display: flex; justify-content: space-between; align-items: flex-end; width: 100%;">`;
+        tableHtml += `<div style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: flex-end; width: 100%;">`;
         
         const renderStatLeft = (lbl, val, valSize) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: flex-end;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: #111111; font-size: ${valSize}; font-weight: 900; line-height: 1;">${val}</div></div>`;
         let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
         
-        tableHtml += `<div style="flex: 1; display: flex; justify-content: space-between; max-width: 33.33%; padding-left: 2px; padding-right: 16px; box-sizing: border-box;">`;
+        tableHtml += `<div style="display: flex; justify-content: flex-start; gap: 8px; padding-left: 2px; box-sizing: border-box; z-index: 1;">`;
         tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '18px');
         tableHtml += renderStatLeft('MAX', `<span style="color:#999999">${maxStr}</span>`, '18px'); 
         tableHtml += renderStatLeft('MIN', `<span style="color:#999999">${minStr}</span>`, '18px'); 
         tableHtml += `</div>`;
 
-        tableHtml += `<div style="flex: 1; text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap;">血壓記錄表</div>`;
+        tableHtml += `<div style="text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; z-index: 0; padding: 0 10px;">血壓記錄表</div>`;
 
         const renderStatCenter = (lbl, val, color, def, icon = '') => {
             let iconHtml = icon ? `<div style="position: absolute; bottom: calc(100% - 2px); left: 50%; transform: translateX(-50%); display: flex; justify-content: center; align-items: center; margin-bottom: 0px;">${icon}</div>` : '';
@@ -1001,10 +1001,10 @@
         };
 
         const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
-        const spanStage1 = `<span style="font-size: 9px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; font-style: italic; color: #D32F2F;">S1</span>`;
-        const spanStage2 = `<span style="font-size: 9px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; font-style: italic; color: #D32F2F;">S2</span>`;
+        const spanStage1 = `<span style="font-size: 9px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">1</span>`;
+        const spanStage2 = `<span style="font-size: 9px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">2</span>`;
 
-        tableHtml += `<div style="flex: 1; display: flex; justify-content: space-between; max-width: 33.33%; padding-left: 16px; padding-right: 2px; box-sizing: border-box;">`;
+        tableHtml += `<div style="display: flex; justify-content: flex-end; gap: 12px; box-sizing: border-box; z-index: 1; padding-right: 2px;">`;
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
         tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80', svgElevatedLegend);
         tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130 - 139 / 80 - 89', spanStage1);
@@ -1045,16 +1045,16 @@
                 if (cat === 1) {
                     catIconHtml = `<span style="${iconWrapperStyle} color: #F59E0B;"><svg viewBox="0 0 24 24" width="7" height="7" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>`;
                 } else if (cat === 2) {
-                    catIconHtml = `<span style="${iconWrapperStyle} font-style: italic; color: #D32F2F;">S1</span>`;
+                    catIconHtml = `<span style="${iconWrapperStyle} color: #D32F2F;">1</span>`;
                 } else if (cat === 3) {
-                    catIconHtml = `<span style="${iconWrapperStyle} font-style: italic; color: #D32F2F;">S2</span>`;
+                    catIconHtml = `<span style="${iconWrapperStyle} color: #D32F2F;">2</span>`;
                 }
             }
             
             let sysCell = record ? `<span style="color: #333333; font-weight: normal;">${sysStr}</span>` : '';
             let diaCell = record ? `<span style="color: #333333; font-weight: normal;">${diaStr}</span>` : '';
             
-            tableHtml += `<td style="color:#999999; font-weight:normal; position: relative;">${day}</td><td style="position: relative; vertical-align: middle;">${catIconHtml}${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: normal;">${record ? record.heartRate : ''}</td>`;
+            tableHtml += `<td style="color:#999999; font-weight:normal;">${day}</td><td style="position: relative; vertical-align: middle;">${catIconHtml}${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: normal;">${record ? record.heartRate : ''}</td>`;
           }
           tableHtml += `</tr>`;
         }
@@ -1071,6 +1071,17 @@
         const today = new Date(); const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
         const filename = `血壓記錄表_${monthCount}M_${dateStr}`;
         
+        const isIPad = /Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1;
+
+        if (isIPad) {
+            currentExportCanvas = canvas;
+            currentExportType = type;
+            currentExportFilename = filename;
+            printArea.style.display = 'none';
+            await executeExport(null);
+            return;
+        }
+
         currentExportCanvas = canvas;
         currentExportType = type;
         currentExportFilename = filename;
@@ -1131,6 +1142,7 @@
                         closeImagePreview();
                     } catch (err) {
                         if (err.name === 'AbortError' || (err.message && err.message.toLowerCase().includes('cancel'))) {
+                            closeImagePreview();
                             return; 
                         }
                         fallbackDownload();
@@ -1161,6 +1173,7 @@
                             closeImagePreview();
                         } catch (err) {
                             if (err.name === 'AbortError' || (err.message && err.message.toLowerCase().includes('cancel'))) {
+                                closeImagePreview();
                                 return; 
                             }
                             fallbackDownload();
