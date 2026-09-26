@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=179">
+  <link rel="manifest" href="manifest.json?v=180">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -107,9 +107,10 @@
     
     .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
     
+    /* 🌟 SBP欄縮小至 28px，完美平衡左右空白 */
     .list-header, .record-row { 
       display: grid; 
-      grid-template-columns: 65px 50px 20px 80px 40px 1fr 24px; 
+      grid-template-columns: 65px 50px 24px 70px 40px 1fr 24px; 
       gap: 0px; 
       align-items: center; 
       text-align: center; 
@@ -147,11 +148,12 @@
     .record-row.highlight-delete .delete-btn { color: var(--danger-color); }
     
     .cat-col { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
-    .bp-col-align { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0px; align-items: center; justify-content: center; width: 100%; }
+    .bp-col-align { display: flex; align-items: center; justify-content: center; width: 100%; }
     
-    .bp-sys { text-align: right; font-weight: bold; color: var(--text-main); }
-    .bp-slash { color: #888; font-weight: normal; margin: 0 2px; } 
-    .bp-dia { text-align: left; font-weight: bold; color: var(--text-main); }
+    /* 🌟 縮減 SBP 寬度 */
+    .bp-sys { width: 28px; text-align: right; font-weight: bold; color: var(--text-main); }
+    .bp-slash { width: 6px; text-align: center; color: #888; font-weight: normal; margin: 0 1px; } 
+    .bp-dia { width: 28px; text-align: left; font-weight: bold; color: var(--text-main); }
     
     .note-col { font-size: 13px; color: #666; word-break: break-word; line-height: 1.1; font-variant-numeric: normal; display: flex; flex-wrap: wrap; gap: 2px; align-items: center; }
 
@@ -564,47 +566,7 @@
       if (!isDraggingSheet) return;
       currentY = e.clientY;
       const deltaY = currentY - startY;
-      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }
-    });
-    window.addEventListener('mouseup', () => {
-      if (!isDraggingSheet) return;
-      isDraggingSheet = false;
-      bottomSheet.classList.remove('dragging');
-      const deltaY = currentY - startY;
-      if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }
-    });
-
-    let isDownChart = false;
-    let startXChart;
-    let scrollLeftChart;
-
-    chartOuter.addEventListener('mousedown', (e) => {
-      isDownChart = true;
-      chartOuter.style.cursor = 'grabbing';
-      startXChart = e.pageX - chartOuter.offsetLeft;
-      scrollLeftChart = chartOuter.scrollLeft;
-    });
-    chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
-    chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
-    chartOuter.addEventListener('mousemove', (e) => {
-      if (!isDownChart) return;
-      e.preventDefault();
-      const x = e.pageX - chartOuter.offsetLeft;
-      const walk = (x - startXChart) * 1.5; 
-      chartOuter.scrollLeft = scrollLeftChart - walk;
-    });
-
-    function showLoading(text) {
-      document.getElementById('loadingText').innerText = text;
-      document.getElementById('loadingOverlay').classList.add('show');
-    }
-    
-    function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
-
-    async function handleRefresh() {
-      showLoading('資料同步中...');
-      let curr = new Date();
-      document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
+      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }     });     window.addEventListener('mouseup', () => {       if (!isDraggingSheet) return;       isDraggingSheet = false;       bottomSheet.classList.remove('dragging');       const deltaY = currentY - startY;       if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }     });      let isDownChart = false;     let startXChart;     let scrollLeftChart;      chartOuter.addEventListener('mousedown', (e) => {       isDownChart = true;       chartOuter.style.cursor = 'grabbing';       startXChart = e.pageX - chartOuter.offsetLeft;       scrollLeftChart = chartOuter.scrollLeft;     });     chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mousemove', (e) => {       if (!isDownChart) return;       e.preventDefault();       const x = e.pageX - chartOuter.offsetLeft;       const walk = (x - startXChart) * 1.5;        chartOuter.scrollLeft = scrollLeftChart - walk;     });      function showLoading(text) {       document.getElementById('loadingText').innerText = text;       document.getElementById('loadingOverlay').classList.add('show');     }          function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }      async function handleRefresh() {       showLoading('資料同步中...');       let curr = new Date();       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
       checkMorningTag();
       try {
@@ -621,29 +583,7 @@
     window.addEventListener('resize', updateStickyOffset);
 
     const now = new Date();
-    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-    document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-    function checkMorningTag() {
-      const timeVal = document.getElementById('time').value;
-      if (!timeVal) return;
-      const h = parseInt(timeVal.split(':')[0], 10);
-      const notesInput = document.getElementById('notes');
-      if (h >= 4 && h < 10) {
-        if (!notesInput.value.includes('[報表]')) {
-          if (notesInput.value.trim() !== '') notesInput.value += ', ';
-          notesInput.value += '[報表]';
-        }
-      }
-    }
-    
-    document.getElementById('time').addEventListener('change', checkMorningTag);
-    checkMorningTag();
-
-    function addQuickTag(tagText) {
-      const notesInput = document.getElementById('notes');
-      if (notesInput.value.trim() === '') { notesInput.value = tagText; } 
-      else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
+    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;      function checkMorningTag() {       const timeVal = document.getElementById('time').value;       if (!timeVal) return;       const h = parseInt(timeVal.split(':')[0], 10);       const notesInput = document.getElementById('notes');       if (h >= 4 && h < 10) {         if (!notesInput.value.includes('[報表]')) {           if (notesInput.value.trim() !== '') notesInput.value += ', ';           notesInput.value += '[報表]';         }       }     }          document.getElementById('time').addEventListener('change', checkMorningTag);     checkMorningTag();      function addQuickTag(tagText) {       const notesInput = document.getElementById('notes');       if (notesInput.value.trim() === '') { notesInput.value = tagText; }        else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
     }
 
     document.querySelectorAll('.capsule-btn').forEach(btn => {
@@ -675,32 +615,7 @@
       const row = btn.closest('.record-row'); row.classList.add('highlight-delete');
       let decodedNotes = decodeURIComponent(encodedNotes);
       setTimeout(() => {
-        if (confirm(`${formattedDate} ${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {
-          let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
-          if (idx !== -1) { allRecords.splice(idx, 1); } 
-          else {
-            let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);
-            if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);
-          }
-          renderList();
-          syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });
-        } else { row.classList.remove('highlight-delete'); }
-      }, 300);
-    }
-
-    function getLogicalDate(dateStr, timeStr) {
-      if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };
-      let d = new Date(String(dateStr).replace(/-/g, '/'));
-      if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };
-      if (timeStr) {
-        let parts = String(timeStr).split(':');
-        if (parts.length >= 2) {
-          let h = parseInt(parts[0], 10);
-          if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); }
-        }
-      }
-      let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');
-      return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
+        if (confirm(`${formattedDate}${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {           let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes \vert{}\vert{} '') === decodedNotes);           if (idx !== -1) { allRecords.splice(idx, 1); }            else {             let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);             if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);           }           renderList();           syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });         } else { row.classList.remove('highlight-delete'); }       }, 300);     }      function getLogicalDate(dateStr, timeStr) {       if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };       let d = new Date(String(dateStr).replace(/-/g, '/'));       if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };       if (timeStr) {         let parts = String(timeStr).split(':');         if (parts.length >= 2) {           let h = parseInt(parts[0], 10);           if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); }         }       }       let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');       return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
     }
 
     function updateChart(displayData) {
@@ -977,13 +892,11 @@
         let tableHtml = `<thead>`;
         tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 16px 12px 16px 12px; background-color: #FFFFFF; vertical-align: middle; position: relative;">`;
         
-        // 🌟 使用 grid: minmax(0,1fr) auto minmax(0,1fr) 保證絕對置中與兩端對等空間
         tableHtml += `<div style="display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: flex-end; width: 100%;">`;
         
         const renderStatLeft = (lbl, val, valSize) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: flex-end;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: #111111; font-size: ${valSize}; font-weight: 900; line-height: 1;">${val}</div></div>`;
         let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
         
-        // 🌟 縮減左面板的 gap，以容納於 33.3% 中
         tableHtml += `<div style="display: flex; justify-content: flex-start; gap: 8px; padding-left: 2px; box-sizing: border-box; z-index: 1;">`;
         tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '18px');
         tableHtml += renderStatLeft('MAX', `<span style="color:#999999">${maxStr}</span>`, '18px'); 
@@ -993,25 +906,26 @@
         tableHtml += `<div style="text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; z-index: 0; padding: 0 10px;">血壓記錄表</div>`;
 
         const renderStatCenter = (lbl, val, color, def, icon = '') => {
-            let iconHtml = icon ? `<div style="position: absolute; bottom: calc(100% - 2px); left: 50%; transform: translateX(-50%); display: flex; justify-content: center; align-items: center; margin-bottom: 0px;">${icon}</div>` : '';
+            let iconHtml = icon ? `<div style="display: flex; align-items: center; justify-content: center; margin-right: 2px; height: 11px;">${icon}</div>` : '';
             return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: flex-end; position: relative;">
-                        ${iconHtml}
-                        <div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div>
+                        <div style="display: flex; align-items: flex-end; justify-content: center; height: 11px; margin-bottom: 2px; white-space: nowrap;">
+                            ${iconHtml}
+                            <span style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1;">${lbl}</span>
+                        </div>
                         <div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1;">${val}</div>
-                        <div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; transform: translateX(-50%); left: 50%; margin-top: 3px; letter-spacing: 0px; white-space: nowrap;">${def}</div>
+                        <div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; transform: translateX(-50%); left: 50%; margin-top: 3px; letter-spacing: -0.2px; white-space: nowrap;">${def}</div>
                     </div>`;
         };
 
-        const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
-        const spanStage1 = `<span style="font-size: 9px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">1</span>`;
-        const spanStage2 = `<span style="font-size: 9px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">2</span>`;
+        const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+        const spanStage1 = `<span style="font-size: 10px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">1</span>`;
+        const spanStage2 = `<span style="font-size: 10px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">2</span>`;
 
-        // 🌟 右面板增加散佈
         tableHtml += `<div style="display: flex; justify-content: space-between; gap: 4px; padding-left: 8px; padding-right: 2px; box-sizing: border-box; z-index: 1;">`;
-        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
-        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80', svgElevatedLegend);
-        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130 - 139 / 80 - 89', spanStage1);
-        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge; 140 / &ge; 90', spanStage2);
+        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt;120/80');
+        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129/&lt;80', svgElevatedLegend);
+        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139/80-89', spanStage1);
+        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge;140/&ge;90', spanStage2);
         tableHtml += `</div>`;
         
         tableHtml += `</div></th></tr>`;
@@ -1074,17 +988,6 @@
         const today = new Date(); const dateStr = today.getFullYear() + String(today.getMonth() + 1).padStart(2, '0') + String(today.getDate()).padStart(2, '0');
         const filename = `血壓記錄表_${monthCount}M_${dateStr}`;
         
-        const isIPad = /Macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints && navigator.maxTouchPoints > 1;
-
-        if (isIPad) {
-            currentExportCanvas = canvas;
-            currentExportType = type;
-            currentExportFilename = filename;
-            printArea.style.display = 'none';
-            await executeExport(null);
-            return;
-        }
-
         currentExportCanvas = canvas;
         currentExportType = type;
         currentExportFilename = filename;
