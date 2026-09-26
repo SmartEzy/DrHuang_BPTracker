@@ -186,17 +186,15 @@
     .preview-content {
       flex: 1; width: 100%; padding: 0 16px; box-sizing: border-box; display: flex; 
       align-items: center; justify-content: center; 
-      overflow-y: auto; -webkit-overflow-scrolling: touch; 
       margin-top: 4px; margin-bottom: 20px;
     }
     #previewImg {
       width: auto; height: auto; 
-      max-width: 100%; max-height: 70vh; 
+      max-width: 100%; max-height: 75vh; 
       object-fit: contain; 
       border-radius: 4px; 
-      box-shadow: 0 15px 35px rgba(0,0,0,0.15); 
+      box-shadow: none; /* 🌟 徹底移除陰影，解決邊緣裁切問題 */
       display: block;
-      margin: 40px auto; 
     }
     
     .preview-action-bar {
