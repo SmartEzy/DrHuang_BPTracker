@@ -996,17 +996,19 @@
         tableHtml += `<div style="text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; z-index: 0;">血壓記錄表</div>`;
 
         const renderStatCenter = (lbl, val, color, def, icon = '') => {
-            let titleContent = icon ? `<div style="display: flex; align-items: flex-end; justify-content: center;"><div style="margin-right: 2px; display: flex; align-items: center; padding-bottom: 1px;">${icon}</div><span style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1;">${lbl}</span></div>` : `<div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1;">${lbl}</div>`;
-            return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: flex-end; position: relative; margin-bottom: 2px;">
+          // 🌟 將 align-items 從 flex-end 改為 center，確保圖示與文字絕對垂直置中
+          let titleContent = icon ? `<div style="display: flex; align-items: center; justify-content: center;"><div style="margin-right: 3px; display: flex; align-items: center;">${icon}</div><span style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</span></div>` : `<div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</div>`;
+          return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: flex-end; position: relative; margin-bottom: 2px;">
                         ${titleContent}
-                        <div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1; margin-top: 2px;">${val}</div>
+                        <div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1; margin-top: 4px;">${val}</div>
                         <div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; transform: translateX(-50%); left: 50%; margin-top: 3px; letter-spacing: 0px; white-space: nowrap;">${def}</div>
                     </div>`;
         };
 
-        const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
-        const spanStage1 = `<span style="font-size: 9px; font-weight: 900; line-height: 1.1; font-family: Arial, sans-serif; color: #D32F2F; margin-bottom: 1px;">1</span>`;
-        const spanStage2 = `<span style="font-size: 9px; font-weight: 900; line-height: 1.1; font-family: Arial, sans-serif; color: #D32F2F; margin-bottom: 1px;">2</span>`;
+        // 🌟 移除多餘的 margin-bottom，讓它純粹依賴 flex 完美置中
+        const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+        const spanStage1 = `<span style="font-size: 10px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">1</span>`;
+        const spanStage2 = `<span style="font-size: 10px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">2</span>`;
 
         tableHtml += `<div style="display: flex; justify-content: space-between; box-sizing: border-box; padding-left: 12px; z-index: 1;">`;
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
