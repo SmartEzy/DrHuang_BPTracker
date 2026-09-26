@@ -161,11 +161,12 @@
     }
     .sheet-overlay.show { opacity: 1; pointer-events: auto; }
 
+    /* 🌟 改為 Apple 原生風格的淺色毛玻璃背景 */
     .image-preview-modal {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.85); z-index: 10000; display: none; 
+      background: rgba(244, 246, 248, 0.85); z-index: 10000; display: none; 
       flex-direction: column; align-items: center; justify-content: flex-start; 
-      backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+      backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       opacity: 0; transition: opacity 0.25s ease;
     }
     .image-preview-modal.show { opacity: 1; }
@@ -174,21 +175,27 @@
       width: 100%; display: flex; justify-content: flex-end; align-items: center; 
       padding: 16px 24px; box-sizing: border-box; margin-top: max(env(safe-area-inset-top), 10px);
     }
+    /* 🌟 關閉按鈕改為深色，以適應淺色背景 */
     .preview-close-btn {
-      background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; 
+      background: rgba(0, 0, 0, 0.1); border: none; color: #495057; width: 32px; height: 32px; 
       border-radius: 16px; font-size: 16px; font-weight: bold; cursor: pointer; 
       display: flex; align-items: center; justify-content: center; transition: all 0.2s;
     }
-    .preview-close-btn:active { background: rgba(255,255,255,0.4); transform: scale(0.9); }
+    .preview-close-btn:active { background: rgba(0, 0, 0, 0.2); transform: scale(0.9); }
     
     .preview-content {
-      flex: 1; width: 100%; padding: 0 16px; box-sizing: border-box; display: block; 
-      overflow-y: auto; -webkit-overflow-scrolling: touch; 
+      flex: 1; width: 100%; padding: 0 16px; box-sizing: border-box; display: flex; 
+      align-items: center; justify-content: center; /* 讓圖片在容器中絕對居中 */
+      overflow: hidden; /* 取消原本的滾動限制 */
       margin-top: 4px; margin-bottom: 20px; text-align: center;
     }
+    
+    /* 🌟 強制圖片縮放以符合 iPad / iPhone 的螢幕高度，不需再上下拉動 */
     #previewImg {
-      width: 100%; height: auto; max-width: 600px; object-fit: contain; 
-      border-radius: 4px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); display: inline-block;
+      width: auto; height: auto; 
+      max-width: 100%; max-height: 70vh; /* 最高只佔螢幕 70% 的高度 */
+      object-fit: contain; 
+      border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: inline-block;
     }
     
     .preview-action-bar {
