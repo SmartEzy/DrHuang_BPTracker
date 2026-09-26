@@ -1211,7 +1211,7 @@
       
       checkMorningTag();
       
-      const originalColor = btn.style.backgroundColor; btn.innerText = '✅ Saved!'; btn.style.backgroundColor = '#4CAF50';
+      const originalColor = btn.style.backgroundColor; btn.innerText = 'Saved!'; btn.style.backgroundColor = '#4CAF50';
       setTimeout(() => { btn.innerText = 'Save'; btn.style.backgroundColor = originalColor; btn.disabled = false; }, 2000);
       syncToCloud(payload);
     });
