@@ -1010,8 +1010,7 @@
         const spanStage1 = `<span style="font-size: 10px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">1</span>`;
         const spanStage2 = `<span style="font-size: 10px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">2</span>`;
 
-        // 🌟 移除多餘的 padding-left: 12px，徹底釋放這 12px 的右側彈性空間
-        tableHtml += `<div style="display: flex; justify-content: space-between; box-sizing: border-box; padding-left: 2px; padding-right: 2px; z-index: 1;">`;
+        tableHtml += `<div style="display: flex; justify-content: space-between; box-sizing: border-box; padding-left: 8px; z-index: 1;">`;
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
         tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt; 80', svgElevatedLegend);
         tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89', spanStage1);
