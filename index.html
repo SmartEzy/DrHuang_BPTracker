@@ -405,6 +405,7 @@
           </button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏥 院所')">🏥 院所</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('☕ 咖啡')">☕ 咖啡</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🍷 酒')">🍷 酒</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃 運動')">🏃 運動</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕 頭痛')">🤕 頭痛</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('💊 吃藥')">💊 吃藥</button>
@@ -863,7 +864,7 @@
             }
             lastDate = formattedDate;
 
-            let displayNote = (item.notes || '').replace(/☕ 咖啡/g, '☕').replace(/🏃 運動/g, '🏃').replace(/💊 吃藥/g, '💊').replace(/🤕 頭痛/g, '🤕').replace(/🏥 院所/g, '🏥').replace(/\[報表\]/g, reportSvg);
+            let displayNote = (item.notes || '').replace(/☕ 咖啡/g, '☕').replace(/🍷 酒/g, '🍷').replace(/🏃 運動/g, '🏃').replace(/💊 吃藥/g, '💊').replace(/🤕 頭痛/g, '🤕').replace(/🏥 院所/g, '🏥').replace(/\[報表\]/g, reportSvg);
             let encodedNotes = encodeURIComponent(item.notes || '');
 
             html += `
