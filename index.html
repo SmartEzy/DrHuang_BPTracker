@@ -1011,14 +1011,18 @@
         };
 
         const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
-        const spanStage1 = `<span style="font-size: 10px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">1</span>`;
-        const spanStage2 = `<span style="font-size: 10px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">2</span>`;
+        
+        // 🌟 直接將圖示與紅色樣式寫入標題字串中
+        const lblElevated = `Elevated <span style="display: inline-flex; align-items: center; margin-left: 3px;">${svgElevatedLegend}</span>`;
+        const lblStage1 = `Stage <span style="color: #D32F2F;">1</span>`;
+        const lblStage2 = `Stage <span style="color: #D32F2F;">2</span>`;
 
-        tableHtml += `<div style="display: flex; justify-content: space-between; box-sizing: border-box; padding-left: 12px; z-index: 1;">`;
+        tableHtml += `<div style="display: flex; justify-content: space-between; box-sizing: border-box; padding-left: 2px; padding-right: 2px; z-index: 1;">`;
+        // 🌟 呼叫時不再傳入最後一個 icon 參數
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
-        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80', svgElevatedLegend);
-        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130 - 139 / 80 - 89', spanStage1);
-        tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge; 140 / &ge; 90', spanStage2);
+        tableHtml += renderStatCenter(lblElevated, `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80');
+        tableHtml += renderStatCenter(lblStage1, `${pctStage1}%`, '#111111', '130 - 139 / 80 - 89');
+        tableHtml += renderStatCenter(lblStage2, `${pctStage2}%`, '#111111', '&ge; 140 / &ge; 90');
         tableHtml += `</div>`;
         
         tableHtml += `</div></th></tr>`;
