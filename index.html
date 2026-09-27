@@ -983,37 +983,38 @@
         let tableHtml = `<thead>`;
         tableHtml += `<tr class="dashboard-row"><th colspan="${monthCount * 4}" style="padding: 16px 12px 16px 12px; background-color: #FFFFFF; vertical-align: middle; position: relative;">`;
         
-        tableHtml += `<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: flex-end; width: 100%;">`;
+        // 🌟 嚴格鎖死 33.33%，不受 3M/4M 欄數影響
+        tableHtml += `<div style="display: grid; grid-template-columns: 33.33% 33.34% 33.33%; align-items: flex-end; width: 100%;">`;
         
         const renderStatLeft = (lbl, val, valSize) => `<div style="text-align: left; display: flex; flex-direction: column; justify-content: flex-end;"><div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1.1; margin-bottom: 2px;">${lbl}</div><div style="color: #111111; font-size: ${valSize}; font-weight: 900; line-height: 1;">${val}</div></div>`;
         let hrDisplay = meanHr !== '-' ? `<span style="margin-left: 6px;">${meanHr}</span>` : '';
         
-        tableHtml += `<div style="display: flex; justify-content: flex-start; gap: 12px; box-sizing: border-box; z-index: 1;">`;
+        tableHtml += `<div style="display: flex; justify-content: flex-start; gap: 8px; box-sizing: border-box; z-index: 1;">`;
         tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '18px');
-        tableHtml += renderStatLeft('MAX', `<span style="color:#999999">${maxStr}</span>`, '18px'); 
-        //tableHtml += renderStatLeft('MIN', `<span style="color:#999999">${minStr}</span>`, '18px');
+        tableHtml += renderStatLeft('MAX', `<span style="color:#999999; font-weight: normal;">${maxStr}</span>`, '16px'); 
+        // tableHtml += renderStatLeft('MIN', `<span style="color:#999999; font-weight: normal;">${minStr}</span>`, '16px'); 
         tableHtml += `</div>`;
 
         tableHtml += `<div style="text-align: center; font-size: 26px; letter-spacing: 8px; padding-left: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; z-index: 0;">血壓記錄表</div>`;
+
         const renderStatCenter = (lbl, val, color, def, icon = '') => {
-          // 🌟 將 align-items 從 flex-end 改為 center，確保圖示與文字絕對垂直置中
-          let titleContent = icon ? `<div style="display: flex; align-items: center; justify-content: center;"><div style="margin-right: 3px; display: flex; align-items: center;">${icon}</div><span style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</span></div>` : `<div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</div>`;
-          return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: flex-end; position: relative; margin-bottom: 2px;">
+            let titleContent = icon ? `<div style="display: flex; align-items: center; justify-content: center;"><div style="margin-right: 3px; display: flex; align-items: center;">${icon}</div><span style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</span></div>` : `<div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</div>`;
+            return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: flex-end; position: relative; margin-bottom: 2px;">
                         ${titleContent}
                         <div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1; margin-top: 4px;">${val}</div>
                         <div style="color: #999999; font-size: 6.5px; font-weight: normal; line-height: 1; position: absolute; top: 100%; transform: translateX(-50%); left: 50%; margin-top: 3px; letter-spacing: 0px; white-space: nowrap;">${def}</div>
                     </div>`;
         };
 
-        // 🌟 移除多餘的 margin-bottom，讓它純粹依賴 flex 完美置中
         const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
         const spanStage1 = `<span style="font-size: 10px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">1</span>`;
         const spanStage2 = `<span style="font-size: 10px; font-weight: 900; line-height: 1; font-family: Arial, sans-serif; color: #D32F2F;">2</span>`;
 
-        tableHtml += `<div style="display: flex; justify-content: space-between; box-sizing: border-box; padding-left: 12px; z-index: 1;">`;
+        // 🌟 移除多餘的 padding-left: 12px，徹底釋放這 12px 的右側彈性空間
+        tableHtml += `<div style="display: flex; justify-content: space-between; box-sizing: border-box; padding-left: 2px; padding-right: 2px; z-index: 1;">`;
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
-        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80', svgElevatedLegend);
-        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130 - 139 / 80 - 89', spanStage1);
+        tableHtml += renderStatCenter('Elevated', `${pctElevated}%`, '#111111', '120-129 / &lt; 80', svgElevatedLegend);
+        tableHtml += renderStatCenter('Stage 1', `${pctStage1}%`, '#111111', '130-139 / 80-89', spanStage1);
         tableHtml += renderStatCenter('Stage 2', `${pctStage2}%`, '#111111', '&ge; 140 / &ge; 90', spanStage2);
         tableHtml += `</div>`;
         
