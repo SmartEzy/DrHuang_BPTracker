@@ -1015,8 +1015,8 @@
         const lblStage1 = `Stage <span style="color: #D32F2F;">1</span>`;
         const lblStage2 = `Stage <span style="color: #D32F2F;">2</span>`;
 
-        // 🌟 關鍵修改：放棄 100%，直接寫死 width: 270px; 強制撐開 html2canvas 的繪製範圍
-        tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 270px; box-sizing: border-box; padding-left: 10px; padding-right: 2px; z-index: 1;">`;
+        // 🌟 關鍵修改：放棄 100%，直接寫死 width: 260px; 強制撐開 html2canvas 的繪製範圍
+        tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 260px; box-sizing: border-box; padding-left: 10px; padding-right: 2px; z-index: 1;">`;
         
         // 🌟 呼叫時不再傳入最後一個 icon 參數
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
