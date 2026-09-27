@@ -1017,7 +1017,8 @@
         const lblStage1 = `Stage <span style="color: #D32F2F;">1</span>`;
         const lblStage2 = `Stage <span style="color: #D32F2F;">2</span>`;
 
-        tableHtml += `<div style="display: flex; justify-content: space-between; box-sizing: border-box; padding-left: 2px; padding-right: 2px; z-index: 1;">`;
+        // 改用 grid 並設定 repeat(4, 1fr) 強制均分四等份，gap 設定彼此的固定間距
+        tableHtml += `<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; box-sizing: border-box; padding-left: 2px; padding-right: 2px; z-index: 1;">`;
         // 🌟 呼叫時不再傳入最後一個 icon 參數
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
         tableHtml += renderStatCenter(lblElevated, `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80');
