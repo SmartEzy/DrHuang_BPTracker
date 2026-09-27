@@ -994,8 +994,7 @@
         //tableHtml += renderStatLeft('MIN', `<span style="color:#999999">${minStr}</span>`, '18px');
         tableHtml += `</div>`;
 
-        tableHtml += `<div style="text-align: center; font-size: 26px; letter-spacing: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; z-index: 0;">血壓記錄表</div>`;
-
+        tableHtml += `<div style="text-align: center; font-size: 26px; letter-spacing: 8px; padding-left: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; z-index: 0;">血壓記錄表</div>`;
         const renderStatCenter = (lbl, val, color, def, icon = '') => {
           // 🌟 將 align-items 從 flex-end 改為 center，確保圖示與文字絕對垂直置中
           let titleContent = icon ? `<div style="display: flex; align-items: center; justify-content: center;"><div style="margin-right: 3px; display: flex; align-items: center;">${icon}</div><span style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</span></div>` : `<div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</div>`;
