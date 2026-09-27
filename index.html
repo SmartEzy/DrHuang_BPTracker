@@ -998,11 +998,15 @@
         tableHtml += `<div style="text-align: center; font-size: 26px; letter-spacing: 8px; padding-left: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; z-index: 0;">血壓記錄表</div>`;
 
         const renderStatCenter = (lbl, val, color, def, icon = '') => {
-            let titleContent = icon ? `<div style="display: flex; align-items: center; justify-content: center;"><div style="margin-right: 3px; display: flex; align-items: center;">${icon}</div><span style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</span></div>` : `<div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</div>`;
-            return `<div style="text-align: center; display: flex; flex-direction: column; justify-content: flex-end; position: relative; margin-bottom: 2px;">
+            // 1. 將標題與圖示的 justify-content: center; 改為 flex-start; (靠左)
+            let titleContent = icon ? `<div style="display: flex; align-items: center; justify-content: flex-start;"><div style="margin-right: 3px; display: flex; align-items: center;">${icon}</div><span style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</span></div>` : `<div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</div>`;
+            
+            // 2. 將外框的 text-align: center; 改為 text-align: left;
+            // 3. 將最下方小字的定位從 left: 50%; transform: translateX(-50%); 改為單純的 left: 0; (貼齊左側)
+            return `<div style="text-align: left; display: flex; flex-direction: column; justify-content: flex-end; position: relative; margin-bottom: 2px;">
                         ${titleContent}
                         <div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1; margin-top: 4px;">${val}</div>
-                        <div style="color: #999999; font-size: 6.5px; font-weight: bold; line-height: 1; position: absolute; top: 100%; transform: translateX(-50%); left: 50%; margin-top: 3px; letter-spacing: 0px; white-space: nowrap;">${def}</div>
+                        <div style="color: #999999; font-size: 6.5px; font-weight: bold; line-height: 1; position: absolute; top: 100%; left: 0; margin-top: 3px; letter-spacing: 0px; white-space: nowrap;">${def}</div>
                     </div>`;
         };
 
