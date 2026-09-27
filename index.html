@@ -1000,10 +1000,13 @@
         const renderStatCenter = (lbl, val, color, def, icon = '') => {
             let titleContent = icon ? `<div style="display: flex; align-items: center; justify-content: flex-start;"><div style="margin-right: 3px; display: flex; align-items: center;">${icon}</div><span style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</span></div>` : `<div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</div>`;
             
-            // 🌟 關鍵修改：將 width: 25% 改成 flex: 1; min-width: 0; 強制均分空間
+            // 🌟 新增判斷：如果數值是 '0%'，就強制把顏色換成灰色，否則維持傳進來的主色
+            const displayColor = val === '0%' ? '#999999' : color;
+            
             return `<div style="flex: 1; min-width: 0; box-sizing: border-box; padding-right: 4px; text-align: left; display: flex; flex-direction: column; justify-content: flex-end; position: relative; margin-bottom: 2px;">
                         ${titleContent}
-                        <div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1; margin-top: 4px;">${val}</div>
+                        <!-- 👇 把原本的 ${color} 換成 ${displayColor} -->
+                        <div style="color: ${displayColor}; font-size: 18px; font-weight: 900; line-height: 1; margin-top: 4px;">${val}</div>
                         <div style="color: #999999; font-size: 6.5px; font-weight: bold; line-height: 1; position: absolute; top: 100%; left: 0; margin-top: 3px; letter-spacing: 0px; white-space: nowrap;">${def}</div>
                     </div>`;
         };
