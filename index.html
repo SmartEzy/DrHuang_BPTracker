@@ -1000,8 +1000,8 @@
         const renderStatCenter = (lbl, val, color, def, icon = '') => {
             let titleContent = icon ? `<div style="display: flex; align-items: center; justify-content: flex-start;"><div style="margin-right: 3px; display: flex; align-items: center;">${icon}</div><span style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</span></div>` : `<div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</div>`;
             
-            // 🌟 關鍵修改：加入 width: 25%; 和 padding-right: 4px; 取代 Grid 的 gap
-            return `<div style="width: 25%; box-sizing: border-box; padding-right: 4px; text-align: left; display: flex; flex-direction: column; justify-content: flex-end; position: relative; margin-bottom: 2px;">
+            // 🌟 關鍵修改：將 width: 25% 改成 flex: 1; min-width: 0; 強制均分空間
+            return `<div style="flex: 1; min-width: 0; box-sizing: border-box; padding-right: 4px; text-align: left; display: flex; flex-direction: column; justify-content: flex-end; position: relative; margin-bottom: 2px;">
                         ${titleContent}
                         <div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1; margin-top: 4px;">${val}</div>
                         <div style="color: #999999; font-size: 6.5px; font-weight: bold; line-height: 1; position: absolute; top: 100%; left: 0; margin-top: 3px; letter-spacing: 0px; white-space: nowrap;">${def}</div>
@@ -1015,8 +1015,8 @@
         const lblStage1 = `Stage <span style="color: #D32F2F;">1</span>`;
         const lblStage2 = `Stage <span style="color: #D32F2F;">2</span>`;
 
-        // 🌟 放棄 Grid，改用 Flex 撐滿 100%，並允許內部換行，但子元素會嚴格鎖死 25% 寬度
-        tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 100%; box-sizing: border-box; padding-left: 2px; padding-right: 2px; z-index: 1;">`;
+        // 🌟 關鍵修改：將 padding-left 改為 16px（產生左側距離，不貼著邊緣）
+        tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 100%; box-sizing: border-box; padding-left: 16px; padding-right: 2px; z-index: 1;">`;       
         
         // 🌟 呼叫時不再傳入最後一個 icon 參數
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
