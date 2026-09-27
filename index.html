@@ -998,12 +998,10 @@
         tableHtml += `<div style="text-align: center; font-size: 26px; letter-spacing: 8px; padding-left: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; z-index: 0;">血壓記錄表</div>`;
 
         const renderStatCenter = (lbl, val, color, def, icon = '') => {
-            // 1. 將標題與圖示的 justify-content: center; 改為 flex-start; (靠左)
             let titleContent = icon ? `<div style="display: flex; align-items: center; justify-content: flex-start;"><div style="margin-right: 3px; display: flex; align-items: center;">${icon}</div><span style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</span></div>` : `<div style="color: #999999; font-size: 9px; font-weight: bold; line-height: 1;">${lbl}</div>`;
             
-            // 2. 將外框的 text-align: center; 改為 text-align: left;
-            // 3. 將最下方小字的定位從 left: 50%; transform: translateX(-50%); 改為單純的 left: 0; (貼齊左側)
-            return `<div style="text-align: left; display: flex; flex-direction: column; justify-content: flex-end; position: relative; margin-bottom: 2px;">
+            // 🌟 關鍵修改：加入 width: 25%; 和 padding-right: 4px; 取代 Grid 的 gap
+            return `<div style="width: 25%; box-sizing: border-box; padding-right: 4px; text-align: left; display: flex; flex-direction: column; justify-content: flex-end; position: relative; margin-bottom: 2px;">
                         ${titleContent}
                         <div style="color: ${color}; font-size: 18px; font-weight: 900; line-height: 1; margin-top: 4px;">${val}</div>
                         <div style="color: #999999; font-size: 6.5px; font-weight: bold; line-height: 1; position: absolute; top: 100%; left: 0; margin-top: 3px; letter-spacing: 0px; white-space: nowrap;">${def}</div>
@@ -1017,8 +1015,9 @@
         const lblStage1 = `Stage <span style="color: #D32F2F;">1</span>`;
         const lblStage2 = `Stage <span style="color: #D32F2F;">2</span>`;
 
-        // 改用 grid 並設定 repeat(4, 1fr) 強制均分四等份，gap 設定彼此的固定間距
-        tableHtml += `<div style="width: 100%; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; box-sizing: border-box; padding-left: 4px; padding-right: 4px; z-index: 1;">`;
+        // 🌟 放棄 Grid，改用 Flex 撐滿 100%，並允許內部換行，但子元素會嚴格鎖死 25% 寬度
+        tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 100%; box-sizing: border-box; padding-left: 2px; padding-right: 2px; z-index: 1;">`;
+        
         // 🌟 呼叫時不再傳入最後一個 icon 參數
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
         tableHtml += renderStatCenter(lblElevated, `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80');
