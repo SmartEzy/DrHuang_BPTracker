@@ -991,8 +991,8 @@
         
         tableHtml += `<div style="display: flex; justify-content: flex-start; gap: 12px; box-sizing: border-box; z-index: 1;">`;
         tableHtml += renderStatLeft('MEAN', `${meanSys}${slash}${meanDia}${hrDisplay}`, '18px');
-        tableHtml += renderStatLeft('MAX', `<span style="color:#BBBBBB">${maxStr}</span>`, '18px'); 
-        // tableHtml += renderStatLeft('MIN', `<span style="color:#BBBBBB">${minStr}</span>`, '18px'); 
+        tableHtml += renderStatLeft('MAX', `<span style="color:#999999">${maxStr}</span>`, '18px'); 
+        // tableHtml += renderStatLeft('MIN', `<span style="color:#999999">${minStr}</span>`, '18px'); 
         tableHtml += `</div>`;
 
         tableHtml += `<div style="text-align: center; font-size: 26px; letter-spacing: 8px; padding-left: 8px; font-weight: 900; font-family: 'PingFang TC', 'Heiti TC', sans-serif; color: #000; line-height: 1; white-space: nowrap; z-index: 0;">血壓記錄表</div>`;
@@ -1015,8 +1015,8 @@
         const lblStage1 = `Stage <span style="color: #D32F2F;">1</span>`;
         const lblStage2 = `Stage <span style="color: #D32F2F;">2</span>`;
 
-        // 🌟 關鍵修改：放棄 100%，直接寫死 width: 280px; 強制撐開 html2canvas 的繪製範圍
-        tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 250px; box-sizing: border-box; padding-left: 10px; padding-right: 2px; z-index: 1;">`;
+        // 🌟 關鍵修改：放棄 100%，直接寫死 width: 270px; 強制撐開 html2canvas 的繪製範圍
+        tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 270px; box-sizing: border-box; padding-left: 10px; padding-right: 2px; z-index: 1;">`;
         
         // 🌟 呼叫時不再傳入最後一個 icon 參數
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
