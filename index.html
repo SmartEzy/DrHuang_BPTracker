@@ -108,7 +108,7 @@
       background-color: var(--bg-color); 
       padding-top: max(env(safe-area-inset-top), 20px); 
       max-width: 500px; margin: 0 auto; 
-      /* 🌟 移除了 position: sticky 和 top: 0，解放版面空間 */
+      position: -webkit-sticky; position: sticky; top: 0;
       position: relative;
       z-index: 100;
     }
@@ -1312,6 +1312,7 @@
         let rawText = await response.text(); allRecords = JSON.parse(rawText); 
         if (!Array.isArray(allRecords)) allRecords = []; 
         renderList(); 
+        scrollToBottom();
       } catch (err) {
         console.error("Fetch Error:", err);
         if (allRecords.length === 0) { document.getElementById('recordsList').innerHTML = `<div style="text-align:center; color:red; padding:20px;">[請檢查網路連線]<br>${err.message}</div>`; }
