@@ -197,6 +197,9 @@
       display: block;
       cursor: zoom-in;
       transition: all 0.3s ease; /* 讓放大縮小有平滑動畫 */
+      /* 🌟 關鍵修改：禁止滑鼠/觸控板雙擊時產生藍色反白選取框 */
+      -webkit-user-select: none; 
+      user-select: none;
     }
 
     /* 🌟 新增：全螢幕放大專屬樣式 */
