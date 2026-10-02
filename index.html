@@ -87,6 +87,9 @@
       display: flex; justify-content: space-between; align-items: center; 
       padding: 0 20px 10px 20px; background-color: var(--bg-color); 
       box-sizing: border-box; width: 100%; gap: 16px; 
+      /* 🌟 關鍵修改：限制最大寬度並置中，讓它在 iPad 上乖乖跟清單對齊 */
+      max-width: 500px; 
+      margin: 0 auto;
     }
     
     .capsule-wrapper { flex: 1; min-width: 0; display: flex; justify-content: flex-start; }
