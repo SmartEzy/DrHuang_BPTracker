@@ -720,6 +720,30 @@
       });
     });
 
+    // 🌟 新增：安全的佇列處理函數
+    async function processSyncQueue() {
+      let queue = JSON.parse(localStorage.getItem('bpSyncQueue') || '[]');
+      if (queue.length === 0) return;
+      
+      let remainingQueue = [];
+      for (let payload of queue) {
+        try {
+          // 嘗試送出卡住的動作 (新增或刪除)
+          await fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+        } catch (err) {
+          // 如果還是失敗，保留在佇列中下次再試
+          remainingQueue.push(payload);
+        }
+      }
+      
+      // 更新佇列
+      if (remainingQueue.length > 0) {
+        localStorage.setItem('bpSyncQueue', JSON.stringify(remainingQueue));
+      } else {
+        localStorage.removeItem('bpSyncQueue');
+      }
+    }
+
     function syncToCloud(payload) {
       fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) })
       .catch(err => {
@@ -728,12 +752,9 @@
       });
     }
 
+    // 🌟 替換原本的 online 監聽器，改用我們的新函數
     window.addEventListener('online', () => {
-      let queue = JSON.parse(localStorage.getItem('bpSyncQueue') || '[]');
-      if (queue.length > 0) {
-        queue.forEach(payload => { fetch(API_URL, { method: 'POST', redirect: 'follow', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) }); });
-        localStorage.removeItem('bpSyncQueue');
-      }
+      processSyncQueue();
     });
 
     function confirmDelete(btn, formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime, encodedNotes) {
@@ -1203,7 +1224,6 @@
                         closeImagePreview();
                     } catch (err) {
                         if (err.name === 'AbortError' || (err.message && err.message.toLowerCase().includes('cancel'))) {
-                            // closeImagePreview();
                             return; 
                         }
                         fallbackDownload();
@@ -1234,7 +1254,6 @@
                             closeImagePreview();
                         } catch (err) {
                             if (err.name === 'AbortError' || (err.message && err.message.toLowerCase().includes('cancel'))) {
-                                // closeImagePreview();
                                 return; 
                             }
                             fallbackDownload();
@@ -1254,10 +1273,15 @@
     }
 
     async function loadData() {
+      // 🌟 關鍵修改：每次載入雲端資料前，先偷偷把之前卡在手機裡沒送出的「刪除/新增」發送出去！
+      await processSyncQueue();
+
       const cachedData = localStorage.getItem('bpCacheRecords');
       if (cachedData) { try { allRecords = JSON.parse(cachedData); renderList(); } catch(e) { console.error("Cache Render Error:", e); } }
       try {
-        let response = await fetch(API_URL); let rawText = await response.text(); allRecords = JSON.parse(rawText); 
+        // 🌟 關鍵修改：在網址後面加上時間戳記，徹底防止 iPad/iPhone 拿舊快取來敷衍
+        let response = await fetch(API_URL + '?t=' + new Date().getTime(), { cache: 'no-store' }); 
+        let rawText = await response.text(); allRecords = JSON.parse(rawText); 
         if (!Array.isArray(allRecords)) allRecords = []; 
         renderList(); scrollToBottom(); 
       } catch (err) {
