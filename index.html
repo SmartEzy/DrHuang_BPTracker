@@ -104,7 +104,14 @@
     }
     .chart-toggle-btn:active { transform: scale(0.95); }
     
-    .sticky-top-panel { position: -webkit-sticky; position: sticky; top: 0; z-index: 100; background-color: var(--bg-color); padding-top: max(env(safe-area-inset-top), 20px); max-width: 500px; margin: 0 auto; }
+    .sticky-top-panel { 
+      background-color: var(--bg-color); 
+      padding-top: max(env(safe-area-inset-top), 20px); 
+      max-width: 500px; margin: 0 auto; 
+      /* 🌟 移除了 position: sticky 和 top: 0，解放版面空間 */
+      position: relative;
+      z-index: 100;
+    }
     
     .list-header, .record-row { 
       display: grid; 
@@ -123,7 +130,10 @@
     .month-section { position: relative; }
     
     .month-divider {
-      position: -webkit-sticky; position: sticky; top: var(--sticky-offset); z-index: 90; 
+      position: -webkit-sticky; position: sticky; 
+      /* 🌟 讓月份分隔線直接對齊畫面頂端（包含 iPhone 瀏海的安全距離） */
+      top: max(env(safe-area-inset-top), 0px); 
+      z-index: 90; 
       display: grid; grid-template-columns: 75px 1fr; align-items: center; 
       background-color: rgba(244, 246, 248, 0.92); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
       padding: 6px 0; border-bottom: 1px solid rgba(206, 212, 218, 0.6); margin: 0; 
