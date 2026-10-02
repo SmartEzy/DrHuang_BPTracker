@@ -167,6 +167,10 @@
       flex-direction: column; align-items: center; justify-content: flex-start; 
       backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
       opacity: 0; transition: opacity 0.25s ease;
+      /* 🌟 徹底封殺整個滿版視窗的文字選取功能 */
+      -webkit-user-select: none !important;
+      user-select: none !important;
+      -webkit-touch-callout: none !important;
     }
     .image-preview-modal.show { opacity: 1; }
     
@@ -370,23 +374,23 @@
         
         <div class="header-actions">
           
-          <button id="exportImgBtn4" class="header-btn" onclick="generateReport(4, 'image')" title="Image 4 Months" style="background-color: #111111; color: #FFFFFF; border: 1.5px solid #FFFFFF; border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 40px; box-sizing: border-box;">
-            <span style="font-size: 14px; font-weight: 900; line-height: 1;">JPG</span>
-            <span style="font-size: 12px; font-weight: 900; line-height: 1; margin-top: 2px;">4M</span>
-          </button>
-          
           <button id="exportPdfBtn4" class="header-btn" onclick="generateReport(4, 'pdf')" title="PDF 4 Months" style="background-color: #FFFFFF; color: #111111; border: 1.5px solid #FFFFFF; border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 40px; box-sizing: border-box;">
             <span style="font-size: 14px; font-weight: 900; line-height: 1;">PDF</span>
             <span style="font-size: 12px; font-weight: 900; line-height: 1; margin-top: 2px;">4M</span>
           </button>
 
-          <button id="exportImgBtn3" class="header-btn" onclick="generateReport(3, 'image')" title="Image 3 Months" style="background-color: #111111; color: #FFFFFF; border: 1.5px solid #FFFFFF; border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 40px; box-sizing: border-box;">
+          <button id="exportImgBtn4" class="header-btn" onclick="generateReport(4, 'image')" title="Image 4 Months" style="background-color: #111111; color: #FFFFFF; border: 1.5px solid #FFFFFF; border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 40px; box-sizing: border-box;">
             <span style="font-size: 14px; font-weight: 900; line-height: 1;">JPG</span>
+            <span style="font-size: 12px; font-weight: 900; line-height: 1; margin-top: 2px;">4M</span>
+          </button>
+          
+          <button id="exportPdfBtn3" class="header-btn" onclick="generateReport(3, 'pdf')" title="PDF 3 Months" style="background-color: #FFFFFF; color: #111111; border: 1.5px solid #FFFFFF; border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 40px; box-sizing: border-box;">
+            <span style="font-size: 14px; font-weight: 900; line-height: 1;">PDF</span>
             <span style="font-size: 12px; font-weight: 900; line-height: 1; margin-top: 2px;">3M</span>
           </button>
 
-          <button id="exportPdfBtn3" class="header-btn" onclick="generateReport(3, 'pdf')" title="PDF 3 Months" style="background-color: #FFFFFF; color: #111111; border: 1.5px solid #FFFFFF; border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 40px; box-sizing: border-box;">
-            <span style="font-size: 14px; font-weight: 900; line-height: 1;">PDF</span>
+          <button id="exportImgBtn3" class="header-btn" onclick="generateReport(3, 'image')" title="Image 3 Months" style="background-color: #111111; color: #FFFFFF; border: 1.5px solid #FFFFFF; border-radius: 6px; padding: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 44px; height: 40px; box-sizing: border-box;">
+            <span style="font-size: 14px; font-weight: 900; line-height: 1;">JPG</span>
             <span style="font-size: 12px; font-weight: 900; line-height: 1; margin-top: 2px;">3M</span>
           </button>
 
@@ -427,12 +431,13 @@
               <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
             </svg>
           </button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏥 院所')">🏥 院所</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('☕ 咖啡')">☕ 咖啡</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🍷 酒')">🍷 酒</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃 運動')">🏃 運動</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕 頭痛')">🤕 頭痛</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('💊 吃藥')">💊 吃藥</button>
+          <!-- 🌟 介面上只保留 emoji -->
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏥')">🏥</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('☕')">☕</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🍷')">🍷</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃')">🏃</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕')">🤕</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('💊')">💊</button>
         </div>
       </form>
     </div>
@@ -567,8 +572,13 @@
     const previewImgElement = document.getElementById('previewImg');
     if (previewImgElement) {
         // 雙擊：切換到全螢幕狀態
-        previewImgElement.addEventListener('dblclick', function() {
+        previewImgElement.addEventListener('dblclick', function(e) {
             this.classList.add('preview-fullscreen');
+            
+            // 🌟 核心解法：強制清除因觸控板雙擊所產生的任何選取範圍
+            if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+            }
         });
 
         // 單擊：如果目前是全螢幕，點一下就縮回去
@@ -1258,7 +1268,24 @@
 
     document.getElementById('bpForm').addEventListener('submit', (e) => {
       e.preventDefault(); const btn = document.getElementById('submitBtn'); btn.disabled = true;
-      const payload = { action: 'add', date: document.getElementById('date').value, time: document.getElementById('time').value, systolic: document.getElementById('systolic').value, diastolic: document.getElementById('diastolic').value, heartRate: document.getElementById('heartRate').value, notes: document.getElementById('notes').value };
+      
+      // 🌟 攔截輸入框的內容，將純 Emoji 自動「展開」回完整文字
+      let finalNotes = document.getElementById('notes').value;
+      finalNotes = finalNotes
+          .replace(/🏥(?!\s*院所)/g, '🏥 院所')
+          .replace(/☕(?!\s*咖啡)/g, '☕ 咖啡')
+          .replace(/🍷(?!\s*酒)/g, '🍷 酒')
+          .replace(/🏃(?!\s*運動)/g, '🏃 運動')
+          .replace(/💊(?!\s*吃藥)/g, '💊 吃藥')
+          .replace(/🤕(?!\s*頭痛)/g, '🤕 頭痛');
+
+      // 🌟 這裡送出的是還原後的 finalNotes
+      const payload = { 
+          action: 'add', date: document.getElementById('date').value, time: document.getElementById('time').value, 
+          systolic: document.getElementById('systolic').value, diastolic: document.getElementById('diastolic').value, 
+          heartRate: document.getElementById('heartRate').value, notes: finalNotes 
+      };
+      
       allRecords.push(payload); renderList(); scrollToBottom(); 
       document.getElementById('bpForm').reset();
       
