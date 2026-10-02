@@ -420,11 +420,12 @@
           <div class="time-box"><input type="time" id="time" required></div>
         </div>
         <div class="form-group bp-hr-row">
-          <input type="number" id="systolic" placeholder="SBP" inputmode="numeric" pattern="[0-9]*" required>
+          <!-- 🌟 加入 onfocus="this.select()" 達成點擊自動全選 -->
+          <input type="number" id="systolic" placeholder="SBP" inputmode="numeric" pattern="[0-9]*" required onfocus="this.select()">
           <span class="symbol">/</span>
-          <input type="number" id="diastolic" placeholder="DBP" inputmode="numeric" pattern="[0-9]*" required>
+          <input type="number" id="diastolic" placeholder="DBP" inputmode="numeric" pattern="[0-9]*" required onfocus="this.select()">
           <span class="unit">mmHg</span>
-          <input type="number" id="heartRate" placeholder="HR" inputmode="numeric" pattern="[0-9]*" required>
+          <input type="number" id="heartRate" placeholder="HR" inputmode="numeric" pattern="[0-9]*" required onfocus="this.select()">
           <span class="unit" style="margin-right:0;">bpm</span>
         </div>
         <div class="form-group notes-save-row">
@@ -911,7 +912,13 @@
         if (displayData.length === 0) { html = `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
         } else {
           let lastDate = null; let lastMonthStr = null; let isFirstSection = true;
-          const reportSvg = `<svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color:#495057; display:inline-block;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`;
+          
+          // 🌟 1. 定義標準化的包裹器：每個圖示都放在一個 18x18 的正方形裡置中對齊
+          const iconWrap = (content, yOffset = 0) => `<span style="display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; transform: translateY(${yOffset}px);">${content}</span>`;
+          
+          // 🌟 2. 使用標準包裹器製作 SVG 圖示 (移除原本自帶的 margin-right)
+          const svgContent = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color:#495057;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`;
+          const reportSvg = iconWrap(svgContent, 1.5); // SVG 稍微往下推一點對齊字線
 
           displayData.forEach(item => {
             let rawDate = item.date ? String(item.date) : ''; 
@@ -953,7 +960,19 @@
             }
             lastDate = formattedDate;
 
-            let displayNote = (item.notes || '').replace(/☕ 咖啡/g, '☕').replace(/🍷 酒/g, '🍷').replace(/🏃 運動/g, '🏃').replace(/💊 吃藥/g, '💊').replace(/🤕 頭痛/g, '🤕').replace(/🏥 院所/g, '🏥').replace(/\[報表\]/g, reportSvg);
+            // 🌟 3. 確保每個 emoji 也被包裝在同樣大小的 18x18 容器裡
+            let displayNote = (item.notes || '')
+                .replace(/☕ 咖啡/g, iconWrap('☕', 0))
+                .replace(/🍷 酒/g, iconWrap('🍷', 0))
+                .replace(/🏃 運動/g, iconWrap('🏃', 0))
+                .replace(/💊 吃藥/g, iconWrap('💊', 0))
+                .replace(/🤕 頭痛/g, iconWrap('🤕', 0))
+                .replace(/🏥 院所/g, iconWrap('🏥', 0))
+                .replace(/\[報表\]/g, reportSvg);
+            
+            // 🌟 4. 如果使用者自己打了逗號和空白，把它清掉，讓 Flex 容器的 gap: 2px 來控制完美間距
+            displayNote = displayNote.replace(/, /g, '').replace(/,/g, '');
+            
             let encodedNotes = encodeURIComponent(item.notes || '');
 
             html += `
@@ -1292,7 +1311,7 @@
         let response = await fetch(API_URL + '?t=' + new Date().getTime(), { cache: 'no-store' }); 
         let rawText = await response.text(); allRecords = JSON.parse(rawText); 
         if (!Array.isArray(allRecords)) allRecords = []; 
-        renderList(); scrollToBottom(); 
+        renderList(); 
       } catch (err) {
         console.error("Fetch Error:", err);
         if (allRecords.length === 0) { document.getElementById('recordsList').innerHTML = `<div style="text-align:center; color:red; padding:20px;">[請檢查網路連線]<br>${err.message}</div>`; }
