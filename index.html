@@ -289,10 +289,13 @@
     }
     .sheet-close-btn:active { background: #E2E8F0; transform: scale(0.9); }
 
+    /* 🌟 恢復水平滑動能力，以便在 All 模式下可以滑動 */
     .chart-outer-container { 
-      width: 100%; overflow: hidden; 
+      width: 100%; overflow-x: auto; overflow-y: hidden; 
+      -webkit-overflow-scrolling: touch; scrollbar-width: none; 
       padding-bottom: max(env(safe-area-inset-bottom), 16px);
     }
+    .chart-outer-container::-webkit-scrollbar { display: none; }
     
     .chart-inner-container { 
       position: relative; height: 250px; 
@@ -804,10 +807,22 @@
         if (!canvas) return; 
         
         const inner = document.getElementById('chartInnerContainer');
-        // 🌟 1. 改為 100% 寬度，自適應螢幕，不再強制撐開
-        inner.style.width = '100%'; 
-        inner.style.minWidth = '100%'; 
+        
+        // 🌟 智慧變形判斷：超過 90 筆資料就變成長圖(可滑動)，90 筆以內就塞滿螢幕(不可滑動)
+        if (displayData.length > 90) {
+            // 資料很多：每筆資料給予最少 6px 的空間，強迫容器變寬
+            const requiredWidth = displayData.length * 6;
+            inner.style.width = requiredWidth + 'px'; 
+            inner.style.minWidth = requiredWidth + 'px'; 
+        } else {
+            // 資料少於 90 筆：剛好 100% 塞滿螢幕，不用滑動
+            inner.style.width = '100%'; 
+            inner.style.minWidth = '100%'; 
+        }
+        
         const ctx = canvas.getContext('2d');
+        
+        // ... (下方保持原樣) ...
         
         let lastMonth = null;
         
