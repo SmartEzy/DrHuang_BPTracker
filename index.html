@@ -1203,7 +1203,7 @@
                         closeImagePreview();
                     } catch (err) {
                         if (err.name === 'AbortError' || (err.message && err.message.toLowerCase().includes('cancel'))) {
-                            closeImagePreview();
+                            // closeImagePreview();
                             return; 
                         }
                         fallbackDownload();
@@ -1234,7 +1234,7 @@
                             closeImagePreview();
                         } catch (err) {
                             if (err.name === 'AbortError' || (err.message && err.message.toLowerCase().includes('cancel'))) {
-                                closeImagePreview();
+                                // closeImagePreview();
                                 return; 
                             }
                             fallbackDownload();
