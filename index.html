@@ -290,16 +290,13 @@
     .sheet-close-btn:active { background: #E2E8F0; transform: scale(0.9); }
 
     .chart-outer-container { 
-      width: 100%; overflow-x: auto; overflow-y: hidden; 
-      -webkit-overflow-scrolling: touch; scrollbar-width: none; 
+      width: 100%; overflow: hidden; 
       padding-bottom: max(env(safe-area-inset-bottom), 16px);
     }
-    .chart-outer-container::-webkit-scrollbar { display: none; }
     
-    @media (pointer: fine) {
-      .chart-outer-container::-webkit-scrollbar { display: block; height: 6px; }
-      .chart-outer-container::-webkit-scrollbar-track { background: transparent; }
-      .chart-outer-container::-webkit-scrollbar-thumb { background: rgba(143, 163, 184, 0.4); border-radius: 3px; }
+    .chart-inner-container { 
+      position: relative; height: 250px; 
+      padding: 0 20px 0 20px; box-sizing: border-box; 
     }
     
     .chart-inner-container { 
@@ -807,8 +804,9 @@
         if (!canvas) return; 
         
         const inner = document.getElementById('chartInnerContainer');
-        const requiredWidth = Math.max(500, displayData.length * 20 + 40);
-        inner.style.width = requiredWidth + 'px'; inner.style.minWidth = requiredWidth + 'px'; 
+        // 🌟 1. 改為 100% 寬度，自適應螢幕，不再強制撐開
+        inner.style.width = '100%'; 
+        inner.style.minWidth = '100%'; 
         const ctx = canvas.getContext('2d');
         
         let lastMonth = null;
@@ -850,13 +848,15 @@
             data: {
               labels: labels, times: times, fullDates: fullDatesForTooltip, 
               datasets: [
-                { type: 'bar', label: 'BP Range', data: bpRangeData, backgroundColor: '#7895B2', borderRadius: 100, barThickness: 6, order: 2, yAxisID: 'y' },
+                // 🌟 2. 移除固定的 barThickness，改用 maxBarThickness，讓柱子能根據資料多寡「自動變細或變粗」
+                { type: 'bar', label: 'BP Range', data: bpRangeData, backgroundColor: '#7895B2', borderRadius: 100, maxBarThickness: 8, barPercentage: 0.85, categoryPercentage: 0.9, order: 2, yAxisID: 'y' },
                 { type: 'line', label: 'HR', data: hrData, borderColor: '#CBD5E1', borderWidth: 1.5, tension: 0, pointRadius: 1.5, order: 3, yAxisID: 'yRight' },
                 { type: 'line', label: '130 Limit', data: limit130Data, borderColor: 'rgba(211, 47, 47, 0.4)', borderWidth: 1, borderDash: [4, 4], pointRadius: 0, fill: false, order: 1, yAxisID: 'y' }
               ]
             },
             options: {
-              responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false },
+              // 🌟 3. 更改為 mode: 'nearest' 與 intersect: true，代表「只有手指/游標真正點到柱子上」才會彈出數據
+              responsive: true, maintainAspectRatio: false, interaction: { mode: 'nearest', intersect: true },
               plugins: { 
                 legend: { display: false },
                 tooltip: {
@@ -875,7 +875,8 @@
                 }
               },
               scales: { 
-                x: { grid: { display: false }, ticks: { autoSkip: false, maxRotation: 0, font: { size: 11, weight: 'bold' }, color: '#999999' } }, 
+                // 🌟 4. 開啟 autoSkip: true，確保一次看 3M (90天) 資料時，X 軸底下的月份標籤不會擠成一團
+                x: { grid: { display: false }, ticks: { autoSkip: true, maxTicksLimit: 6, maxRotation: 0, font: { size: 11, weight: 'bold' }, color: '#999999' } }, 
                 y: { type: 'linear', display: true, position: 'left', grid: { color: '#E2E8F0' }, min: chartMin, max: chartMax, ticks: { color: '#999999', font: { size: 10, weight: 'bold' } } },
                 yRight: { type: 'linear', display: true, position: 'right', grid: { display: false }, min: chartMin, max: chartMax, ticks: { color: '#999999', font: { size: 10, weight: 'bold' } } }
               }
