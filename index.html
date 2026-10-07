@@ -97,16 +97,20 @@
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     .quick-tag-btn:active { background-color: #CBD5E1; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
+    /* 🌟 升級：深色框架包覆篩選區 - 移除圓角，增加層次對比 */
     .filter-wrapper {
-      background-color: #E2E8F0;
-      border-radius: 14px;
-      padding: 8px 12px;
-      margin: 0 auto 10px auto;
-      max-width: calc(500px - 40px);
+      background-color: #F1F5F9; 
+      border-top: 1px solid #E2E8F0;
+      border-bottom: 1px solid #E2E8F0;
+      padding: 8px 20px;
+      margin: 0 auto;
+      max-width: 500px;
+      width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
       gap: 10px;
+      box-sizing: border-box;
     }
     
     .filter-left-zone {
@@ -115,20 +119,23 @@
     }
     .filter-left-zone::-webkit-scrollbar { display: none; }
 
+    /* 🌟 群組加上較深的底色，與最外層的淺色做出區隔 */
     .capsule-group { 
       display: flex; align-items: center; gap: 2px;
-      background-color: rgba(0, 0, 0, 0.04); 
-      border-radius: 20px; padding: 3px; flex-shrink: 0;
+      background-color: #E2E8F0; 
+      border-radius: 8px; padding: 3px; flex-shrink: 0;
     }
     
+    /* 🌟 統一篩選按鈕的大小 */
     .filter-btn { 
-      background: transparent; color: #64748B; border: none; padding: 6px 12px; 
-      font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 16px; 
+      background: transparent; color: #64748B; border: none; padding: 0; 
+      height: 32px; min-width: 44px;
+      font-size: 13px; font-weight: bold; cursor: pointer; border-radius: 6px; 
       transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; justify-content: center;
     }
     .filter-btn.active { 
       background-color: #FFFFFF; color: #111111; 
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
     }
     .filter-btn svg { color: #64748B; transition: color 0.2s; }
     .filter-btn.active svg { color: #111111; }
@@ -141,7 +148,7 @@
     .chart-toggle-btn { 
       background-color: var(--primary-color); color: #FFFFFF; 
       border: none; padding: 6px 10px; margin: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; 
-      border-radius: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: all 0.2s; 
+      border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: all 0.2s; 
     }
     .chart-toggle-btn:active { transform: scale(0.95); }
     
@@ -162,9 +169,10 @@
       position: relative;
     }
 
+    /* 🌟 重新設定 Grid 寬度比例，縮小間距，對齊標題 */
     .list-header, .record-row { 
       display: grid; 
-      grid-template-columns: 65px 50px 24px 70px 40px 1fr 24px; 
+      grid-template-columns: 55px 48px 20px 70px 40px 1fr 30px; 
       gap: 0px; 
       align-items: center; 
       text-align: center; 
@@ -174,17 +182,20 @@
       padding-bottom: 4px; border-bottom: 2px solid var(--primary-dark); 
       font-weight: bold; font-size: 14px; color: var(--primary-dark); 
       padding-left: 20px; padding-right: 20px; box-sizing: border-box;
+      margin-top: 10px;
     }
     .list-header div:nth-child(5) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 12px; }
 
     .month-section { position: relative; }
     
+    /* 🌟 讓月份標題寬度與 Date 欄位 (55px) 一致，並置中對齊 */
     .month-divider {
       position: -webkit-sticky; position: sticky; top: 0; z-index: 90; 
-      display: grid; grid-template-columns: 75px 1fr; align-items: center; 
+      display: grid; grid-template-columns: 55px 1fr; align-items: center; 
       background-color: rgba(244, 246, 248, 0.92); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-      padding: 6px 0; border-bottom: 1px solid rgba(206, 212, 218, 0.6); margin: 0; 
+      padding: 6px 20px; border-bottom: 1px solid rgba(206, 212, 218, 0.6); margin: 0 auto;
+      max-width: 500px; box-sizing: border-box;
     }
     .month-divider-text { font-weight: 800; font-size: 13px; color: var(--primary-dark); text-align: center; letter-spacing: 0; }
 
@@ -197,7 +208,9 @@
     .record-row.highlight-delete { background-color: rgba(211, 47, 47, 0.2); border-radius: 6px; }
     .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:nth-child(6) { text-align: left; padding-left: 12px; }
-    .record-row div:last-child { display: flex; justify-content: flex-end; padding-right: 4px;}
+    
+    /* 🌟 調整垃圾桶靠右 */
+    .record-row div:last-child { display: flex; justify-content: flex-end; padding-right: 6px;}
     
     .delete-btn { background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; display: flex; justify-content: flex-end; align-items: center; transition: color 0.2s; }
     @media (hover: hover) { .delete-btn:hover { color: var(--danger-color); } }
@@ -417,6 +430,7 @@
       </form>
     </div>
 
+    <!-- 🌟 深色的全包覆型篩選樞紐框架 -->
     <div class="filter-wrapper">
       <div class="filter-left-zone">
         <!-- 期間 (單選) -->
@@ -521,9 +535,10 @@
       if (!isClickInside && menu.classList.contains('show')) { menu.classList.remove('show'); }
     });
 
+    // 🌟 圖表 Tooltip 固定置頂
     Chart.Tooltip.positioners.fixedTop = function(elements, eventPosition) {
       if (!elements.length) return false;
-      return { x: elements[0].element.x, y: this.chart.chartArea.top }; 
+      return { x: elements[0].element.x, y: 15 }; 
     };
 
     function openSheet() {
@@ -581,30 +596,7 @@
     dragArea.addEventListener('mousedown', (e) => { startY = e.clientY; isDraggingSheet = true; bottomSheet.classList.add('dragging'); });
     window.addEventListener('mousemove', (e) => {
       if (!isDraggingSheet) return; currentY = e.clientY; const deltaY = currentY - startY;
-      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }
-    });
-    window.addEventListener('mouseup', () => {
-      if (!isDraggingSheet) return; isDraggingSheet = false; bottomSheet.classList.remove('dragging');
-      const deltaY = currentY - startY; if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }
-    });
-
-    let isDownChart = false; let startXChart; let scrollLeftChart;
-    chartOuter.addEventListener('mousedown', (e) => {
-      isDownChart = true; chartOuter.style.cursor = 'grabbing'; startXChart = e.pageX - chartOuter.offsetLeft; scrollLeftChart = chartOuter.scrollLeft;
-    });
-    chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
-    chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
-    chartOuter.addEventListener('mousemove', (e) => {
-      if (!isDownChart) return; e.preventDefault(); const x = e.pageX - chartOuter.offsetLeft; const walk = (x - startXChart) * 1.5; chartOuter.scrollLeft = scrollLeftChart - walk;
-    });
-
-    function showLoading(text) { document.getElementById('loadingText').innerText = text; document.getElementById('loadingOverlay').classList.add('show'); }
-    function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
-
-    async function handleRefresh() {
-      showLoading('資料同步中...');
-      let curr = new Date();
-      document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
+      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }     });     window.addEventListener('mouseup', () => {       if (!isDraggingSheet) return; isDraggingSheet = false; bottomSheet.classList.remove('dragging');       const deltaY = currentY - startY; if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }     });      let isDownChart = false; let startXChart; let scrollLeftChart;     chartOuter.addEventListener('mousedown', (e) => {       isDownChart = true; chartOuter.style.cursor = 'grabbing'; startXChart = e.pageX - chartOuter.offsetLeft; scrollLeftChart = chartOuter.scrollLeft;     });     chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mousemove', (e) => {       if (!isDownChart) return; e.preventDefault(); const x = e.pageX - chartOuter.offsetLeft; const walk = (x - startXChart) * 1.5; chartOuter.scrollLeft = scrollLeftChart - walk;     });      function showLoading(text) { document.getElementById('loadingText').innerText = text; document.getElementById('loadingOverlay').classList.add('show'); }     function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }      async function handleRefresh() {       showLoading('資料同步中...');       let curr = new Date();       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
       checkMorningTag();
       try {
@@ -620,29 +612,7 @@
     }
 
     const now = new Date();
-    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-    document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-    function checkMorningTag() {
-      const timeVal = document.getElementById('time').value;
-      if (!timeVal) return;
-      const h = parseInt(timeVal.split(':')[0], 10);
-      const notesInput = document.getElementById('notes');
-      if (h >= 4 && h < 10) {
-        if (!notesInput.value.includes('[報表]')) {
-          if (notesInput.value.trim() !== '') notesInput.value += ', ';
-          notesInput.value += '[報表]';
-        }
-      }
-    }
-    
-    document.getElementById('time').addEventListener('change', checkMorningTag);
-    checkMorningTag();
-
-    function addQuickTag(tagText) {
-      const notesInput = document.getElementById('notes');
-      if (notesInput.value.trim() === '') { notesInput.value = tagText; } 
-      else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
+    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;      function checkMorningTag() {       const timeVal = document.getElementById('time').value;       if (!timeVal) return;       const h = parseInt(timeVal.split(':')[0], 10);       const notesInput = document.getElementById('notes');       if (h >= 4 && h < 10) {         if (!notesInput.value.includes('[報表]')) {           if (notesInput.value.trim() !== '') notesInput.value += ', ';           notesInput.value += '[報表]';         }       }     }          document.getElementById('time').addEventListener('change', checkMorningTag);     checkMorningTag();      function addQuickTag(tagText) {       const notesInput = document.getElementById('notes');       if (notesInput.value.trim() === '') { notesInput.value = tagText; }        else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
     }
 
     document.querySelectorAll('.period-btn').forEach(btn => {
@@ -701,29 +671,7 @@
       const row = btn.closest('.record-row'); row.classList.add('highlight-delete');
       let decodedNotes = decodeURIComponent(encodedNotes);
       setTimeout(() => {
-        if (confirm(`${formattedDate} ${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {
-          let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
-          if (idx !== -1) { allRecords.splice(idx, 1); } 
-          else {
-            let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);
-            if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);
-          }
-          renderList();
-          syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });
-        } else { row.classList.remove('highlight-delete'); }
-      }, 300);
-    }
-
-    function getLogicalDate(dateStr, timeStr) {
-      if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };
-      let d = new Date(String(dateStr).replace(/-/g, '/'));
-      if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };
-      if (timeStr) {
-        let parts = String(timeStr).split(':');
-        if (parts.length >= 2) { let h = parseInt(parts[0], 10); if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); } }
-      }
-      let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');
-      return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
+        if (confirm(`${formattedDate}${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {           let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes \vert{}\vert{} '') === decodedNotes);           if (idx !== -1) { allRecords.splice(idx, 1); }            else {             let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);             if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);           }           renderList();           syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });         } else { row.classList.remove('highlight-delete'); }       }, 300);     }      function getLogicalDate(dateStr, timeStr) {       if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };       let d = new Date(String(dateStr).replace(/-/g, '/'));       if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };       if (timeStr) {         let parts = String(timeStr).split(':');         if (parts.length >= 2) { let h = parseInt(parts[0], 10); if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); } }       }       let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');       return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
     }
 
     function updateChart(displayData) {
@@ -773,7 +721,7 @@
             data: {
               labels: labels, times: times, fullDates: fullDatesForTooltip, 
               datasets: [
-                { type: 'bar', label: 'BP Range', data: bpRangeData, backgroundColor: '#7895B2', hoverBackgroundColor: '#6B7280', borderRadius: 100, maxBarThickness: 8, barPercentage: 0.85, categoryPercentage: 0.9, order: 2, yAxisID: 'y' },
+                { type: 'bar', label: 'BP Range', data: bpRangeData, backgroundColor: '#7895B2', hoverBackgroundColor: 'var(--hover-gray)', borderRadius: 100, maxBarThickness: 8, barPercentage: 0.85, categoryPercentage: 0.9, order: 2, yAxisID: 'y' },
                 { type: 'line', label: 'HR', data: hrData, borderColor: '#CBD5E1', borderWidth: 1.5, tension: 0, pointRadius: 1.5, order: 3, yAxisID: 'yRight' },
                 { type: 'line', label: '130 Limit', data: limit130Data, borderColor: 'rgba(211, 47, 47, 0.4)', borderWidth: 1, borderDash: [4, 4], pointRadius: 0, fill: false, order: 1, yAxisID: 'y' }
               ]
@@ -785,6 +733,8 @@
                 tooltip: {
                   position: 'fixedTop',
                   yAlign: 'top', 
+                  caretSize: 0, // 🌟 移除數據框尖角
+                  caretPadding: 0,
                   backgroundColor: '#6B7280',
                   padding: 8,
                   cornerRadius: 6,
@@ -857,10 +807,11 @@
                 let sCat = (s < 120) ? 0 : ((s < 130) ? 1 : ((s < 140) ? 2 : 3));
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
-                let iconWrapperStyle = "position: absolute; left: 2px; top: 0px; font-size: 8px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif; display: flex; align-items: center;";
-                if (cat === 1) { catIconHtml = `<span style="${iconWrapperStyle} color: #F59E0B;"><svg viewBox="0 0 24 24" width="7" height="7" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>`; } 
-                else if (cat === 2) { catIconHtml = `<span style="${iconWrapperStyle} color: #D32F2F;">1</span>`; } 
-                else if (cat === 3) { catIconHtml = `<span style="${iconWrapperStyle} color: #D32F2F;">2</span>`; }
+                // 🌟 修復了原本錯誤套用 absolute 導致亂跑的 Bug，改用 Flex 完美置中
+                let flexCenter = "display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 13px; font-weight: 900; font-family: Arial, sans-serif;";
+                if (cat === 1) { catIconHtml = `<div style="${flexCenter} color: #F59E0B;"><svg viewBox="0 0 24 24" width="14" height="14" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>`; } 
+                else if (cat === 2) { catIconHtml = `<div style="${flexCenter} color: #D32F2F;">1</div>`; } 
+                else if (cat === 3) { catIconHtml = `<div style="${flexCenter} color: #D32F2F;">2</div>`; }
             }
             
             let sysHtml = `<span style="font-weight: bold; color: #333333;">${sysStr}</span>`; let diaHtml = `<span style="font-weight: bold; color: #333333;">${diaStr}</span>`;
@@ -1120,15 +1071,17 @@
     }
 
     async function loadData() {
+      // 秒開防護：先載入快取，不讓畫面空白等待
       const cachedData = localStorage.getItem('bpCacheRecords');
       if (cachedData) { 
         try { allRecords = JSON.parse(cachedData); renderList(); scrollToBottom(); } 
         catch(e) { console.error("Cache Render Error:", e); } 
       }
       
-      processSyncQueue();
+      processSyncQueue(); // 背景偷偷發送尚未同步的指令
       
       try {
+        // 🌟 防卡死機制：最多等 10 秒，等不到就放棄並顯示快取
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
         
@@ -1144,6 +1097,7 @@
         scrollToBottom();
       } catch (err) {
         console.error("Fetch Error:", err);
+        // 如果連線失敗且快取有資料，就用 Toast 提示；若連快取都沒有，才顯示連線失敗
         if (allRecords.length > 0) {
             showToast("目前為離線模式");
         } else {
