@@ -97,13 +97,20 @@
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     .quick-tag-btn:active { background-color: #CBD5E1; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
-    .records-header { 
-      display: flex; justify-content: space-between; align-items: center; 
-      padding: 10px 20px; 
-      background-color: #E2E8F0; 
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
-      box-sizing: border-box; width: 100%; gap: 10px; 
-      max-width: 500px; margin: 0 auto;
+    /* 🌟 修復 1：恢復淡色上下陰影框，並強迫單行排列 nowrap，絕不擠下去 */
+    .filter-wrapper {
+      background-color: #F1F5F9; 
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), inset 0 -2px 4px rgba(0,0,0,0.06); 
+      padding: 10px 20px;
+      margin: 0 auto;
+      max-width: 500px;
+      width: 100%;
+      display: flex;
+      flex-wrap: nowrap; /* 強迫左右兩邊死死黏在同一行 */
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      box-sizing: border-box;
     }
     
     .filter-left-zone {
@@ -115,14 +122,14 @@
     .capsule-group { 
       display: flex; align-items: center; gap: 4px;
       background-color: #94A3B8; 
-      border-radius: 20px; 
+      border-radius: 24px; 
       padding: 4px; flex-shrink: 0;
     }
     
-    /* 🌟 單選期間按鈕維持膠囊狀 */
+    /* 期間按鈕：縮小一點左右 padding，節省空間 */
     .period-btn { 
-      background: transparent; color: #F8FAFC; border: none; padding: 0 12px; 
-      height: 32px; min-width: 48px;
+      background: transparent; color: #F8FAFC; border: none; padding: 0 10px; 
+      height: 32px; min-width: 44px;
       font-size: 13px; font-weight: bold; cursor: pointer; 
       border-radius: 16px; 
       transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; justify-content: center;
@@ -132,28 +139,32 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.15); 
     }
 
-    /* 🌟 多選標籤按鈕改為完美圓形 */
+    /* 🌟 修復 2：Emoji 的白色光暈調至完美的微亮狀態 */
     .tag-btn { 
       background: transparent; color: #F8FAFC; border: none; padding: 0; 
-      height: 32px; width: 32px; min-width: 32px; /* 固定長寬，變成正圓形 */
+      height: 32px; width: 32px; min-width: 32px; 
       font-size: 14px; font-weight: bold; cursor: pointer; 
-      border-radius: 50%; /* 完美圓形 */
+      border-radius: 50%; 
       transition: all 0.2s; display: flex; align-items: center; justify-content: center;
-      /* 🌟 減弱 Emoji 的白色光暈，只保留極輕微的描邊防沾黏 */
-      text-shadow: 0px 0px 2px rgba(255, 255, 255, 0.5);
+      /* 增強一點點白色背光感，讓 Emoji 不會被深灰底色吃掉 */
+      text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.7);
     }
     .tag-btn.active { 
       background-color: #FFFFFF; color: #111111; 
       box-shadow: 0 1px 4px rgba(0,0,0,0.15); 
       text-shadow: none;
     }
-    .tag-btn svg { color: #F8FAFC; transition: color 0.2s; filter: drop-shadow(0px 1px 1px rgba(0,0,0,0.2)); }
+    .tag-btn svg { color: #F8FAFC; transition: color 0.2s; filter: drop-shadow(0px 1px 2px rgba(0,0,0,0.25)); }
     .tag-btn.active svg { color: #111111; filter: none; }
     
-    /* 🌟 清除標籤按鈕也統一為圓形 */
+    .report-filter-btn {
+        width: 32px; height: 32px; min-width: 32px; border-radius: 50%; padding: 0;
+    }
+    
     .clear-tags-btn { background: rgba(255,255,255,0.2); color: #FFFFFF; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; margin-left: 2px;}
     .clear-tags-btn:active { background: rgba(255,255,255,0.4); }
 
+    /* 讓圖表按鈕絕對不縮水，永遠保持在最右邊 */
     .chart-controls-right { display: flex; align-items: center; flex-shrink: 0; }
     
     .chart-toggle-btn { 
@@ -182,10 +193,9 @@
       position: relative;
     }
 
-    /* 🌟 調整網格比例，讓垃圾桶區塊往右極度靠攏 */
     .list-header, .record-row { 
       display: grid; 
-      grid-template-columns: 55px 48px 20px 70px 40px 1fr 20px; /* 最後一欄從 30px 縮小到 20px */
+      grid-template-columns: 55px 48px 20px 70px 40px 1fr 30px; 
       gap: 0px; 
       align-items: center; 
       text-align: center; 
@@ -194,8 +204,8 @@
     .list-header { 
       padding-bottom: 4px; border-bottom: 2px solid var(--primary-dark); 
       font-weight: bold; font-size: 14px; color: var(--primary-dark); 
-      padding-left: 20px; padding-right: 10px; /* 右側 padding 縮小 */
-      box-sizing: border-box; margin-top: 10px;
+      padding-left: 20px; padding-right: 20px; box-sizing: border-box;
+      margin-top: 10px;
     }
     .list-header div:nth-child(5) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 12px; }
@@ -212,8 +222,7 @@
     .month-divider-text { font-weight: 800; font-size: 13px; color: var(--primary-dark); text-align: center; letter-spacing: 0; }
 
     .record-row { 
-      padding: 6px 10px 6px 20px; /* 左20px，右邊縮減到10px，讓內容更靠邊緣 */
-      font-size: 15px; line-height: 1.1; color: var(--text-main); 
+      padding: 6px 20px; font-size: 15px; line-height: 1.1; color: var(--text-main); 
       font-variant-numeric: tabular-nums; transition: background-color 0.2s; border-top: 1px solid transparent; 
       box-sizing: border-box; width: 100%;
     }
@@ -221,9 +230,7 @@
     .record-row.highlight-delete { background-color: rgba(211, 47, 47, 0.2); border-radius: 6px; }
     .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:nth-child(6) { text-align: left; padding-left: 12px; }
-    
-    /* 🌟 將垃圾桶強迫推到最右側 */
-    .record-row div:last-child { display: flex; justify-content: flex-end; padding-right: 0;}
+    .record-row div:last-child { display: flex; justify-content: flex-end; padding-right: 2px;}
     
     .delete-btn { background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; display: flex; justify-content: flex-end; align-items: center; transition: color 0.2s; }
     @media (hover: hover) { .delete-btn:hover { color: var(--danger-color); } }
@@ -443,7 +450,8 @@
       </form>
     </div>
 
-    <div class="filter-wrapper">
+    <!-- 🌟 明顯的淺色上下陰影框，且必定單行排列 -->
+    <div class="records-header filter-wrapper">
       <div class="filter-left-zone">
         <!-- 期間 (單選) -->
         <div class="capsule-group period-group">
@@ -839,7 +847,6 @@
                 }
               },
               scales: { 
-                // 🌟 修復 4：關閉 autoSkip，強制顯示所有月份標籤！
                 x: { grid: { display: false }, ticks: { autoSkip: false, maxRotation: 0, font: { size: 11, weight: 'bold' }, color: '#999999' } }, 
                 y: { type: 'linear', display: true, position: 'left', grid: { color: '#E2E8F0' }, min: chartMin, max: chartMax, ticks: { color: '#999999', font: { size: 10, weight: 'bold' } } },
                 yRight: { type: 'linear', display: true, position: 'right', grid: { display: false }, min: chartMin, max: chartMax, ticks: { color: '#999999', font: { size: 10, weight: 'bold' } } }
