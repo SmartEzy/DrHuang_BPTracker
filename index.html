@@ -29,7 +29,7 @@
       --danger-color: #D32F2F;  
       --alert-color: #EA580C;   
       --warning-color: #F59E0B; 
-      --hover-gray: #6B7280; 
+      --hover-gray: #495057; /* 🌟 統一數據框與選取柱子的深灰色 */
     }
     
     html, body { 
@@ -97,11 +97,10 @@
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     .quick-tag-btn:active { background-color: #CBD5E1; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
-    /* 🌟 升級：深色明顯的框架，與膠囊群組 */
+    /* 🌟 升級：深色明顯的框架，改為陰影邊界 */
     .filter-wrapper {
-      background-color: #E2E8F0; /* 加深框架底色，使其一目了然 */
-      border-top: 1px solid #CBD5E1;
-      border-bottom: 1px solid #CBD5E1;
+      background-color: #F1F5F9; 
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.06), inset 0 -2px 6px rgba(0,0,0,0.06); /* 陰影代替實線邊框 */
       padding: 10px 20px;
       margin: 0 auto;
       max-width: 500px;
@@ -119,31 +118,35 @@
     }
     .filter-left-zone::-webkit-scrollbar { display: none; }
 
-    /* 🌟 恢復全圓角的膠囊群組 */
+    /* 🌟 群組底色加深，與白底按鈕對比更明顯 */
     .capsule-group { 
       display: flex; align-items: center; gap: 4px;
-      background-color: #CBD5E1; /* 明顯的群組深底色 */
-      border-radius: 24px; /* 全圓角膠囊狀 */
+      background-color: #94A3B8; /* 加深為深藍灰色 */
+      border-radius: 24px; 
       padding: 4px; flex-shrink: 0;
     }
     
-    /* 🌟 恢復全圓角的膠囊按鈕 */
     .filter-btn { 
-      background: transparent; color: #495057; border: none; padding: 0; 
+      background: transparent; color: #F1F5F9; border: none; padding: 0; 
       height: 32px; min-width: 48px;
       font-size: 13px; font-weight: bold; cursor: pointer; 
-      border-radius: 20px; /* 全圓角膠囊狀 */
+      border-radius: 20px; 
       transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; justify-content: center;
     }
     .filter-btn.active { 
       background-color: #FFFFFF; color: #111111; 
       box-shadow: 0 1px 4px rgba(0,0,0,0.15); 
     }
-    .filter-btn svg { color: #495057; transition: color 0.2s; }
+    .filter-btn svg { color: #F1F5F9; transition: color 0.2s; }
     .filter-btn.active svg { color: #111111; }
     
-    .clear-tags-btn { background: rgba(0,0,0,0.05); color: #495057; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; margin-left: 2px;}
-    .clear-tags-btn:active { background: rgba(0,0,0,0.15); }
+    /* 🌟 新增：純圓形的報表按鈕樣式，移除 padding 截斷問題 */
+    .report-filter-btn {
+        width: 32px; height: 32px; min-width: 32px; border-radius: 50%;
+    }
+    
+    .clear-tags-btn { background: rgba(0,0,0,0.15); color: #F1F5F9; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; margin-left: 2px;}
+    .clear-tags-btn:active { background: rgba(0,0,0,0.3); }
 
     .chart-controls-right { display: flex; align-items: center; flex-shrink: 0; }
     
@@ -208,7 +211,9 @@
     .record-row.highlight-delete { background-color: rgba(211, 47, 47, 0.2); border-radius: 6px; }
     .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:nth-child(6) { text-align: left; padding-left: 12px; }
-    .record-row div:last-child { display: flex; justify-content: flex-end; padding-right: 6px;}
+    
+    /* 🌟 升級：垃圾桶圖示再往右推一點 */
+    .record-row div:last-child { display: flex; justify-content: flex-end; padding-right: 2px;}
     
     .delete-btn { background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; display: flex; justify-content: flex-end; align-items: center; transition: color 0.2s; }
     @media (hover: hover) { .delete-btn:hover { color: var(--danger-color); } }
@@ -428,7 +433,7 @@
       </form>
     </div>
 
-    <!-- 🌟 加深的全包覆型篩選樞紐框架 -->
+    <!-- 🌟 升級：陰影邊界的過濾樞紐區 -->
     <div class="filter-wrapper">
       <div class="filter-left-zone">
         <!-- 期間 (單選) -->
@@ -439,7 +444,8 @@
         
         <!-- 標籤 (多選) -->
         <div class="capsule-group tags-group">
-          <button class="filter-btn active tag-btn" data-tag="[報表]" title="Report">
+          <!-- 🌟 修正：純圓形的報表按鈕 -->
+          <button class="filter-btn active tag-btn report-filter-btn" data-tag="[報表]" title="Report">
             <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line>
@@ -533,7 +539,6 @@
       if (!isClickInside && menu.classList.contains('show')) { menu.classList.remove('show'); }
     });
 
-    // 🌟 安全的自訂 Tooltip 位置邏輯，加入 try-catch 防止未定義錯誤導致全頁崩潰
     let tooltipPosConfig = 'nearest';
     try {
         if (typeof Chart !== 'undefined' && Chart.Tooltip && Chart.Tooltip.positioners) {
@@ -602,30 +607,7 @@
     dragArea.addEventListener('mousedown', (e) => { startY = e.clientY; isDraggingSheet = true; bottomSheet.classList.add('dragging'); });
     window.addEventListener('mousemove', (e) => {
       if (!isDraggingSheet) return; currentY = e.clientY; const deltaY = currentY - startY;
-      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }
-    });
-    window.addEventListener('mouseup', () => {
-      if (!isDraggingSheet) return; isDraggingSheet = false; bottomSheet.classList.remove('dragging');
-      const deltaY = currentY - startY; if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }
-    });
-
-    let isDownChart = false; let startXChart; let scrollLeftChart;
-    chartOuter.addEventListener('mousedown', (e) => {
-      isDownChart = true; chartOuter.style.cursor = 'grabbing'; startXChart = e.pageX - chartOuter.offsetLeft; scrollLeftChart = chartOuter.scrollLeft;
-    });
-    chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
-    chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });
-    chartOuter.addEventListener('mousemove', (e) => {
-      if (!isDownChart) return; e.preventDefault(); const x = e.pageX - chartOuter.offsetLeft; const walk = (x - startXChart) * 1.5; chartOuter.scrollLeft = scrollLeftChart - walk;
-    });
-
-    function showLoading(text) { document.getElementById('loadingText').innerText = text; document.getElementById('loadingOverlay').classList.add('show'); }
-    function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
-
-    async function handleRefresh() {
-      showLoading('資料同步中...');
-      let curr = new Date();
-      document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
+      if (deltaY > 0) { bottomSheet.style.transform = `translateX(-50%) translateY(${deltaY}px)`; }     });     window.addEventListener('mouseup', () => {       if (!isDraggingSheet) return; isDraggingSheet = false; bottomSheet.classList.remove('dragging');       const deltaY = currentY - startY; if (deltaY > 60) { closeSheet(); } else { bottomSheet.style.transform = ''; }     });      let isDownChart = false; let startXChart; let scrollLeftChart;     chartOuter.addEventListener('mousedown', (e) => {       isDownChart = true; chartOuter.style.cursor = 'grabbing'; startXChart = e.pageX - chartOuter.offsetLeft; scrollLeftChart = chartOuter.scrollLeft;     });     chartOuter.addEventListener('mouseleave', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mouseup', () => { isDownChart = false; chartOuter.style.cursor = 'default'; });     chartOuter.addEventListener('mousemove', (e) => {       if (!isDownChart) return; e.preventDefault(); const x = e.pageX - chartOuter.offsetLeft; const walk = (x - startXChart) * 1.5; chartOuter.scrollLeft = scrollLeftChart - walk;     });      function showLoading(text) { document.getElementById('loadingText').innerText = text; document.getElementById('loadingOverlay').classList.add('show'); }     function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }      async function handleRefresh() {       showLoading('資料同步中...');       let curr = new Date();       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
       checkMorningTag();
       try {
@@ -641,29 +623,7 @@
     }
 
     const now = new Date();
-    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-    document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-    function checkMorningTag() {
-      const timeVal = document.getElementById('time').value;
-      if (!timeVal) return;
-      const h = parseInt(timeVal.split(':')[0], 10);
-      const notesInput = document.getElementById('notes');
-      if (h >= 4 && h < 10) {
-        if (!notesInput.value.includes('[報表]')) {
-          if (notesInput.value.trim() !== '') notesInput.value += ', ';
-          notesInput.value += '[報表]';
-        }
-      }
-    }
-    
-    document.getElementById('time').addEventListener('change', checkMorningTag);
-    checkMorningTag();
-
-    function addQuickTag(tagText) {
-      const notesInput = document.getElementById('notes');
-      if (notesInput.value.trim() === '') { notesInput.value = tagText; } 
-      else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
+    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;     document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;      function checkMorningTag() {       const timeVal = document.getElementById('time').value;       if (!timeVal) return;       const h = parseInt(timeVal.split(':')[0], 10);       const notesInput = document.getElementById('notes');       if (h >= 4 && h < 10) {         if (!notesInput.value.includes('[報表]')) {           if (notesInput.value.trim() !== '') notesInput.value += ', ';           notesInput.value += '[報表]';         }       }     }          document.getElementById('time').addEventListener('change', checkMorningTag);     checkMorningTag();      function addQuickTag(tagText) {       const notesInput = document.getElementById('notes');       if (notesInput.value.trim() === '') { notesInput.value = tagText; }        else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
     }
 
     document.querySelectorAll('.period-btn').forEach(btn => {
@@ -722,29 +682,7 @@
       const row = btn.closest('.record-row'); row.classList.add('highlight-delete');
       let decodedNotes = decodeURIComponent(encodedNotes);
       setTimeout(() => {
-        if (confirm(`${formattedDate} ${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {
-          let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
-          if (idx !== -1) { allRecords.splice(idx, 1); } 
-          else {
-            let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);
-            if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);
-          }
-          renderList();
-          syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });
-        } else { row.classList.remove('highlight-delete'); }
-      }, 300);
-    }
-
-    function getLogicalDate(dateStr, timeStr) {
-      if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };
-      let d = new Date(String(dateStr).replace(/-/g, '/'));
-      if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };
-      if (timeStr) {
-        let parts = String(timeStr).split(':');
-        if (parts.length >= 2) { let h = parseInt(parts[0], 10); if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); } }
-      }
-      let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');
-      return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
+        if (confirm(`${formattedDate}${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {           let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes \vert{}\vert{} '') === decodedNotes);           if (idx !== -1) { allRecords.splice(idx, 1); }            else {             let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);             if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);           }           renderList();           syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });         } else { row.classList.remove('highlight-delete'); }       }, 300);     }      function getLogicalDate(dateStr, timeStr) {       if (!dateStr) return { logicalStr: '', logicalMonthStr: '', logicalDayStr: '', dateObj: new Date(NaN) };       let d = new Date(String(dateStr).replace(/-/g, '/'));       if (isNaN(d.getTime())) return { logicalStr: dateStr, logicalMonthStr: '', logicalDayStr: '', dateObj: d };       if (timeStr) {         let parts = String(timeStr).split(':');         if (parts.length >= 2) { let h = parseInt(parts[0], 10); if (h >= 0 && h < 4) { d.setDate(d.getDate() - 1); } }       }       let yy = d.getFullYear(); let mm = String(d.getMonth() + 1).padStart(2, '0'); let dd = String(d.getDate()).padStart(2, '0');       return { logicalStr: `${yy}/${mm}/${dd}`, logicalMonthStr: `${yy}/${mm}`, logicalDayStr: dd, dateObj: d };
     }
 
     function updateChart(displayData) {
@@ -794,7 +732,8 @@
             data: {
               labels: labels, times: times, fullDates: fullDatesForTooltip, 
               datasets: [
-                { type: 'bar', label: 'BP Range', data: bpRangeData, backgroundColor: '#7895B2', hoverBackgroundColor: 'var(--hover-gray)', borderRadius: 100, maxBarThickness: 8, barPercentage: 0.85, categoryPercentage: 0.9, order: 2, yAxisID: 'y' },
+                // 🌟 統一選取底色：使用深灰色 #495057
+                { type: 'bar', label: 'BP Range', data: bpRangeData, backgroundColor: '#7895B2', hoverBackgroundColor: '#495057', borderRadius: 100, maxBarThickness: 8, barPercentage: 0.85, categoryPercentage: 0.9, order: 2, yAxisID: 'y' },
                 { type: 'line', label: 'HR', data: hrData, borderColor: '#CBD5E1', borderWidth: 1.5, tension: 0, pointRadius: 1.5, order: 3, yAxisID: 'yRight' },
                 { type: 'line', label: '130 Limit', data: limit130Data, borderColor: 'rgba(211, 47, 47, 0.4)', borderWidth: 1, borderDash: [4, 4], pointRadius: 0, fill: false, order: 1, yAxisID: 'y' }
               ]
@@ -804,11 +743,12 @@
               plugins: { 
                 legend: { display: false },
                 tooltip: {
-                  position: tooltipPosConfig, // 🌟 採用安全的變數設定，不再崩潰
+                  position: tooltipPosConfig, 
                   yAlign: 'top', 
                   caretSize: 0, 
                   caretPadding: 8,
-                  backgroundColor: '#6B7280',
+                  // 🌟 統一提示框底色：使用深灰色 #495057
+                  backgroundColor: '#495057',
                   padding: 8,
                   cornerRadius: 6,
                   displayColors: false,
@@ -1143,7 +1083,6 @@
     }
 
     async function loadData() {
-      // 🌟 秒開防護：先載入快取，不讓畫面空白等待
       const cachedData = localStorage.getItem('bpCacheRecords');
       if (cachedData) { 
         try { allRecords = JSON.parse(cachedData); renderList(); scrollToBottom(); } 
@@ -1153,7 +1092,6 @@
       processSyncQueue();
       
       try {
-        // 🌟 防卡死機制：設定 10 秒倒數計時，時間到就切斷要求
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 10000);
         
@@ -1169,7 +1107,6 @@
         scrollToBottom();
       } catch (err) {
         console.error("Fetch Error:", err);
-        // 如果連線失敗且快取有資料，就用 Toast 提示離線；若連快取都沒有，才顯示連線失敗文字
         if (allRecords.length > 0) {
             showToast("目前為離線模式");
         } else {
