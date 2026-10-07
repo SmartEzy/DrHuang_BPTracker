@@ -97,7 +97,6 @@
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     .quick-tag-btn:active { background-color: #CBD5E1; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
-    /* 🌟 修復 1：恢復淡色上下陰影框，並強迫單行排列 nowrap，絕不擠下去 */
     .filter-wrapper {
       background-color: #F1F5F9; 
       box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), inset 0 -2px 4px rgba(0,0,0,0.06); 
@@ -106,7 +105,7 @@
       max-width: 500px;
       width: 100%;
       display: flex;
-      flex-wrap: nowrap; /* 強迫左右兩邊死死黏在同一行 */
+      flex-wrap: nowrap; 
       justify-content: space-between;
       align-items: center;
       gap: 10px;
@@ -126,7 +125,6 @@
       padding: 4px; flex-shrink: 0;
     }
     
-    /* 期間按鈕：縮小一點左右 padding，節省空間 */
     .period-btn { 
       background: transparent; color: #F8FAFC; border: none; padding: 0 10px; 
       height: 32px; min-width: 44px;
@@ -139,14 +137,12 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.15); 
     }
 
-    /* 🌟 修復 2：Emoji 的白色光暈調至完美的微亮狀態 */
     .tag-btn { 
       background: transparent; color: #F8FAFC; border: none; padding: 0; 
       height: 32px; width: 32px; min-width: 32px; 
       font-size: 14px; font-weight: bold; cursor: pointer; 
       border-radius: 50%; 
       transition: all 0.2s; display: flex; align-items: center; justify-content: center;
-      /* 增強一點點白色背光感，讓 Emoji 不會被深灰底色吃掉 */
       text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.7);
     }
     .tag-btn.active { 
@@ -164,7 +160,6 @@
     .clear-tags-btn { background: rgba(255,255,255,0.2); color: #FFFFFF; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; margin-left: 2px;}
     .clear-tags-btn:active { background: rgba(255,255,255,0.4); }
 
-    /* 讓圖表按鈕絕對不縮水，永遠保持在最右邊 */
     .chart-controls-right { display: flex; align-items: center; flex-shrink: 0; }
     
     .chart-toggle-btn { 
@@ -450,16 +445,13 @@
       </form>
     </div>
 
-    <!-- 🌟 明顯的淺色上下陰影框，且必定單行排列 -->
     <div class="records-header filter-wrapper">
       <div class="filter-left-zone">
-        <!-- 期間 (單選) -->
         <div class="capsule-group period-group">
           <button class="filter-btn active period-btn" data-val="90days">3 M</button>
           <button class="filter-btn period-btn" data-val="all">All</button>
         </div>
         
-        <!-- 標籤 (多選) -->
         <div class="capsule-group tags-group">
           <button class="filter-btn active tag-btn report-filter-btn" data-tag="[報表]" title="Report">
             <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -645,6 +637,19 @@
 
     async function handleRefresh() {
       showLoading('資料同步中...');
+      // 🌟 升級：重整按鈕恢復預設狀態 (3M + 報表)
+      currentPeriod = '90days';
+      currentTags = ['[報表]'];
+      
+      document.querySelectorAll('.period-btn').forEach(b => {
+        if (b.getAttribute('data-val') === '90days') b.classList.add('active');
+        else b.classList.remove('active');
+      });
+      document.querySelectorAll('.tag-btn').forEach(b => {
+        if (b.getAttribute('data-tag') === '[報表]') b.classList.add('active');
+        else b.classList.remove('active');
+      });
+
       let curr = new Date();
       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
