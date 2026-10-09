@@ -97,9 +97,8 @@
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     .quick-tag-btn:active { background-color: #CBD5E1; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
-    /* 🌟 升級：稍微加深外層框架的底色 */
     .filter-wrapper {
-      background-color: #E2E8F0; /* 從 #F1F5F9 加深為 #E2E8F0，增強分層感 */
+      background-color: #E2E8F0; 
       box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), inset 0 -2px 4px rgba(0,0,0,0.06); 
       padding: 10px 20px;
       margin: 0 auto;
@@ -777,48 +776,93 @@
       try {
         const canvas = document.getElementById('bpChart');
         if (!canvas) return; 
+        
+        // 🌟 升級：依照資料來源提取出所有唯一日期（天數），來決定圖表真正需要的寬度
+        let uniqueDates = new Set();
+        displayData.forEach(d => {
+            if (d.date) uniqueDates.add(String(d.date));
+        });
+        const distinctDaysCount = uniqueDates.size;
+        
         const inner = document.getElementById('chartInnerContainer');
-        if (displayData.length > 90) {
-            const requiredWidth = displayData.length * 6;
+        // 🌟 如果不重複天數超過 90 天，才開始往右延伸變長卷軸 (每天至少給予 6px 寬度)
+        if (distinctDaysCount > 90) {
+            const requiredWidth = distinctDaysCount * 6;
             inner.style.width = requiredWidth + 'px'; inner.style.minWidth = requiredWidth + 'px'; 
         } else {
             inner.style.width = '100%'; inner.style.minWidth = '100%'; 
         }
+        
         const ctx = canvas.getContext('2d');
         let lastMonth = null;
         
-        const labels = displayData.map((d, index) => { 
-          let p = String(d.date || '').replace(/-/g, '/').split('/'); 
-          if (p.length === 3) {
-            let currentMonth = parseInt(p[1], 10); 
-            if (index === 0 || currentMonth !== lastMonth) { lastMonth = currentMonth; return currentMonth.toString() + '月'; } 
-            else { return ''; }
-          }
-          return ''; 
+        // 🌟 新增：我們將同一天的多筆資料，為了圖表顯示進行「單日平均計算」
+        let dailyAverages = {};
+        displayData.forEach(d => {
+            let logical = getLogicalDate(d.date, d.time);
+            if (isNaN(logical.dateObj.getTime())) return;
+            let dayKey = logical.logicalStr; // e.g. "2026/09/28"
+            
+            if (!dailyAverages[dayKey]) {
+                dailyAverages[dayKey] = {
+                    dateStr: dayKey,
+                    monthNum: logical.dateObj.getMonth() + 1,
+                    sumSys: 0, countSys: 0,
+                    sumDia: 0, countDia: 0,
+                    sumHr: 0, countHr: 0
+                };
+            }
+            
+            let s = parseInt(d.systolic); let dia = parseInt(d.diastolic); let hr = parseInt(d.heartRate);
+            if (!isNaN(s)) { dailyAverages[dayKey].sumSys += s; dailyAverages[dayKey].countSys++; }
+            if (!isNaN(dia)) { dailyAverages[dayKey].sumDia += dia; dailyAverages[dayKey].countDia++; }
+            if (!isNaN(hr)) { dailyAverages[dayKey].sumHr += hr; dailyAverages[dayKey].countHr++; }
+        });
+        
+        // 將計算結果轉換回陣列，並確保按日期舊到新排序
+        let aggregatedData = Object.values(dailyAverages).sort((a, b) => new Date(a.dateStr).getTime() - new Date(b.dateStr).getTime());
+
+        const labels = aggregatedData.map((d, index) => { 
+            let currentMonth = d.monthNum; 
+            if (index === 0 || currentMonth !== lastMonth) { 
+                lastMonth = currentMonth; 
+                return currentMonth.toString() + '月'; 
+            } else { 
+                return ''; 
+            }
         });
 
-        const fullDatesForTooltip = displayData.map(d => { let p = String(d.date || '').split('/'); return p.length === 3 ? `${p[1]}/${p[2]}` : (d.date || ''); });
-        const times = displayData.map(d => { let t = d.time ? String(d.time).match(/(\d+):(\d+)/) : null; return t ? `${t[1].padStart(2, '0')}:${t[2].padStart(2, '0')}` : (d.time || ''); });
-        const bpRangeData = displayData.map(d => [parseInt(d.diastolic), parseInt(d.systolic)]);
-        const hrData = displayData.map(d => parseInt(d.heartRate));
-        const limit130Data = displayData.map(() => 130);
+        // 取出 yyyy/mm/dd 中的 mm/dd 用作 Tooltip 標題
+        const fullDatesForTooltip = aggregatedData.map(d => { 
+            let p = d.dateStr.split('/'); 
+            return p.length === 3 ? `${p[1]}/${p[2]}` : d.dateStr; 
+        });
+        
+        const bpRangeData = aggregatedData.map(d => [
+            d.countDia ? Math.round(d.sumDia / d.countDia) : null, 
+            d.countSys ? Math.round(d.sumSys / d.countSys) : null
+        ]);
+        const hrData = aggregatedData.map(d => d.countHr ? Math.round(d.sumHr / d.countHr) : null);
+        const limit130Data = aggregatedData.map(() => 130);
 
         let chartMax = 180; let chartMin = 40;
-        displayData.forEach(d => {
-            if (d.systolic && parseInt(d.systolic) + 20 > chartMax) chartMax = parseInt(d.systolic) + 20;
-            if (d.heartRate && parseInt(d.heartRate) > 0 && parseInt(d.heartRate) - 10 < chartMin) chartMin = parseInt(d.heartRate) - 10;
+        aggregatedData.forEach(d => {
+            let avgSys = d.countSys ? Math.round(d.sumSys / d.countSys) : 0;
+            let avgHr = d.countHr ? Math.round(d.sumHr / d.countHr) : 0;
+            if (avgSys && avgSys + 20 > chartMax) chartMax = avgSys + 20;
+            if (avgHr && avgHr > 0 && avgHr - 10 < chartMin) chartMin = avgHr - 10;
         });
 
         if (bpChartInstance) {
           bpChartInstance.options.scales.y.min = chartMin; bpChartInstance.options.scales.y.max = chartMax;
           bpChartInstance.options.scales.yRight.min = chartMin; bpChartInstance.options.scales.yRight.max = chartMax;
-          bpChartInstance.resize(); bpChartInstance.data.labels = labels; bpChartInstance.data.times = times; bpChartInstance.data.fullDates = fullDatesForTooltip; 
+          bpChartInstance.resize(); bpChartInstance.data.labels = labels; bpChartInstance.data.fullDates = fullDatesForTooltip; 
           bpChartInstance.data.datasets[0].data = bpRangeData; bpChartInstance.data.datasets[1].data = hrData; bpChartInstance.data.datasets[2].data = limit130Data; 
           bpChartInstance.update();
         } else {
           bpChartInstance = new Chart(ctx, {
             data: {
-              labels: labels, times: times, fullDates: fullDatesForTooltip, 
+              labels: labels, fullDates: fullDatesForTooltip, 
               datasets: [
                 { type: 'bar', label: 'BP Range', data: bpRangeData, backgroundColor: '#7895B2', hoverBackgroundColor: '#495057', borderRadius: 100, maxBarThickness: 8, barPercentage: 0.85, categoryPercentage: 0.9, order: 2, yAxisID: 'y' },
                 { type: 'line', label: 'HR', data: hrData, borderColor: '#CBD5E1', borderWidth: 1.5, tension: 0, pointRadius: 1.5, order: 3, yAxisID: 'yRight' },
@@ -840,12 +884,14 @@
                   displayColors: false,
                   callbacks: {
                     title: function(items) { 
-                      let dataIndex = items[0].dataIndex; let fullDateStr = items[0].chart.data.fullDates[dataIndex]; let timeStr = items[0].chart.data.times[dataIndex];
-                      return fullDateStr + (timeStr ? ' ' + timeStr : ''); 
+                      let dataIndex = items[0].dataIndex; 
+                      // 🌟 圖表現在顯示單日平均，不再顯示時間
+                      return items[0].chart.data.fullDates[dataIndex] + ' (日平均)'; 
                     },
                     label: function(ctx) { 
                       if (ctx.datasetIndex === 0) {
-                        let hrVal = ctx.chart.data.datasets[1].data[ctx.dataIndex]; return ctx.raw[1] + '/' + ctx.raw[0] + (hrVal ? '   ' + hrVal : ''); 
+                        let hrVal = ctx.chart.data.datasets[1].data[ctx.dataIndex]; 
+                        return ctx.raw[1] + '/' + ctx.raw[0] + (hrVal ? '   ' + hrVal : ''); 
                       } return null; 
                     }
                   }
@@ -968,7 +1014,32 @@
           if (isNaN(d.getTime())) return;
           let yyyy_mm = `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, '0')}`; let day = d.getDate();
           if (!monthMap[yyyy_mm]) monthMap[yyyy_mm] = {};
-          if (!monthMap[yyyy_mm][day]) monthMap[yyyy_mm][day] = r; 
+          if (!monthMap[yyyy_mm][day]) monthMap[yyyy_mm][day] = []; 
+          monthMap[yyyy_mm][day].push(r);
+        });
+
+        // 🌟 新增：計算單日平均值
+        Object.keys(monthMap).forEach(ym => {
+          Object.keys(monthMap[ym]).forEach(day => {
+            let dayRecords = monthMap[ym][day];
+            if (dayRecords.length === 1) {
+              monthMap[ym][day] = dayRecords[0];
+            } else {
+              let sumSys = 0, sumDia = 0, sumHr = 0, cSys = 0, cDia = 0, cHr = 0;
+              dayRecords.forEach(rec => {
+                let s = parseInt(rec.systolic), d = parseInt(rec.diastolic), h = parseInt(rec.heartRate);
+                if (!isNaN(s)) { sumSys += s; cSys++; }
+                if (!isNaN(d)) { sumDia += d; cDia++; }
+                if (!isNaN(h)) { sumHr += h; cHr++; }
+              });
+              monthMap[ym][day] = {
+                systolic: cSys ? Math.round(sumSys / cSys).toString() : '',
+                diastolic: cDia ? Math.round(sumDia / cDia).toString() : '',
+                heartRate: cHr ? Math.round(sumHr / cHr).toString() : '',
+                date: dayRecords[0].date // 保留日期格式供後續使用
+              };
+            }
+          });
         });
 
         let availableMonths = Object.keys(monthMap).sort();
