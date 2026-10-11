@@ -97,9 +97,10 @@
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     .quick-tag-btn:active { background-color: #CBD5E1; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
+    /* 🌟 升級：將篩選列橫幅底色再稍微加深至 #D8E2ED，並微調內陰影增強立體邊界 */
     .filter-wrapper {
-      background-color: #E2E8F0; 
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.06), inset 0 -2px 4px rgba(0,0,0,0.06); 
+      background-color: #D8E2ED; 
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.08), inset 0 -2px 5px rgba(0,0,0,0.08); 
       padding: 10px 20px;
       margin: 0 auto;
       max-width: 500px;
@@ -777,7 +778,6 @@
         const canvas = document.getElementById('bpChart');
         if (!canvas) return; 
         
-        // 🌟 升級：依照資料來源提取出所有唯一日期（天數），來決定圖表真正需要的寬度
         let uniqueDates = new Set();
         displayData.forEach(d => {
             if (d.date) uniqueDates.add(String(d.date));
@@ -785,7 +785,6 @@
         const distinctDaysCount = uniqueDates.size;
         
         const inner = document.getElementById('chartInnerContainer');
-        // 🌟 如果不重複天數超過 90 天，才開始往右延伸變長卷軸 (每天至少給予 6px 寬度)
         if (distinctDaysCount > 90) {
             const requiredWidth = distinctDaysCount * 6;
             inner.style.width = requiredWidth + 'px'; inner.style.minWidth = requiredWidth + 'px'; 
@@ -796,12 +795,11 @@
         const ctx = canvas.getContext('2d');
         let lastMonth = null;
         
-        // 🌟 新增：我們將同一天的多筆資料，為了圖表顯示進行「單日平均計算」
         let dailyAverages = {};
         displayData.forEach(d => {
             let logical = getLogicalDate(d.date, d.time);
             if (isNaN(logical.dateObj.getTime())) return;
-            let dayKey = logical.logicalStr; // e.g. "2026/09/28"
+            let dayKey = logical.logicalStr;
             
             if (!dailyAverages[dayKey]) {
                 dailyAverages[dayKey] = {
@@ -819,7 +817,6 @@
             if (!isNaN(hr)) { dailyAverages[dayKey].sumHr += hr; dailyAverages[dayKey].countHr++; }
         });
         
-        // 將計算結果轉換回陣列，並確保按日期舊到新排序
         let aggregatedData = Object.values(dailyAverages).sort((a, b) => new Date(a.dateStr).getTime() - new Date(b.dateStr).getTime());
 
         const labels = aggregatedData.map((d, index) => { 
@@ -832,7 +829,6 @@
             }
         });
 
-        // 取出 yyyy/mm/dd 中的 mm/dd 用作 Tooltip 標題
         const fullDatesForTooltip = aggregatedData.map(d => { 
             let p = d.dateStr.split('/'); 
             return p.length === 3 ? `${p[1]}/${p[2]}` : d.dateStr; 
@@ -885,7 +881,6 @@
                   callbacks: {
                     title: function(items) { 
                       let dataIndex = items[0].dataIndex; 
-                      // 🌟 圖表現在顯示單日平均，不再顯示時間
                       return items[0].chart.data.fullDates[dataIndex] + ' (日平均)'; 
                     },
                     label: function(ctx) { 
@@ -1018,7 +1013,7 @@
           monthMap[yyyy_mm][day].push(r);
         });
 
-        // 🌟 新增：計算單日平均值
+        // 計算單日平均值
         Object.keys(monthMap).forEach(ym => {
           Object.keys(monthMap[ym]).forEach(day => {
             let dayRecords = monthMap[ym][day];
@@ -1036,7 +1031,7 @@
                 systolic: cSys ? Math.round(sumSys / cSys).toString() : '',
                 diastolic: cDia ? Math.round(sumDia / cDia).toString() : '',
                 heartRate: cHr ? Math.round(sumHr / cHr).toString() : '',
-                date: dayRecords[0].date // 保留日期格式供後續使用
+                date: dayRecords[0].date
               };
             }
           });
