@@ -97,7 +97,6 @@
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     .quick-tag-btn:active { background-color: #CBD5E1; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
-    /* 🌟 升級：將篩選列橫幅底色再稍微加深至 #D8E2ED，並微調內陰影增強立體邊界 */
     .filter-wrapper {
       background-color: #D8E2ED; 
       box-shadow: inset 0 2px 5px rgba(0,0,0,0.08), inset 0 -2px 5px rgba(0,0,0,0.08); 
@@ -1286,6 +1285,37 @@
           systolic: document.getElementById('systolic').value, diastolic: document.getElementById('diastolic').value, 
           heartRate: document.getElementById('heartRate').value, notes: finalNotes 
       };
+      
+      // 🌟 升級：Save 時自動檢查篩選狀態，若新資料會被隱藏，則自動解除篩選
+      let filterChanged = false;
+      
+      // 1. 檢查標籤：如果目前有篩選標籤，且新紀錄沒有包含任何一個，就自動清空標籤
+      if (currentTags.length > 0) {
+          let hasMatchingTag = currentTags.some(tag => finalNotes.includes(tag));
+          if (!hasMatchingTag) {
+              currentTags = [];
+              document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+              filterChanged = true;
+          }
+      }
+      
+      // 2. 檢查期間：如果輸入的日期比目前的篩選期間還要舊，自動切換到 All
+      let recordDate = new Date(payload.date.replace(/-/g, '/'));
+      if (currentPeriod === '90days') {
+          let cutoff = new Date(); cutoff.setDate(cutoff.getDate() - 90);
+          if (recordDate < cutoff) {
+              currentPeriod = 'all';
+              document.querySelectorAll('.period-btn').forEach(b => {
+                  if (b.getAttribute('data-val') === 'all') b.classList.add('active');
+                  else b.classList.remove('active');
+              });
+              filterChanged = true;
+          }
+      }
+      
+      if (filterChanged) {
+          showToast("已自動調整篩選，以顯示新紀錄！");
+      }
       
       allRecords.push(payload); 
       renderList(); 
