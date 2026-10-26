@@ -45,13 +45,11 @@
       flex-direction: column;
     }
     
-    /* 🌟 新增：滿版深色橫幅外層 */
     .banner-wrapper { 
       width: 100%; 
       background-color: var(--primary-dark); 
     }
     
-    /* 🌟 修改：內部容器限制最大寬度並置中 */
     .banner-container { 
       display: flex; align-items: stretch; width: 100%; max-width: 500px; margin: 0 auto; height: 50px; box-sizing: border-box; 
     }
@@ -241,7 +239,7 @@
     .delete-btn:active { color: var(--danger-color); }
     .record-row.highlight-delete .delete-btn { color: var(--danger-color); }
     
-    .cat-col { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+    .cat-col { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; position: relative; }
     .bp-col-align { display: flex; align-items: center; justify-content: center; width: 100%; }
     .bp-sys { width: 28px; text-align: right; font-weight: bold; color: var(--text-main); }
     .bp-slash { width: 6px; text-align: center; color: #888; font-weight: normal; margin: 0 1px; } 
@@ -376,7 +374,6 @@
   </div>
 
   <div class="sticky-top-panel">
-    <!-- 🌟 滿版橫幅外框 -->
     <div class="banner-wrapper">
       <div class="banner-container">
         <div class="banner-left-bar"></div> 
@@ -958,10 +955,14 @@
                 let sCat = (s < 120) ? 0 : ((s < 130) ? 1 : ((s < 140) ? 2 : 3));
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
-                let flexCenter = "display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 13px; font-weight: 900; font-family: Arial, sans-serif;";
-                if (cat === 1) { catIconHtml = `<div style="${flexCenter} color: #F59E0B;"><svg viewBox="0 0 24 24" width="14" height="14" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>`; } 
-                else if (cat === 2) { catIconHtml = `<div style="${flexCenter} color: #D32F2F;">1</div>`; } 
-                else if (cat === 3) { catIconHtml = `<div style="${flexCenter} color: #D32F2F;">2</div>`; }
+                
+                // 🌟 新增：統一為圓角方塊 (Badge) 設計
+                let boxStyle = "display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 4px; font-size: 13px; font-weight: 900; font-family: -apple-system, sans-serif; line-height: 1;";
+                let arrowSvg = `<svg viewBox="0 0 24 24" width="12" height="12" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="8 6 18 6 18 16"></polyline></svg>`;
+                
+                if (cat === 1) { catIconHtml = `<div style="${boxStyle} background-color: #FBBF24; color: #111111;">${arrowSvg}</div>`; } 
+                else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #F97316; color: #FFFFFF;">1</div>`; } 
+                else if (cat === 3) { catIconHtml = `<div style="${boxStyle} background-color: #EF4444; color: #FFFFFF;">2</div>`; }
             }
             
             let sysHtml = `<span style="font-weight: bold; color: #333333;">${sysStr}</span>`; let diaHtml = `<span style="font-weight: bold; color: #333333;">${diaStr}</span>`;
@@ -1116,10 +1117,13 @@
                     </div>`;
         };
 
-        const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
-        const lblElevated = `Elevated <span style="display: inline-flex; align-items: center; margin-left: 0px;">${svgElevatedLegend}</span>`;
-        const lblStage1 = `Stage <span style="color: #D32F2F;">1</span>`;
-        const lblStage2 = `Stage <span style="color: #D32F2F;">2</span>`;
+        // 🌟 更新 PDF 報表中的圓角圖例
+        const boxStyleLegend = "display: inline-flex; align-items: center; justify-content: center; width: 10px; height: 10px; border-radius: 2px; font-size: 7px; font-weight: 900; font-family: Arial, sans-serif; line-height: 1; margin-left: 3px;";
+        const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="6" height="6" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="8 6 18 6 18 16"></polyline></svg>`;
+        
+        const lblElevated = `Elevated<div style="${boxStyleLegend} background-color: #FBBF24; color: #111111;">${arrowSvgLegend}</div>`;
+        const lblStage1 = `Stage 1<div style="${boxStyleLegend} background-color: #F97316; color: #FFFFFF;">1</div>`;
+        const lblStage2 = `Stage 2<div style="${boxStyleLegend} background-color: #EF4444; color: #FFFFFF;">2</div>`;
 
         tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 260px; box-sizing: border-box; padding-left: 10px; padding-right: 2px; z-index: 1;">`;
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
@@ -1153,10 +1157,14 @@
                 let sCat = (s < 120) ? 0 : ((s < 130) ? 1 : ((s < 140) ? 2 : 3));
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
-                let iconWrapperStyle = "position: absolute; left: 2px; top: 0px; font-size: 8px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif; display: flex; align-items: center;";
-                if (cat === 1) { catIconHtml = `<span style="${iconWrapperStyle} color: #F59E0B;"><svg viewBox="0 0 24 24" width="7" height="7" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>`; } 
-                else if (cat === 2) { catIconHtml = `<span style="${iconWrapperStyle} color: #D32F2F;">1</span>`; } 
-                else if (cat === 3) { catIconHtml = `<span style="${iconWrapperStyle} color: #D32F2F;">2</span>`; }
+                
+                // 🌟 更新 PDF 表格中的圓角徽章設計
+                let boxStyleReport = "position: absolute; left: 3px; top: 8px; display: flex; align-items: center; justify-content: center; width: 12px; height: 12px; border-radius: 2.5px; font-size: 9px; font-weight: 900; font-family: Arial, sans-serif; line-height: 1;";
+                let arrowSvgReport = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="8 6 18 6 18 16"></polyline></svg>`;
+                
+                if (cat === 1) { catIconHtml = `<div style="${boxStyleReport} background-color: #FBBF24; color: #111111;">${arrowSvgReport}</div>`; } 
+                else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #F97316; color: #FFFFFF;">1</div>`; } 
+                else if (cat === 3) { catIconHtml = `<div style="${boxStyleReport} background-color: #EF4444; color: #FFFFFF;">2</div>`; }
             }
             
             let sysCell = record ? `<span style="color: #333333; font-weight: normal;">${sysStr}</span>` : ''; let diaCell = record ? `<span style="color: #333333; font-weight: normal;">${diaStr}</span>` : '';
@@ -1298,14 +1306,11 @@
           heartRate: document.getElementById('heartRate').value, notes: finalNotes 
       };
       
-      let filterChanged = false;
-      
       if (currentTags.length > 0) {
           let hasMatchingTag = currentTags.some(tag => finalNotes.includes(tag));
           if (!hasMatchingTag) {
               currentTags = [];
               document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
-              filterChanged = true;
           }
       }
       
@@ -1318,7 +1323,6 @@
                   if (b.getAttribute('data-val') === 'all') b.classList.add('active');
                   else b.classList.remove('active');
               });
-              filterChanged = true;
           }
       }
       
