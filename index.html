@@ -28,7 +28,7 @@
       --border-color: #CED4DA; 
       --danger-color: #D32F2F;  
       --alert-color: #EA580C;   
-      --warning-color: #EAB308; 
+      --warning-color: #FFC107; 
       --hover-gray: #495057; 
     }
     
@@ -957,13 +957,15 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 更新 2：App 列表區塊使用 flex 完全置中，解決部分字型偏左的問題
+                // 🌟 更新 2：App 列表區塊使用 flex 完全置中，解決部分字型偏左的問題。加入相對定位微調 0.5px
                 let boxStyle = "display: flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 3px; font-size: 11px; font-weight: 900; font-family: -apple-system, Arial, sans-serif; box-sizing: border-box; padding: 0;";
-                let arrowSvg = `<svg viewBox="0 0 24 24" width="10" height="10" stroke="#EAB308" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                
+                // 🌟 更新 1：箭頭顏色改為純亮金黃色 #FFC107
+                let arrowSvg = `<svg viewBox="0 0 24 24" width="10" height="10" stroke="#FFC107" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
                 if (cat === 1) { catIconHtml = `<div style="display: flex; align-items: center; justify-content: center; width: 14px; height: 14px;">${arrowSvg}</div>`; } 
-                else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FFA726; color: #FFFFFF;">1</div>`; } 
-                else if (cat === 3) { catIconHtml = `<div style="${boxStyle} background-color: #EF4444; color: #FFFFFF;">2</div>`; }
+                else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FFA726; color: #FFFFFF;"><span style="position: relative; top: -0.5px;">1</span></div>`; } 
+                else if (cat === 3) { catIconHtml = `<div style="${boxStyle} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -0.5px;">2</span></div>`; }
             }
             
             let sysHtml = `<span style="font-weight: bold; color: #333333;">${sysStr}</span>`; let diaHtml = `<span style="font-weight: bold; color: #333333;">${diaStr}</span>`;
@@ -1117,13 +1119,13 @@
                     </div>`;
         };
 
-        // 🌟 更新 3：PDF 報表圖例，放寬高度並使用 line-height 置中
-        const boxStyleLegend = "display: inline-block; width: 11px; height: 11px; border-radius: 2px; font-size: 8px; font-weight: 900; font-family: Arial, sans-serif; line-height: 11.5px; text-align: center; margin-left: 2px; vertical-align: middle;";
-        const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#EAB308" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+        // 🌟 更新 3：報表圖例，使用 Flexbox 絕對置中，並加上 span 相對推高 (-1px) 抵抗截圖引擎下墜
+        const boxStyleLegend = "display: inline-flex; align-items: center; justify-content: center; width: 11px; height: 11px; border-radius: 2px; font-size: 8px; font-weight: 900; font-family: Arial, sans-serif; text-align: center; margin-left: 2px; vertical-align: middle;";
+        const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
         
-        const lblElevated = `Elevated<div style="display: inline-block; width: 11px; height: 11px; text-align: center; line-height: 11px; margin-left: 2px; vertical-align: middle;">${arrowSvgLegend}</div>`;
-        const lblStage1 = `Stage<div style="${boxStyleLegend} background-color: #FFA726; color: #FFFFFF;">1</div>`;
-        const lblStage2 = `Stage<div style="${boxStyleLegend} background-color: #EF4444; color: #FFFFFF;">2</div>`;
+        const lblElevated = `Elevated<div style="display: inline-flex; align-items: center; justify-content: center; width: 11px; height: 11px; margin-left: 2px; vertical-align: middle;">${arrowSvgLegend}</div>`;
+        const lblStage1 = `Stage<div style="${boxStyleLegend} background-color: #FFA726; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`;
+        const lblStage2 = `Stage<div style="${boxStyleLegend} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -1px;">2</span></div>`;
 
         tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 260px; box-sizing: border-box; padding-left: 10px; padding-right: 2px; z-index: 1;">`;
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
@@ -1158,13 +1160,13 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 更新 3：PDF 格子內文字，以 line-height: 9.5px 硬鎖在 10px 高度方塊的中央
-                let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 9.5px; text-align: center; box-sizing: border-box;";
-                let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#EAB308" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                // 🌟 更新 3：PDF 格子內，使用 Flexbox 絕對置中，並加上 span 相對推高 (-1px) 抵抗截圖引擎下墜
+                let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: flex; align-items: center; justify-content: center; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; box-sizing: border-box;";
+                let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
-                if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 1px; top: 1px; width: 10px; height: 10px; text-align: center; line-height: 9px;">${arrowSvgReport}</div>`; } 
-                else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #FFA726; color: #FFFFFF;">1</div>`; } 
-                else if (cat === 3) { catIconHtml = `<div style="${boxStyleReport} background-color: #EF4444; color: #FFFFFF;">2</div>`; }
+                if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 1px; top: 1px; display:flex; align-items:center; justify-content:center; width: 10px; height: 10px;">${arrowSvgReport}</div>`; } 
+                else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #FFA726; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`; } 
+                else if (cat === 3) { catIconHtml = `<div style="${boxStyleReport} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -1px;">2</span></div>`; }
             }
             
             let sysCell = record ? `<span style="color: #333333; font-weight: normal;">${sysStr}</span>` : ''; let diaCell = record ? `<span style="color: #333333; font-weight: normal;">${diaStr}</span>` : '';
