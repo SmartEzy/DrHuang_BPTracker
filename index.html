@@ -195,9 +195,10 @@
       position: relative;
     }
 
+    /* 🌟 修復 1：重新調整 Grid，加入 18px 獨立欄位給標記 (cat-col) 使用，確保不與 SBP 重疊 */
     .list-header, .record-row { 
       display: grid; 
-      grid-template-columns: 55px 48px 24px 70px 40px 1fr 30px; 
+      grid-template-columns: 55px 48px 18px 70px 40px 1fr 30px; 
       gap: 0px; 
       align-items: center; 
       text-align: center; 
@@ -209,7 +210,7 @@
       padding-left: 20px; padding-right: 20px; box-sizing: border-box;
       margin-top: 10px;
     }
-    .list-header div:nth-child(5) { text-align: center; padding: 0; } 
+    .list-header div:nth-child(4) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 12px; }
 
     .month-section { position: relative; }
@@ -231,7 +232,6 @@
     .record-row.new-day { border-top: 1px solid transparent; }
     .record-row.highlight-delete { background-color: rgba(211, 47, 47, 0.2); border-radius: 6px; }
     
-    .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:nth-child(6) { text-align: left; padding-left: 12px; }
     .record-row div:last-child { display: flex; justify-content: flex-end; padding-right: 2px;}
     
@@ -241,7 +241,7 @@
     .record-row.highlight-delete .delete-btn { color: var(--danger-color); }
     
     .cat-col { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
-    .bp-col-align { display: flex; align-items: center; justify-content: center; width: 100%; position: relative; }
+    .bp-col-align { display: flex; align-items: center; justify-content: center; width: 100%; }
     .bp-sys { width: 28px; text-align: right; font-weight: bold; color: var(--text-main); }
     .bp-slash { width: 6px; text-align: center; color: #888; font-weight: normal; margin: 0 1px; } 
     .bp-dia { width: 28px; text-align: left; font-weight: bold; color: var(--text-main); }
@@ -957,11 +957,11 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 更新 1, 2, 3：放棄 flex，改用純 display: block 保證正方形，並精準 text-align 與 line-height 置中
-                let boxStyle = "position: absolute; left: 2px; top: 1px; width: 14px; height: 14px; border-radius: 3px; font-size: 10px; font-weight: 900; font-family: -apple-system, sans-serif; line-height: 14px; text-align: center; box-sizing: border-box;";
-                let arrowSvg = `<svg viewBox="0 0 24 24" width="11" height="11" stroke="#EAB308" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -2px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                // 🌟 更新 2 & 3：放棄 flex，改用原生 block 確保完美正方形與純黑字，並使用琥珀黃SVG箭頭
+                let boxStyle = "display: block; width: 14px; height: 14px; border-radius: 3px; font-size: 10px; font-weight: 900; font-family: -apple-system, sans-serif; line-height: 14px; text-align: center; box-sizing: border-box;";
+                let arrowSvg = `<svg viewBox="0 0 24 24" width="10" height="10" stroke="#EAB308" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -2px;"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="8 6 18 6 18 16"></polyline></svg>`;
                 
-                if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 2px; top: 1px; width: 14px; height: 14px; text-align: center; line-height: 14px;">${arrowSvg}</div>`; } 
+                if (cat === 1) { catIconHtml = `<div style="display: inline-block; width: 14px; height: 14px; text-align: center; line-height: 14px;">${arrowSvg}</div>`; } 
                 else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FED7AA; color: #111111;">1</div>`; } 
                 else if (cat === 3) { catIconHtml = `<div style="${boxStyle} background-color: #EF4444; color: #FFFFFF;">2</div>`; }
             }
@@ -988,8 +988,8 @@
             html += `
               <div class="record-row ${isNewDay ? 'new-day' : ''}">
                 <div>${displayDateText}</div><div>${formattedTime}</div>
-                <div class="cat-col"></div>
-                <div class="bp-col-align">${catIconHtml}<span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${diaHtml}</span></div>
+                <div class="cat-col">${catIconHtml}</div>
+                <div class="bp-col-align"><span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${diaHtml}</span></div>
                 <div style="font-weight: bold; color: #333333;">${item.heartRate || ''}</div><div class="note-col">${displayNote}</div>
                 <div>
                   <button class="delete-btn" onclick="confirmDelete(this, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}', '${encodedNotes}')" title="Delete">
@@ -1026,7 +1026,6 @@
           monthMap[yyyy_mm][day].push(r);
         });
 
-        // 計算單日平均值
         Object.keys(monthMap).forEach(ym => {
           Object.keys(monthMap[ym]).forEach(day => {
             let dayRecords = monthMap[ym][day];
@@ -1118,13 +1117,13 @@
                     </div>`;
         };
 
-        // 🌟 更新 5：圖例文字使用無空白的 `Stage<div...>` 以縮短間距，並改為純黑色文字
+        // 🌟 更新 5：報表統計圖例 (SVG 琥珀黃箭頭與紅底白字)，緊密對位，圖示取代原本12文字
         const boxStyleLegend = "display: inline-block; width: 9px; height: 9px; border-radius: 2px; font-size: 7px; font-weight: 900; font-family: Arial, sans-serif; line-height: 9px; text-align: center; margin-left: 2px; vertical-align: baseline;";
-        const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="6" height="6" stroke="#EAB308" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+        const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="6" height="6" stroke="#EAB308" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="8 6 18 6 18 16"></polyline></svg>`;
         
         const lblElevated = `Elevated<div style="display: inline-block; width: 9px; height: 9px; text-align: center; line-height: 9px; margin-left: 2px; vertical-align: baseline;">${arrowSvgLegend}</div>`;
-        const lblStage1 = `Stage<div style="${boxStyleLegend} background-color: #FED7AA; color: #111111;">1</div>`;
-        const lblStage2 = `Stage<div style="${boxStyleLegend} background-color: #EF4444; color: #FFFFFF;">2</div>`;
+        const lblStage1 = `Stage <div style="${boxStyleLegend} background-color: #FED7AA; color: #111111;">1</div>`;
+        const lblStage2 = `Stage <div style="${boxStyleLegend} background-color: #EF4444; color: #FFFFFF;">2</div>`;
 
         tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 260px; box-sizing: border-box; padding-left: 10px; padding-right: 2px; z-index: 1;">`;
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
@@ -1159,11 +1158,11 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 更新 4：PDF 中使用行高 10px 鎖死垂直置中，移除絕對定位的錯位，並使用 SVG 箭頭
-                let boxStyleReport = "position: absolute; left: 2px; top: 1px; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 10px; text-align: center; box-sizing: border-box;";
-                let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#EAB308" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                // 🌟 更新 1 & 4：PDF 中統一使用 line-height 確保 html2canvas 垂直置中，並使用 SVG 琥珀黃箭頭
+                let boxStyleReport = "position: absolute; left: 1px; top: 1px; width: 10px; height: 10px; border-radius: 2px; font-size: 7px; font-weight: 900; font-family: Arial, sans-serif; line-height: 10px; text-align: center; box-sizing: border-box;";
+                let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#EAB308" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="8 6 18 6 18 16"></polyline></svg>`;
                 
-                if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 2px; top: 1px; width: 10px; height: 10px; text-align: center; line-height: 10px;">${arrowSvgReport}</div>`; } 
+                if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 1px; top: 1px; width: 10px; height: 10px; text-align: center; line-height: 10px;">${arrowSvgReport}</div>`; } 
                 else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #FED7AA; color: #111111;">1</div>`; } 
                 else if (cat === 3) { catIconHtml = `<div style="${boxStyleReport} background-color: #EF4444; color: #FFFFFF;">2</div>`; }
             }
