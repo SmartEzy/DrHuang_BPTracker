@@ -231,6 +231,7 @@
     .record-row.new-day { border-top: 1px solid transparent; }
     .record-row.highlight-delete { background-color: rgba(211, 47, 47, 0.2); border-radius: 6px; }
     
+    .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:nth-child(6) { text-align: left; padding-left: 12px; }
     .record-row div:last-child { display: flex; justify-content: flex-end; padding-right: 2px;}
     
@@ -956,12 +957,12 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 更新 1 & 2：使用區塊完全置中，並套用深灰色文字 (#495057) 與 琥珀黃箭頭
-                let boxStyle = "display: block; width: 14px; height: 14px; border-radius: 3px; font-size: 11px; font-weight: 900; font-family: -apple-system, Arial, sans-serif; line-height: 14px; text-align: center; box-sizing: border-box;";
-                let arrowSvg = `<svg viewBox="0 0 24 24" width="12" height="12" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -2px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                // 🌟 更新 1,2,3：絕對正方形、琥珀色箭頭無底、純白文字與深灰文字
+                let boxStyle = "display: block; width: 14px; height: 14px; border-radius: 3px; font-size: 10px; font-weight: 900; font-family: -apple-system, sans-serif; line-height: 14px; text-align: center; box-sizing: border-box;";
+                let arrowSvg = `<svg viewBox="0 0 24 24" width="10" height="10" stroke="#F59E0B" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -2px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
                 if (cat === 1) { catIconHtml = `<div style="display: inline-block; width: 14px; height: 14px; text-align: center; line-height: 14px;">${arrowSvg}</div>`; } 
-                else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FED7AA; color: #495057;">1</div>`; } 
+                else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FB923C; color: #FFFFFF;">1</div>`; } 
                 else if (cat === 3) { catIconHtml = `<div style="${boxStyle} background-color: #EF4444; color: #FFFFFF;">2</div>`; }
             }
             
@@ -1025,6 +1026,7 @@
           monthMap[yyyy_mm][day].push(r);
         });
 
+        // 計算單日平均值
         Object.keys(monthMap).forEach(ym => {
           Object.keys(monthMap[ym]).forEach(day => {
             let dayRecords = monthMap[ym][day];
@@ -1116,13 +1118,13 @@
                     </div>`;
         };
 
-        // 🌟 更新 5：圖例的字體對位，強制使用行高置中與微負 margin 推擠
-        const boxStyleLegend = "display: inline-block; width: 11px; height: 11px; border-radius: 2px; font-size: 8px; font-weight: 900; font-family: Arial, sans-serif; line-height: 11.5px; text-align: center; margin-left: 2px; vertical-align: middle;";
-        const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="9" height="9" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+        // 🌟 更新 5：圖例文字間距縮緊，並且解決套件渲染消失問題
+        const boxStyleLegend = "display: inline-block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 10px; text-align: center; margin-left: 2px; vertical-align: baseline;";
+        const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
         
-        const lblElevated = `Elevated<div style="display: inline-block; width: 11px; height: 11px; text-align: center; margin-left: 2px; vertical-align: middle;">${arrowSvgLegend}</div>`;
-        const lblStage1 = `Stage<div style="${boxStyleLegend} background-color: #FED7AA; color: #495057;"><div style="margin-top: -1.5px;">1</div></div>`;
-        const lblStage2 = `Stage<div style="${boxStyleLegend} background-color: #EF4444; color: #FFFFFF;"><div style="margin-top: -1.5px;">2</div></div>`;
+        const lblElevated = `Elevated<div style="display: inline-block; width: 10px; height: 10px; text-align: center; line-height: 10px; margin-left: 2px; vertical-align: baseline;">${arrowSvgLegend}</div>`;
+        const lblStage1 = `Stage<div style="${boxStyleLegend} background-color: #FB923C; color: #FFFFFF;">1</div>`;
+        const lblStage2 = `Stage<div style="${boxStyleLegend} background-color: #EF4444; color: #FFFFFF;">2</div>`;
 
         tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 260px; box-sizing: border-box; padding-left: 10px; padding-right: 2px; z-index: 1;">`;
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
@@ -1157,13 +1159,13 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 更新 3：PDF 中字體置中防呆，使用內部 div margin-top 負推擠
-                let boxStyleReport = "position: absolute; left: 1px; top: 1px; width: 11px; height: 11px; border-radius: 2px; font-size: 8px; font-weight: 900; font-family: Arial, sans-serif; line-height: 11.5px; text-align: center; box-sizing: border-box;";
-                let arrowSvgReport = `<svg viewBox="0 0 24 24" width="9" height="9" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                // 🌟 更新 4：PDF 格子內使用 line-height 置中，不再使用負 margin 導致的消失或錯位
+                let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 10px; text-align: center; box-sizing: border-box;";
+                let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
-                if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 1px; top: 1px; width: 11px; height: 11px; text-align: center; line-height: 11px;">${arrowSvgReport}</div>`; } 
-                else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #FED7AA; color: #495057;"><div style="margin-top: -1.5px;">1</div></div>`; } 
-                else if (cat === 3) { catIconHtml = `<div style="${boxStyleReport} background-color: #EF4444; color: #FFFFFF;"><div style="margin-top: -1.5px;">2</div></div>`; }
+                if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 1px; top: 1px; width: 10px; height: 10px; text-align: center; line-height: 10px;">${arrowSvgReport}</div>`; } 
+                else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #FB923C; color: #FFFFFF;">1</div>`; } 
+                else if (cat === 3) { catIconHtml = `<div style="${boxStyleReport} background-color: #EF4444; color: #FFFFFF;">2</div>`; }
             }
             
             let sysCell = record ? `<span style="color: #333333; font-weight: normal;">${sysStr}</span>` : ''; let diaCell = record ? `<span style="color: #333333; font-weight: normal;">${diaStr}</span>` : '';
@@ -1217,7 +1219,8 @@
                     setTimeout(() => { document.body.removeChild(link); window.URL.revokeObjectURL(url); showToast('Finished!'); closeImagePreview(); }, 100);
                 };
 
-                if (navigator.share && /mobile|android|iphone|ipad|Macintosh/i.test(navigator.userAgent)) {
+                // 🌟 更新：精確限制，僅在真正的手機裝置上彈出系統分享選單，電腦一律直接下載！
+                if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                     try {
                         const file = new File([pdfBlob], `${currentExportFilename}.pdf`, { type: 'application/pdf' });
                         await navigator.share({ files: [file] }); showToast('Finished!'); closeImagePreview();
@@ -1236,7 +1239,7 @@
                         setTimeout(() => { document.body.removeChild(link); window.URL.revokeObjectURL(url); showToast('Finished!'); closeImagePreview(); }, 100);
                     };
 
-                    if (navigator.share && /mobile|android|iphone|ipad|Macintosh/i.test(navigator.userAgent)) {
+                    if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                         try {
                             const file = new File([blob], `${currentExportFilename}.jpg`, { type: 'image/jpeg' });
                             await navigator.share({ files: [file] }); showToast('Finished!'); closeImagePreview();
