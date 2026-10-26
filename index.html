@@ -195,10 +195,10 @@
       position: relative;
     }
 
-    /* 🌟 修改 2：優化 Grid，移除原本的標記專用欄位，節省空間 */
+    /* 🌟 修復 1：恢復 7 欄位專屬排版，讓標記有獨立空間並置中 */
     .list-header, .record-row { 
       display: grid; 
-      grid-template-columns: 55px 48px 90px 40px 1fr 30px; 
+      grid-template-columns: 55px 48px 24px 70px 40px 1fr 30px; 
       gap: 0px; 
       align-items: center; 
       text-align: center; 
@@ -210,9 +210,8 @@
       padding-left: 20px; padding-right: 20px; box-sizing: border-box;
       margin-top: 10px;
     }
-    /* 🌟 同步更新對齊目標欄位 */
-    .list-header div:nth-child(4) { text-align: center; padding: 0; } 
-    .list-header div:nth-child(5) { text-align: left; padding-left: 12px; }
+    .list-header div:nth-child(5) { text-align: center; padding: 0; } 
+    .list-header div:nth-child(6) { text-align: left; padding-left: 12px; }
 
     .month-section { position: relative; }
     
@@ -233,9 +232,8 @@
     .record-row.new-day { border-top: 1px solid transparent; }
     .record-row.highlight-delete { background-color: rgba(211, 47, 47, 0.2); border-radius: 6px; }
     
-    /* 🌟 同步更新對齊目標欄位 */
-    .record-row div:nth-child(4) { text-align: center; padding: 0; font-weight: bold; } 
-    .record-row div:nth-child(5) { text-align: left; padding-left: 12px; }
+    .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
+    .record-row div:nth-child(6) { text-align: left; padding-left: 12px; }
     .record-row div:last-child { display: flex; justify-content: flex-end; padding-right: 2px;}
     
     .delete-btn { background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; display: flex; justify-content: flex-end; align-items: center; transition: color 0.2s; }
@@ -243,7 +241,9 @@
     .delete-btn:active { color: var(--danger-color); }
     .record-row.highlight-delete .delete-btn { color: var(--danger-color); }
     
-    .bp-col-align { display: flex; align-items: center; justify-content: center; width: 100%; position: relative; }
+    /* 🌟 新增標記專屬區塊的對齊設定 */
+    .cat-col { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+    .bp-col-align { display: flex; align-items: center; justify-content: center; width: 100%; }
     .bp-sys { width: 28px; text-align: right; font-weight: bold; color: var(--text-main); }
     .bp-slash { width: 6px; text-align: center; color: #888; font-weight: normal; margin: 0 1px; } 
     .bp-dia { width: 28px; text-align: left; font-weight: bold; color: var(--text-main); }
@@ -490,7 +490,7 @@
     
     <div class="container" style="padding-top: 0; padding-bottom: 0px;">
       <div class="list-header">
-        <div></div> <div>Time</div> <div>BP</div> <div>HR</div> <div>Notes</div> <div></div>
+        <div></div> <div>Time</div> <div></div> <div>BP</div> <div>HR</div> <div>Notes</div> <div></div>
       </div>
     </div>
   </div> 
@@ -959,11 +959,11 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 更新 2 & 3：縮小圓角標記，服貼於血壓值的左上角，並使用淡色系底色＋純黑文字
-                let boxStyle = "position: absolute; left: 8px; top: 0px; display: flex; align-items: center; justify-content: center; width: 12px; height: 12px; border-radius: 3px; font-size: 9px; font-weight: 900; font-family: -apple-system, sans-serif; line-height: 1;";
-                let arrowSvg = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="currentColor" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><line x1="6" y1="18" x2="18" y2="6"></line><polyline points="8 6 18 6 18 16"></polyline></svg>`;
+                // 🌟 更新 2 & 3：移除絕對座標，改用專屬欄位置中。套用淡色底純黑字。
+                let boxStyle = "display: flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 4px; font-size: 10px; font-weight: 900; font-family: -apple-system, sans-serif; line-height: 1;";
+                let arrowSvg = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="#F59E0B" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
-                if (cat === 1) { catIconHtml = `<div style="${boxStyle} background-color: #FEF08A; color: #111111;">${arrowSvg}</div>`; } 
+                if (cat === 1) { catIconHtml = `<div style="display:flex; align-items:center; justify-content:center;">${arrowSvg}</div>`; } 
                 else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FED7AA; color: #111111;">1</div>`; } 
                 else if (cat === 3) { catIconHtml = `<div style="${boxStyle} background-color: #FECACA; color: #111111;">2</div>`; }
             }
@@ -990,7 +990,8 @@
             html += `
               <div class="record-row ${isNewDay ? 'new-day' : ''}">
                 <div>${displayDateText}</div><div>${formattedTime}</div>
-                <div class="bp-col-align" style="position: relative;">${catIconHtml}<span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${diaHtml}</span></div>
+                <div class="cat-col">${catIconHtml}</div>
+                <div class="bp-col-align"><span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${diaHtml}</span></div>
                 <div style="font-weight: bold; color: #333333;">${item.heartRate || ''}</div><div class="note-col">${displayNote}</div>
                 <div>
                   <button class="delete-btn" onclick="confirmDelete(this, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}', '${encodedNotes}')" title="Delete">
@@ -1027,7 +1028,6 @@
           monthMap[yyyy_mm][day].push(r);
         });
 
-        // 計算單日平均值
         Object.keys(monthMap).forEach(ym => {
           Object.keys(monthMap[ym]).forEach(day => {
             let dayRecords = monthMap[ym][day];
@@ -1119,13 +1119,13 @@
                     </div>`;
         };
 
-        // 🌟 更新 1 & 3：PDF 報表中的圓角圖例使用原生文字置中，並套用淡色底黑字
-        const boxStyleLegend = "display: inline-block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 10.5px; text-align: center; margin-left: 3px; vertical-align: baseline;";
-        const arrowHtmlLegend = `↗`;
+        // 🌟 更新 1：報表統計圖例 (SVG 箭頭與淡色框精準置中)
+        const boxStyleLegend = "display: inline-flex; align-items: center; justify-content: center; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 1; margin-left: 3px; vertical-align: middle;";
+        const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
         
-        const lblElevated = `Elevated<div style="${boxStyleLegend} background-color: #FEF08A; color: #111111;">${arrowHtmlLegend}</div>`;
-        const lblStage1 = `Stage 1<div style="${boxStyleLegend} background-color: #FED7AA; color: #111111;">1</div>`;
-        const lblStage2 = `Stage 2<div style="${boxStyleLegend} background-color: #FECACA; color: #111111;">2</div>`;
+        const lblElevated = `Elevated<div style="display: inline-flex; align-items: center; justify-content: center; margin-left: 3px; vertical-align: middle;">${arrowSvgLegend}</div>`;
+        const lblStage1 = `Stage <div style="${boxStyleLegend} background-color: #FED7AA; color: #111111;">1</div>`;
+        const lblStage2 = `Stage <div style="${boxStyleLegend} background-color: #FECACA; color: #111111;">2</div>`;
 
         tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 260px; box-sizing: border-box; padding-left: 10px; padding-right: 2px; z-index: 1;">`;
         tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
@@ -1160,11 +1160,11 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 更新 1 & 3：PDF 中使用 line-height 確保 html2canvas 置中，縮小尺寸至 10px，淡底黑字
-                let boxStyleReport = "position: absolute; left: 2px; top: 2px; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 10.5px; text-align: center; box-sizing: border-box;";
-                let arrowHtmlReport = `↗`;
+                // 🌟 更新 1：PDF 儲存格內的圖示使用 SVG，絕不偏位
+                let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: flex; align-items: center; justify-content: center; width: 8px; height: 8px; border-radius: 1.5px; font-size: 6.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 1; box-sizing: border-box;";
+                let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
-                if (cat === 1) { catIconHtml = `<div style="${boxStyleReport} background-color: #FEF08A; color: #111111;">${arrowHtmlReport}</div>`; } 
+                if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 1px; top: 1px; display:flex; align-items:center; justify-content:center;">${arrowSvgReport}</div>`; } 
                 else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #FED7AA; color: #111111;">1</div>`; } 
                 else if (cat === 3) { catIconHtml = `<div style="${boxStyleReport} background-color: #FECACA; color: #111111;">2</div>`; }
             }
@@ -1308,11 +1308,14 @@
           heartRate: document.getElementById('heartRate').value, notes: finalNotes 
       };
       
+      let filterChanged = false;
+      
       if (currentTags.length > 0) {
           let hasMatchingTag = currentTags.some(tag => finalNotes.includes(tag));
           if (!hasMatchingTag) {
               currentTags = [];
               document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+              filterChanged = true;
           }
       }
       
@@ -1325,6 +1328,7 @@
                   if (b.getAttribute('data-val') === 'all') b.classList.add('active');
                   else b.classList.remove('active');
               });
+              filterChanged = true;
           }
       }
       
