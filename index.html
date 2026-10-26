@@ -28,7 +28,7 @@
       --border-color: #CED4DA; 
       --danger-color: #D32F2F;  
       --alert-color: #EA580C;   
-      --warning-color: #F59E0B; 
+      --warning-color: #EAB308; 
       --hover-gray: #495057; 
     }
     
@@ -957,11 +957,10 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 更新 2：改用 flex 絕對置中，強制 14x14px 完美正方形並置中數字
+                // 🌟 更新 2：App 列表區塊使用 flex 完全置中，解決部分字型偏左的問題
                 let boxStyle = "display: flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 3px; font-size: 11px; font-weight: 900; font-family: -apple-system, Arial, sans-serif; box-sizing: border-box; padding: 0;";
-                let arrowSvg = `<svg viewBox="0 0 24 24" width="10" height="10" stroke="#F59E0B" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                let arrowSvg = `<svg viewBox="0 0 24 24" width="10" height="10" stroke="#EAB308" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
-                // 🌟 更新 1：使用較亮的橘色 (#FFA726) 搭配白字
                 if (cat === 1) { catIconHtml = `<div style="display: flex; align-items: center; justify-content: center; width: 14px; height: 14px;">${arrowSvg}</div>`; } 
                 else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FFA726; color: #FFFFFF;">1</div>`; } 
                 else if (cat === 3) { catIconHtml = `<div style="${boxStyle} background-color: #EF4444; color: #FFFFFF;">2</div>`; }
@@ -1118,11 +1117,11 @@
                     </div>`;
         };
 
-        // 🌟 更新 3：報表圖例放棄可能出錯的 margin-top 負值，直接使用小於字體的絕對行高硬頂 (line-height: 9.5px)
-        const boxStyleLegend = "display: inline-block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 9.5px; text-align: center; margin-left: 2px; vertical-align: baseline;";
-        const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+        // 🌟 更新 3：PDF 報表圖例，放寬高度並使用 line-height 置中
+        const boxStyleLegend = "display: inline-block; width: 11px; height: 11px; border-radius: 2px; font-size: 8px; font-weight: 900; font-family: Arial, sans-serif; line-height: 11.5px; text-align: center; margin-left: 2px; vertical-align: middle;";
+        const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#EAB308" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
         
-        const lblElevated = `Elevated<div style="display: inline-block; width: 10px; height: 10px; text-align: center; line-height: 10px; margin-left: 2px; vertical-align: baseline;">${arrowSvgLegend}</div>`;
+        const lblElevated = `Elevated<div style="display: inline-block; width: 11px; height: 11px; text-align: center; line-height: 11px; margin-left: 2px; vertical-align: middle;">${arrowSvgLegend}</div>`;
         const lblStage1 = `Stage<div style="${boxStyleLegend} background-color: #FFA726; color: #FFFFFF;">1</div>`;
         const lblStage2 = `Stage<div style="${boxStyleLegend} background-color: #EF4444; color: #FFFFFF;">2</div>`;
 
@@ -1159,9 +1158,9 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 更新 3：PDF 格子內文字，同樣套用 line-height: 9.5px 絕對置中，確保 html2canvas 繪圖成功
+                // 🌟 更新 3：PDF 格子內文字，以 line-height: 9.5px 硬鎖在 10px 高度方塊的中央
                 let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 9.5px; text-align: center; box-sizing: border-box;";
-                let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#EAB308" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
                 if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 1px; top: 1px; width: 10px; height: 10px; text-align: center; line-height: 9px;">${arrowSvgReport}</div>`; } 
                 else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #FFA726; color: #FFFFFF;">1</div>`; } 
@@ -1219,7 +1218,6 @@
                     setTimeout(() => { document.body.removeChild(link); window.URL.revokeObjectURL(url); showToast('Finished!'); closeImagePreview(); }, 100);
                 };
 
-                // 🌟 更新：強制偵測手機設備，如果是電腦 (Mac/Win) 就直接走 fallbackDownload 下載，不跳分享！
                 if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                     try {
                         const file = new File([pdfBlob], `${currentExportFilename}.pdf`, { type: 'application/pdf' });
