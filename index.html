@@ -963,8 +963,9 @@
                 // 🌟 更新 1：箭頭顏色改為純亮金黃色 #FFC107
                 let arrowSvg = `<svg viewBox="0 0 24 24" width="10" height="10" stroke="#FFC107" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
+                // 🌟 再次更新 1：替換橘色為 #FAA05F
                 if (cat === 1) { catIconHtml = `<div style="display: flex; align-items: center; justify-content: center; width: 14px; height: 14px;">${arrowSvg}</div>`; } 
-                else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FFA726; color: #FFFFFF;"><span style="position: relative; top: -0.5px;">1</span></div>`; } 
+                else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FAA05F; color: #FFFFFF;"><span style="position: relative; top: -0.5px;">1</span></div>`; } 
                 else if (cat === 3) { catIconHtml = `<div style="${boxStyle} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -0.5px;">2</span></div>`; }
             }
             
@@ -1028,6 +1029,7 @@
           monthMap[yyyy_mm][day].push(r);
         });
 
+        // 計算單日平均值
         Object.keys(monthMap).forEach(ym => {
           Object.keys(monthMap[ym]).forEach(day => {
             let dayRecords = monthMap[ym][day];
@@ -1119,19 +1121,21 @@
                     </div>`;
         };
 
-        // 🌟 更新 3：報表圖例，使用 Flexbox 絕對置中，並加上 span 相對推高 (-1px) 抵抗截圖引擎下墜
-        const boxStyleLegend = "display: inline-flex; align-items: center; justify-content: center; width: 11px; height: 11px; border-radius: 2px; font-size: 8px; font-weight: 900; font-family: Arial, sans-serif; text-align: center; margin-left: 2px; vertical-align: middle;";
-        const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+        // 🌟 更新 3：報表圖例放棄可能出錯的 margin-top 負值，直接使用小於字體的絕對行高硬頂 (line-height: 9.5px)
+        const boxStyleLegend = "display: inline-block; width: 11px; height: 11px; border-radius: 2px; font-size: 8px; font-weight: 900; font-family: Arial, sans-serif; line-height: 11.5px; text-align: center; margin-left: 2px; vertical-align: middle;";
+        const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
         
         const lblElevated = `Elevated<div style="display: inline-flex; align-items: center; justify-content: center; width: 11px; height: 11px; margin-left: 2px; vertical-align: middle;">${arrowSvgLegend}</div>`;
-        const lblStage1 = `Stage<div style="${boxStyleLegend} background-color: #FFA726; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`;
+        
+        // 🌟 再次更新 1：替換橘色為 #FAA05F
+        const lblStage1 = `Stage<div style="${boxStyleLegend} background-color: #FAA05F; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`;
         const lblStage2 = `Stage<div style="${boxStyleLegend} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -1px;">2</span></div>`;
 
         tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 260px; box-sizing: border-box; padding-left: 10px; padding-right: 2px; z-index: 1;">`;
-        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
-        tableHtml += renderStatCenter(lblElevated, `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80');
+        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '< 120 / 80');
+        tableHtml += renderStatCenter(lblElevated, `${pctElevated}%`, '#111111', '120 - 129 / < 80');
         tableHtml += renderStatCenter(lblStage1, `${pctStage1}%`, '#111111', '130 - 139 / 80 - 89');
-        tableHtml += renderStatCenter(lblStage2, `${pctStage2}%`, '#111111', '&ge; 140 / &ge; 90');
+        tableHtml += renderStatCenter(lblStage2, `${pctStage2}%`, '#111111', '≥ 140 / ≥ 90');
         tableHtml += `</div>`;
         tableHtml += `</div></th></tr>`;
         
@@ -1164,8 +1168,9 @@
                 let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: flex; align-items: center; justify-content: center; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; box-sizing: border-box;";
                 let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
+                // 🌟 再次更新 1：替換橘色為 #FAA05F
                 if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 1px; top: 1px; display:flex; align-items:center; justify-content:center; width: 10px; height: 10px;">${arrowSvgReport}</div>`; } 
-                else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #FFA726; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`; } 
+                else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #FAA05F; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`; } 
                 else if (cat === 3) { catIconHtml = `<div style="${boxStyleReport} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -1px;">2</span></div>`; }
             }
             
@@ -1220,6 +1225,7 @@
                     setTimeout(() => { document.body.removeChild(link); window.URL.revokeObjectURL(url); showToast('Finished!'); closeImagePreview(); }, 100);
                 };
 
+                // 🌟 更新 1：強制偵測手機設備，如果是電腦 (Mac/Win) 就直接走 fallbackDownload 下載，不跳分享！
                 if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                     try {
                         const file = new File([pdfBlob], `${currentExportFilename}.pdf`, { type: 'application/pdf' });
@@ -1239,6 +1245,7 @@
                         setTimeout(() => { document.body.removeChild(link); window.URL.revokeObjectURL(url); showToast('Finished!'); closeImagePreview(); }, 100);
                     };
 
+                    // 🌟 同樣更新：電腦直下 JPEG，手機才跳分享
                     if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                         try {
                             const file = new File([blob], `${currentExportFilename}.jpg`, { type: 'image/jpeg' });
