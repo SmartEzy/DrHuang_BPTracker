@@ -99,7 +99,7 @@
     .notes-save-row button.primary-btn { width: 105px; margin-top: 0; padding: 12px 0; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: all 0.2s; }
     .notes-save-row button.primary-btn:active { box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
-    .quick-tags-container { display: flex; gap: 8px; margin-top: 0; margin-bottom: 10px; overflow-x: auto; padding-bottom: 2px; }
+    .quick-tags-container { display: flex; gap: 8px; margin-top: 0; margin-bottom: 2px; overflow-x: auto; padding-bottom: 2px; }
     .quick-tags-container::-webkit-scrollbar { display: none; } 
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     .quick-tag-btn:active { background-color: #CBD5E1; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
@@ -145,10 +145,10 @@
     }
 
     .tag-btn { 
-      background: transparent; color: #F8FAFC; border: none; padding: 0 10px; /* 調整了 padding，讓文字類的按鈕也能顯示良好 */
-      height: 32px; min-width: 32px; 
+      background: transparent; color: #F8FAFC; border: none; padding: 0; 
+      height: 32px; width: 32px; min-width: 32px; 
       font-size: 14px; font-weight: bold; cursor: pointer; 
-      border-radius: 16px; /* 稍微改成膠囊狀以適應純文字，如果您堅持圓形可改回 50% */
+      border-radius: 50%; 
       transition: all 0.2s; display: flex; align-items: center; justify-content: center;
       text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.7);
     }
@@ -450,10 +450,14 @@
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🍷')">🍷</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃')">🏃</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕')">🤕</button>
-          
-          <!-- 🌟 新增：兩個新的快速標籤按鈕，讓您不用手打就能標記藥物 -->
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('[A藥]')">💊 A藥</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('[B藥]')">💊 B藥</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🅰️')">🅰️</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🅱️')">🅱️</button>
+        </div>
+        
+        <!-- 🌟 微型對照表：您可以在這裡直接修改文字，將其改為您的實際藥物名稱 -->
+        <div style="font-size: 11px; color: #8FA3B8; text-align: right; margin-top: -3px; margin-bottom: 8px; padding-right: 2px; font-weight: bold;">
+          <span style="margin-left: 8px;">🅰️ 藥物名稱</span>
+          <span style="margin-left: 8px;">🅱️ 藥物名稱</span>
         </div>
       </form>
     </div>
@@ -473,11 +477,12 @@
               <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
             </svg>
           </button>
-          
-          <!-- 🌟 新增：A/B 藥物過濾按鈕，點擊後圖表和列表都會只顯示有吃這款藥的紀錄 -->
-          <button class="filter-btn tag-btn" data-tag="[A藥]" style="width: auto; padding: 0 10px;">A藥</button>
-          <button class="filter-btn tag-btn" data-tag="[B藥]" style="width: auto; padding: 0 10px;">B藥</button>
-          
+          <!-- 🌟 補回原本在 3M 列消失的院所與酒類標籤，並加入藥物 A/B 的篩選功能 -->
+          <button class="filter-btn tag-btn" data-tag="🏥">🏥</button>
+          <button class="filter-btn tag-btn" data-tag="🍷">🍷</button>
+          <button class="filter-btn tag-btn" data-tag="☕">☕</button>
+          <button class="filter-btn tag-btn" data-tag="🅰️">🅰️</button>
+          <button class="filter-btn tag-btn" data-tag="🅱️">🅱️</button>
           <button class="clear-tags-btn" onclick="clearTags()" title="Clear Filters">✕</button>
         </div>
       </div>
@@ -690,7 +695,7 @@
       const h = parseInt(timeVal.split(':')[0], 10);
       const notesInput = document.getElementById('notes');
       
-      // 🌟 更新 1：強制根據當前時間拔除或加入 [報表] 標籤
+      // 🌟 生命週期修復：如果不是早上，則強迫清除自動加入的 [報表] 標籤
       let currentNotes = notesInput.value;
       if (h >= 4 && h < 10) {
         if (!currentNotes.includes('[報表]')) {
@@ -698,7 +703,6 @@
           currentNotes += '[報表]';
         }
       } else {
-        // 如果現在不是早上，強制把 [報表] 拔除
         if (currentNotes.includes('[報表]')) {
           currentNotes = currentNotes.replace(/\[報表\]/g, '').replace(/,\s*,/g, ',').replace(/^,\s*/, '').replace(/,\s*$/, '').trim();
         }
@@ -709,7 +713,7 @@
     document.getElementById('time').addEventListener('change', checkMorningTag);
     checkMorningTag();
     
-    // 🌟 更新 1：當網頁從背景回來時（iPad 重新喚醒），強制更新時間並檢查標籤
+    // 🌟 生命週期修復：當 iPad 將網頁從背景喚醒時，強制更新時間並重啟判斷機制
     document.addEventListener('visibilitychange', function() {
       if (!document.hidden) {
         let curr = new Date();
@@ -981,11 +985,11 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 更新 2：完全防呆置中，使用 Flexbox 的 align-items 和 justify-content 確保無襯線字體不會因為字距而偏左
+                // 🌟 修正 2：確保文字使用 Flex 完全置中，不管字體特性都不會偏左
                 let boxStyle = "display: flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 3px; font-size: 11px; font-weight: 900; font-family: -apple-system, Arial, sans-serif; box-sizing: border-box; padding: 0;";
                 let arrowSvg = `<svg viewBox="0 0 24 24" width="10" height="10" stroke="#FFC107" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
-                // 🌟 修正 1：橘色改回稍亮的 #FFA726 以免太深
+                // 🌟 修正 1：淡化橘色為 #FFA726 (琥珀橘)，並使用純白字
                 if (cat === 1) { catIconHtml = `<div style="display: flex; align-items: center; justify-content: center; width: 14px; height: 14px;">${arrowSvg}</div>`; } 
                 else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FFA726; color: #FFFFFF;">1</div>`; } 
                 else if (cat === 3) { catIconHtml = `<div style="${boxStyle} background-color: #EF4444; color: #FFFFFF;">2</div>`; }
@@ -1005,9 +1009,7 @@
             let displayNote = (item.notes || '')
                 .replace(/☕ 咖啡/g, iconWrap('☕', 0)).replace(/🍷 酒/g, iconWrap('🍷', 0)).replace(/🏃 運動/g, iconWrap('🏃', 0))
                 .replace(/💊 吃藥/g, iconWrap('💊', 0)).replace(/🤕 頭痛/g, iconWrap('🤕', 0)).replace(/🏥 院所/g, iconWrap('🏥', 0))
-                .replace(/\[報表\]/g, reportSvg)
-                .replace(/\[A藥\]/g, `<span style="display: inline-flex; align-items: center; justify-content: center; background-color: #E2E8F0; border-radius: 4px; padding: 2px 4px; font-size: 11px; font-weight: bold; color: #495057;">💊 A藥</span>`)
-                .replace(/\[B藥\]/g, `<span style="display: inline-flex; align-items: center; justify-content: center; background-color: #E2E8F0; border-radius: 4px; padding: 2px 4px; font-size: 11px; font-weight: bold; color: #495057;">💊 B藥</span>`);
+                .replace(/\[報表\]/g, reportSvg);
             
             displayNote = displayNote.replace(/, /g, '').replace(/,/g, '');
             let encodedNotes = encodeURIComponent(item.notes || '');
@@ -1145,8 +1147,8 @@
                     </div>`;
         };
 
-        // 🌟 更新 3：PDF 圖例強制相對位移 (top: -1px)，利用 HTML 渲染對抗截圖引擎的下沉
-        const boxStyleLegend = "display: inline-block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; text-align: center; margin-left: 2px; vertical-align: middle;";
+        // 🌟 修正 3：報表圖例，使用 span 相對定位 (-1px) 絕對推高字元，這是對抗截圖套件下墜的唯一解法
+        const boxStyleLegend = "display: inline-block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 10px; text-align: center; margin-left: 2px; vertical-align: middle;";
         const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
         
         const lblElevated = `Elevated<div style="display: inline-flex; align-items: center; justify-content: center; width: 10px; height: 10px; margin-left: 2px; vertical-align: middle;">${arrowSvgLegend}</div>`;
@@ -1186,8 +1188,8 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 更新 3：PDF 格子內文字，同樣套用相對位移 (top: -1px)
-                let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 9.5px; text-align: center; box-sizing: border-box;";
+                // 🌟 修正 3：PDF 格子內，同樣使用 span 相對定位 (-1px) 絕對推高字元
+                let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 10px; text-align: center; box-sizing: border-box;";
                 let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
                 if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 1px; top: 1px; display:flex; align-items:center; justify-content:center; width: 10px; height: 10px;">${arrowSvgReport}</div>`; } 
