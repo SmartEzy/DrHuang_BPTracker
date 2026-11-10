@@ -99,9 +99,9 @@
     .notes-save-row button.primary-btn { width: 105px; margin-top: 0; padding: 12px 0; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: all 0.2s; }
     .notes-save-row button.primary-btn:active { box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
-    .quick-tags-container { display: flex; gap: 8px; margin-top: 0; margin-bottom: 2px; overflow-x: auto; padding-bottom: 2px; }
+    .quick-tags-container { display: flex; gap: 8px; margin-top: 0; margin-bottom: 2px; overflow-x: auto; padding-bottom: 4px; align-items: center; }
     .quick-tags-container::-webkit-scrollbar { display: none; } 
-    .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); flex-shrink: 0; }
     .quick-tag-btn:active { background-color: #CBD5E1; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
     .filter-wrapper {
@@ -356,6 +356,28 @@
 
   <div id="toastMsg" class="toast-msg"></div>
 
+  <!-- 🌟 新增：藥物標籤設定視窗 (Modal) -->
+  <div id="drugManagerModal" class="image-preview-modal" style="align-items: center; justify-content: center; z-index: 10002;">
+    <div style="background: #FFFFFF; width: 90%; max-width: 340px; border-radius: 16px; padding: 24px; box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+      <h3 style="margin-top: 0; color: var(--primary-dark); font-size: 18px; margin-bottom: 16px;">⚙️ 藥物標籤設定</h3>
+      
+      <!-- 現有藥物列表會渲染在這裡 -->
+      <div id="drugList" style="margin-bottom: 16px; max-height: 200px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px;"></div>
+      
+      <!-- 新增藥物輸入區 -->
+      <div style="display: flex; gap: 8px; margin-bottom: 20px;">
+        <input type="text" id="newDrugCode" placeholder="代號(如:D)" style="width: 35%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-weight: bold; text-align: center; text-transform: uppercase;" maxlength="2">
+        <input type="text" id="newDrugName" placeholder="全名(如:Diovan)" style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
+      </div>
+      
+      <!-- 視窗按鈕 -->
+      <div style="display: flex; gap: 12px;">
+          <button type="button" onclick="closeDrugManager()" style="flex: 1; padding: 12px; background: #F1F5F9; border: none; border-radius: 8px; font-weight: bold; color: var(--primary-dark); cursor: pointer;">完成</button>
+          <button type="button" onclick="addDrug()" style="flex: 1; padding: 12px; background: var(--primary-color); border: none; border-radius: 8px; font-weight: bold; color: #FFF; cursor: pointer;">新增藥物</button>
+      </div>
+    </div>
+  </div>
+
   <div id="imagePreviewModal" class="image-preview-modal">
     <div class="preview-header">
       <button class="preview-close-btn" onclick="closeImagePreview()">✕</button>
@@ -451,16 +473,12 @@
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃')">🏃</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕')">🤕</button>
           
-          <!-- 🌟 升級版快捷鍵：直接使用 C 和 I 的英文字母，不需依靠系統 Emoji -->
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('[C]')">💊 C</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('[I]')">💊 I</button>
+          <!-- 🌟 動態產生的藥物快捷鍵將注入於此 -->
+          <span id="dynamicQuickTags" style="display: contents;"></span>
         </div>
         
-        <!-- 🌟 微型對照表：提醒 C 和 I 代表什麼藥物 -->
-        <div style="font-size: 11px; color: #8FA3B8; text-align: right; margin-top: -3px; margin-bottom: 8px; padding-right: 2px; font-weight: bold;">
-          <span style="margin-left: 8px;">💊 C: Concor 1.25</span>
-          <span style="margin-left: 8px;">💊 I: Isoptin SR 120</span>
-        </div>
+        <!-- 🌟 動態產生的對照表將注入於此 -->
+        <div id="drugLegend" style="font-size: 11px; color: #8FA3B8; text-align: right; margin-top: -3px; margin-bottom: 8px; padding-right: 2px; font-weight: bold; overflow-x: auto; white-space: nowrap; scrollbar-width: none;"></div>
       </form>
     </div>
 
@@ -472,20 +490,19 @@
         </div>
         
         <div class="capsule-group tags-group">
-          <button class="filter-btn active tag-btn report-filter-btn" data-tag="[報表]" title="Report">
+          <button class="filter-btn active tag-btn report-filter-btn" data-tag="[報表]" onclick="toggleTagFilter(this, '[報表]')">
             <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line>
               <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
             </svg>
           </button>
-          <button class="filter-btn tag-btn" data-tag="🏥">🏥</button>
-          <button class="filter-btn tag-btn" data-tag="🍷">🍷</button>
-          <button class="filter-btn tag-btn" data-tag="☕">☕</button>
+          <button class="filter-btn tag-btn" data-tag="🏥" onclick="toggleTagFilter(this, '🏥')">🏥</button>
+          <button class="filter-btn tag-btn" data-tag="🍷" onclick="toggleTagFilter(this, '🍷')">🍷</button>
+          <button class="filter-btn tag-btn" data-tag="☕" onclick="toggleTagFilter(this, '☕')">☕</button>
           
-          <!-- 🌟 篩選列新增 C 和 I 的按鈕 -->
-          <button class="filter-btn tag-btn" data-tag="[C]" style="width: auto; padding: 0 10px;">C</button>
-          <button class="filter-btn tag-btn" data-tag="[I]" style="width: auto; padding: 0 10px;">I</button>
+          <!-- 🌟 動態產生的藥物過濾鍵將注入於此 -->
+          <span id="dynamicFilterTags" style="display: contents;"></span>
           
           <button class="clear-tags-btn" onclick="clearTags()" title="Clear Filters">✕</button>
         </div>
@@ -552,6 +569,119 @@
     let currentPeriod = '90days'; 
     let currentTags = ['[報表]']; 
     
+    // 🌟 藥物字典初始化：如果本機沒有紀錄，就使用預設的 C 與 I
+    let DRUG_DICT = JSON.parse(localStorage.getItem('bpDrugDict')) || {
+        "C": "Concor 1.25",
+        "I": "Isoptin SR 120"
+    };
+
+    // 🌟 負責把畫面上所有與藥物有關的按鈕與對照表「長出來」的魔法函數
+    function initDrugUI() {
+        let quickHtml = '';
+        let filterHtml = '';
+        let legendHtml = '';
+
+        for (const [key, fullName] of Object.entries(DRUG_DICT)) {
+            quickHtml += `<button type="button" class="quick-tag-btn" onclick="addQuickTag('[${key}]')">💊 ${key}</button>`;
+            
+            const isActive = currentTags.includes(`[${key}]`) ? 'active' : '';
+            filterHtml += `<button class="filter-btn tag-btn ${isActive}" data-tag="[${key}]" style="width: auto; padding: 0 10px;" onclick="toggleTagFilter(this, '[${key}]')">${key}</button>`;
+            
+            legendHtml += `<span style="margin-left: 10px;">💊 ${key}: ${fullName}</span>`;
+        }
+        
+        // 加上最關鍵的設定按鈕
+        quickHtml += `<button type="button" class="quick-tag-btn" onclick="openDrugManager()" style="background-color: #F1F5F9; border: 1px dashed #94A3B8; color: #495057;">⚙️ 設定</button>`;
+
+        document.getElementById('dynamicQuickTags').innerHTML = quickHtml;
+        document.getElementById('dynamicFilterTags').innerHTML = filterHtml;
+        document.getElementById('drugLegend').innerHTML = legendHtml;
+        
+        renderList(); // 每次刷新 UI 後，順便把列表重畫一遍確保標籤正確
+    }
+
+    // 🌟 打開設定視窗
+    function openDrugManager() {
+        renderDrugManagerList();
+        const modal = document.getElementById('drugManagerModal');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    // 🌟 關閉設定視窗
+    function closeDrugManager() {
+        const modal = document.getElementById('drugManagerModal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 250);
+    }
+
+    // 🌟 畫出設定視窗裡面的「目前現有藥物清單」
+    function renderDrugManagerList() {
+        let html = '';
+        if (Object.keys(DRUG_DICT).length === 0) {
+            html = `<div style="text-align:center; color:#999; font-size: 13px; padding: 10px 0;">目前沒有藥物標籤</div>`;
+        } else {
+            for (const [key, fullName] of Object.entries(DRUG_DICT)) {
+                html += `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #F1F5F9;">
+                    <div style="font-size: 14px; color: var(--primary-dark);"><span style="font-weight: bold; display: inline-block; background: #E2E8F0; padding: 2px 6px; border-radius: 4px; margin-right: 8px;">💊 ${key}</span> ${fullName}</div>
+                    <button type="button" onclick="deleteDrug('${key}')" style="background: none; border: none; color: var(--danger-color); cursor: pointer; font-weight: bold; font-size: 16px;">✕</button>
+                </div>`;
+            }
+        }
+        document.getElementById('drugList').innerHTML = html;
+    }
+
+    // 🌟 新增藥物邏輯
+    function addDrug() {
+        const codeInput = document.getElementById('newDrugCode');
+        const nameInput = document.getElementById('newDrugName');
+        const code = codeInput.value.trim().toUpperCase();
+        const name = nameInput.value.trim();
+        
+        if (!code || !name) {
+            alert("請完整填寫「代號」與「全名」喔！");
+            return;
+        }
+        
+        DRUG_DICT[code] = name;
+        localStorage.setItem('bpDrugDict', JSON.stringify(DRUG_DICT)); // 永久存檔
+        codeInput.value = '';
+        nameInput.value = '';
+        renderDrugManagerList();
+        initDrugUI(); // 瞬間更新外部畫面
+    }
+
+    // 🌟 刪除藥物邏輯
+    function deleteDrug(key) {
+        if(confirm(`確定要刪除藥物 [${key}] 嗎？\n(過去的歷史資料標籤仍會保留，但無法透過上方按鈕快速篩選)`)) {
+            delete DRUG_DICT[key];
+            localStorage.setItem('bpDrugDict', JSON.stringify(DRUG_DICT));
+            
+            // 如果刪除的剛好是目前正在篩選的，也要從篩選條件中拔掉
+            currentTags = currentTags.filter(t => t !== `[${key}]`);
+            
+            renderDrugManagerList();
+            initDrugUI();
+        }
+    }
+
+    // 啟動藥物 UI
+    initDrugUI();
+
+    // 🌟 篩選按鈕的獨立觸發函數，確保動態按鈕也能正常運作
+    function toggleTagFilter(btn, tag) {
+        if (currentTags.includes(tag)) {
+            currentTags = currentTags.filter(t => t !== tag);
+            btn.classList.remove('active');
+        } else {
+            currentTags.push(tag);
+            btn.classList.add('active');
+        }
+        renderList(); 
+        scrollToBottom(); 
+    }
+
     let bpChartInstance = null; 
     let currentExportCanvas = null;
     let currentExportType = null;
@@ -668,10 +798,9 @@
         if (b.getAttribute('data-val') === '90days') b.classList.add('active');
         else b.classList.remove('active');
       });
-      document.querySelectorAll('.tag-btn').forEach(b => {
-        if (b.getAttribute('data-tag') === '[報表]') b.classList.add('active');
-        else b.classList.remove('active');
-      });
+      document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+      const reportBtn = document.querySelector('.tag-btn[data-tag="[報表]"]');
+      if(reportBtn) reportBtn.classList.add('active');
 
       let curr = new Date();
       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
@@ -736,21 +865,6 @@
         document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
         e.target.classList.add('active'); 
         currentPeriod = e.target.getAttribute('data-val'); 
-        renderList(); scrollToBottom(); 
-      });
-    });
-
-    document.querySelectorAll('.tag-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const targetBtn = e.target.closest('button');
-        const tag = targetBtn.getAttribute('data-tag');
-        if (currentTags.includes(tag)) {
-            currentTags = currentTags.filter(t => t !== tag);
-            targetBtn.classList.remove('active');
-        } else {
-            currentTags.push(tag);
-            targetBtn.classList.add('active');
-        }
         renderList(); scrollToBottom(); 
       });
     });
@@ -1005,16 +1119,14 @@
               lastMonthStr = currMonthStr; lastDate = null; isNewDay = false; displayDateText = currDayStr; isFirstSection = false;
             }
             lastDate = formattedDate;
-            
-            // 🌟 魔法：將所有剩餘的中括號 [藥物] 轉換為專業膠囊標籤
-            let drugBadgeStyle = "display: inline-flex; align-items: center; justify-content: center; background-color: #E2E8F0; border-radius: 4px; padding: 2px 6px; font-size: 11px; font-weight: bold; color: #495057; margin: 0 2px;";
 
             let displayNote = (item.notes || '')
                 .replace(/☕ 咖啡/g, iconWrap('☕', 0)).replace(/🍷 酒/g, iconWrap('🍷', 0)).replace(/🏃 運動/g, iconWrap('🏃', 0))
                 .replace(/💊 吃藥/g, iconWrap('💊', 0)).replace(/🤕 頭痛/g, iconWrap('🤕', 0)).replace(/🏥 院所/g, iconWrap('🏥', 0))
                 .replace(/\[報表\]/g, reportSvg);
                 
-            displayNote = displayNote.replace(/\[([^\]]+)\]/g, `<span style="${drugBadgeStyle}">💊 $1</span>`);
+            // 🌟 將系統中所有出現的中括號標籤 [XXX] 自動轉換為專業灰色膠囊，完全不需手動寫死藥名
+            displayNote = displayNote.replace(/\[([^\]]+)\]/g, `<span style="display: inline-flex; align-items: center; justify-content: center; background-color: #E2E8F0; border-radius: 4px; padding: 2px 6px; font-size: 11px; font-weight: bold; color: #495057; margin: 0 2px;">💊 $1</span>`);
             displayNote = displayNote.replace(/, /g, '').replace(/,/g, '');
             let encodedNotes = encodeURIComponent(item.notes || '');
 
@@ -1059,7 +1171,6 @@
           monthMap[yyyy_mm][day].push(r);
         });
 
-        // 計算單日平均值
         Object.keys(monthMap).forEach(ym => {
           Object.keys(monthMap[ym]).forEach(day => {
             let dayRecords = monthMap[ym][day];
@@ -1151,7 +1262,8 @@
                     </div>`;
         };
 
-        const boxStyleLegend = "display: inline-block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 10px; text-align: center; margin-left: 2px; vertical-align: baseline;";
+        // 🌟 修正 3：PDF 圖例強制相對位移 (top: -1px)，利用 HTML 渲染對抗截圖引擎的下沉
+        const boxStyleLegend = "display: inline-block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; text-align: center; margin-left: 2px; vertical-align: middle;";
         const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
         
         const lblElevated = `Elevated<div style="display: inline-flex; align-items: center; justify-content: center; width: 10px; height: 10px; margin-left: 2px; vertical-align: middle;">${arrowSvgLegend}</div>`;
@@ -1191,6 +1303,7 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
+                // 🌟 修正 3：PDF 格子內，同樣使用 span 相對定位 (-1px) 絕對推高字元
                 let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 10px; text-align: center; box-sizing: border-box;";
                 let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
@@ -1250,6 +1363,7 @@
                     setTimeout(() => { document.body.removeChild(link); window.URL.revokeObjectURL(url); showToast('Finished!'); closeImagePreview(); }, 100);
                 };
 
+                // 🌟 更新 1：強制偵測手機設備，如果是電腦 (Mac/Win) 就直接走 fallbackDownload 下載，不跳分享！
                 if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                     try {
                         const file = new File([pdfBlob], `${currentExportFilename}.pdf`, { type: 'application/pdf' });
@@ -1269,6 +1383,7 @@
                         setTimeout(() => { document.body.removeChild(link); window.URL.revokeObjectURL(url); showToast('Finished!'); closeImagePreview(); }, 100);
                     };
 
+                    // 🌟 同樣更新：電腦直下 JPEG，手機才跳分享
                     if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                         try {
                             const file = new File([blob], `${currentExportFilename}.jpg`, { type: 'image/jpeg' });
