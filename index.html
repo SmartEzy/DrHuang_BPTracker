@@ -145,10 +145,10 @@
     }
 
     .tag-btn { 
-      background: transparent; color: #F8FAFC; border: none; padding: 0; 
-      height: 32px; width: 32px; min-width: 32px; 
+      background: transparent; color: #F8FAFC; border: none; padding: 0 10px; 
+      height: 32px; min-width: 32px; 
       font-size: 14px; font-weight: bold; cursor: pointer; 
-      border-radius: 50%; 
+      border-radius: 16px; 
       transition: all 0.2s; display: flex; align-items: center; justify-content: center;
       text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.7);
     }
@@ -450,14 +450,16 @@
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🍷')">🍷</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃')">🏃</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕')">🤕</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🅰️')">🅰️</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🅱️')">🅱️</button>
+          
+          <!-- 🌟 升級版快捷鍵：直接使用 C 和 I 的英文字母，不需依靠系統 Emoji -->
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('[C]')">💊 C</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('[I]')">💊 I</button>
         </div>
         
-        <!-- 🌟 微型對照表：您可以在這裡直接修改文字，將其改為您的實際藥物名稱 -->
+        <!-- 🌟 微型對照表：提醒 C 和 I 代表什麼藥物 -->
         <div style="font-size: 11px; color: #8FA3B8; text-align: right; margin-top: -3px; margin-bottom: 8px; padding-right: 2px; font-weight: bold;">
-          <span style="margin-left: 8px;">🅰️ 藥物名稱</span>
-          <span style="margin-left: 8px;">🅱️ 藥物名稱</span>
+          <span style="margin-left: 8px;">💊 C: Concor 1.25</span>
+          <span style="margin-left: 8px;">💊 I: Isoptin SR 120</span>
         </div>
       </form>
     </div>
@@ -477,12 +479,14 @@
               <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
             </svg>
           </button>
-          <!-- 🌟 補回原本在 3M 列消失的院所與酒類標籤，並加入藥物 A/B 的篩選功能 -->
           <button class="filter-btn tag-btn" data-tag="🏥">🏥</button>
           <button class="filter-btn tag-btn" data-tag="🍷">🍷</button>
           <button class="filter-btn tag-btn" data-tag="☕">☕</button>
-          <button class="filter-btn tag-btn" data-tag="🅰️">🅰️</button>
-          <button class="filter-btn tag-btn" data-tag="🅱️">🅱️</button>
+          
+          <!-- 🌟 篩選列新增 C 和 I 的按鈕 -->
+          <button class="filter-btn tag-btn" data-tag="[C]" style="width: auto; padding: 0 10px;">C</button>
+          <button class="filter-btn tag-btn" data-tag="[I]" style="width: auto; padding: 0 10px;">I</button>
+          
           <button class="clear-tags-btn" onclick="clearTags()" title="Clear Filters">✕</button>
         </div>
       </div>
@@ -695,7 +699,6 @@
       const h = parseInt(timeVal.split(':')[0], 10);
       const notesInput = document.getElementById('notes');
       
-      // 🌟 生命週期修復：如果不是早上，則強迫清除自動加入的 [報表] 標籤
       let currentNotes = notesInput.value;
       if (h >= 4 && h < 10) {
         if (!currentNotes.includes('[報表]')) {
@@ -713,7 +716,6 @@
     document.getElementById('time').addEventListener('change', checkMorningTag);
     checkMorningTag();
     
-    // 🌟 生命週期修復：當 iPad 將網頁從背景喚醒時，強制更新時間並重啟判斷機制
     document.addEventListener('visibilitychange', function() {
       if (!document.hidden) {
         let curr = new Date();
@@ -985,14 +987,12 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 修正 2：確保文字使用 Flex 完全置中，不管字體特性都不會偏左
                 let boxStyle = "display: flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 3px; font-size: 11px; font-weight: 900; font-family: -apple-system, Arial, sans-serif; box-sizing: border-box; padding: 0;";
                 let arrowSvg = `<svg viewBox="0 0 24 24" width="10" height="10" stroke="#FFC107" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
-                // 🌟 修正 1：淡化橘色為 #FFA726 (琥珀橘)，並使用純白字
                 if (cat === 1) { catIconHtml = `<div style="display: flex; align-items: center; justify-content: center; width: 14px; height: 14px;">${arrowSvg}</div>`; } 
-                else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FFA726; color: #FFFFFF;">1</div>`; } 
-                else if (cat === 3) { catIconHtml = `<div style="${boxStyle} background-color: #EF4444; color: #FFFFFF;">2</div>`; }
+                else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FAA05F; color: #FFFFFF;"><span style="position: relative; top: -0.5px;">1</span></div>`; } 
+                else if (cat === 3) { catIconHtml = `<div style="${boxStyle} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -0.5px;">2</span></div>`; }
             }
             
             let sysHtml = `<span style="font-weight: bold; color: #333333;">${sysStr}</span>`; let diaHtml = `<span style="font-weight: bold; color: #333333;">${diaStr}</span>`;
@@ -1005,12 +1005,16 @@
               lastMonthStr = currMonthStr; lastDate = null; isNewDay = false; displayDateText = currDayStr; isFirstSection = false;
             }
             lastDate = formattedDate;
+            
+            // 🌟 魔法：將所有剩餘的中括號 [藥物] 轉換為專業膠囊標籤
+            let drugBadgeStyle = "display: inline-flex; align-items: center; justify-content: center; background-color: #E2E8F0; border-radius: 4px; padding: 2px 6px; font-size: 11px; font-weight: bold; color: #495057; margin: 0 2px;";
 
             let displayNote = (item.notes || '')
                 .replace(/☕ 咖啡/g, iconWrap('☕', 0)).replace(/🍷 酒/g, iconWrap('🍷', 0)).replace(/🏃 運動/g, iconWrap('🏃', 0))
                 .replace(/💊 吃藥/g, iconWrap('💊', 0)).replace(/🤕 頭痛/g, iconWrap('🤕', 0)).replace(/🏥 院所/g, iconWrap('🏥', 0))
                 .replace(/\[報表\]/g, reportSvg);
-            
+                
+            displayNote = displayNote.replace(/\[([^\]]+)\]/g, `<span style="${drugBadgeStyle}">💊 $1</span>`);
             displayNote = displayNote.replace(/, /g, '').replace(/,/g, '');
             let encodedNotes = encodeURIComponent(item.notes || '');
 
@@ -1147,12 +1151,11 @@
                     </div>`;
         };
 
-        // 🌟 修正 3：報表圖例，使用 span 相對定位 (-1px) 絕對推高字元，這是對抗截圖套件下墜的唯一解法
-        const boxStyleLegend = "display: inline-block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 10px; text-align: center; margin-left: 2px; vertical-align: middle;";
+        const boxStyleLegend = "display: inline-block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 10px; text-align: center; margin-left: 2px; vertical-align: baseline;";
         const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
         
         const lblElevated = `Elevated<div style="display: inline-flex; align-items: center; justify-content: center; width: 10px; height: 10px; margin-left: 2px; vertical-align: middle;">${arrowSvgLegend}</div>`;
-        const lblStage1 = `Stage<div style="${boxStyleLegend} background-color: #FFA726; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`;
+        const lblStage1 = `Stage<div style="${boxStyleLegend} background-color: #FAA05F; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`;
         const lblStage2 = `Stage<div style="${boxStyleLegend} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -1px;">2</span></div>`;
 
         tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 260px; box-sizing: border-box; padding-left: 10px; padding-right: 2px; z-index: 1;">`;
@@ -1188,12 +1191,11 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 修正 3：PDF 格子內，同樣使用 span 相對定位 (-1px) 絕對推高字元
                 let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 10px; text-align: center; box-sizing: border-box;";
                 let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
                 if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 1px; top: 1px; display:flex; align-items:center; justify-content:center; width: 10px; height: 10px;">${arrowSvgReport}</div>`; } 
-                else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #FFA726; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`; } 
+                else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #FAA05F; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`; } 
                 else if (cat === 3) { catIconHtml = `<div style="${boxStyleReport} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -1px;">2</span></div>`; }
             }
             
