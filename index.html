@@ -145,10 +145,10 @@
     }
 
     .tag-btn { 
-      background: transparent; color: #F8FAFC; border: none; padding: 0; 
-      height: 32px; width: 32px; min-width: 32px; 
+      background: transparent; color: #F8FAFC; border: none; padding: 0 10px; /* 調整了 padding，讓文字類的按鈕也能顯示良好 */
+      height: 32px; min-width: 32px; 
       font-size: 14px; font-weight: bold; cursor: pointer; 
-      border-radius: 50%; 
+      border-radius: 16px; /* 稍微改成膠囊狀以適應純文字，如果您堅持圓形可改回 50% */
       transition: all 0.2s; display: flex; align-items: center; justify-content: center;
       text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.7);
     }
@@ -450,7 +450,10 @@
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🍷')">🍷</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃')">🏃</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕')">🤕</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('💊')">💊</button>
+          
+          <!-- 🌟 新增：兩個新的快速標籤按鈕，讓您不用手打就能標記藥物 -->
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('[A藥]')">💊 A藥</button>
+          <button type="button" class="quick-tag-btn" onclick="addQuickTag('[B藥]')">💊 B藥</button>
         </div>
       </form>
     </div>
@@ -470,9 +473,11 @@
               <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
             </svg>
           </button>
-          <button class="filter-btn tag-btn" data-tag="🏥">🏥</button>
-          <button class="filter-btn tag-btn" data-tag="🍷">🍷</button>
-          <button class="filter-btn tag-btn" data-tag="☕">☕</button>
+          
+          <!-- 🌟 新增：A/B 藥物過濾按鈕，點擊後圖表和列表都會只顯示有吃這款藥的紀錄 -->
+          <button class="filter-btn tag-btn" data-tag="[A藥]" style="width: auto; padding: 0 10px;">A藥</button>
+          <button class="filter-btn tag-btn" data-tag="[B藥]" style="width: auto; padding: 0 10px;">B藥</button>
+          
           <button class="clear-tags-btn" onclick="clearTags()" title="Clear Filters">✕</button>
         </div>
       </div>
@@ -684,16 +689,35 @@
       if (!timeVal) return;
       const h = parseInt(timeVal.split(':')[0], 10);
       const notesInput = document.getElementById('notes');
+      
+      // 🌟 更新 1：強制根據當前時間拔除或加入 [報表] 標籤
+      let currentNotes = notesInput.value;
       if (h >= 4 && h < 10) {
-        if (!notesInput.value.includes('[報表]')) {
-          if (notesInput.value.trim() !== '') notesInput.value += ', ';
-          notesInput.value += '[報表]';
+        if (!currentNotes.includes('[報表]')) {
+          if (currentNotes.trim() !== '') currentNotes += ', ';
+          currentNotes += '[報表]';
+        }
+      } else {
+        // 如果現在不是早上，強制把 [報表] 拔除
+        if (currentNotes.includes('[報表]')) {
+          currentNotes = currentNotes.replace(/\[報表\]/g, '').replace(/,\s*,/g, ',').replace(/^,\s*/, '').replace(/,\s*$/, '').trim();
         }
       }
+      notesInput.value = currentNotes;
     }
     
     document.getElementById('time').addEventListener('change', checkMorningTag);
     checkMorningTag();
+    
+    // 🌟 更新 1：當網頁從背景回來時（iPad 重新喚醒），強制更新時間並檢查標籤
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) {
+        let curr = new Date();
+        document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
+        document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
+        checkMorningTag();
+      }
+    });
 
     function addQuickTag(tagText) {
       const notesInput = document.getElementById('notes');
@@ -957,16 +981,14 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 更新 2：App 列表區塊使用 flex 完全置中，解決部分字型偏左的問題。加入相對定位微調 0.5px
+                // 🌟 更新 2：完全防呆置中，使用 Flexbox 的 align-items 和 justify-content 確保無襯線字體不會因為字距而偏左
                 let boxStyle = "display: flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 3px; font-size: 11px; font-weight: 900; font-family: -apple-system, Arial, sans-serif; box-sizing: border-box; padding: 0;";
-                
-                // 🌟 更新 1：箭頭顏色改為純亮金黃色 #FFC107
                 let arrowSvg = `<svg viewBox="0 0 24 24" width="10" height="10" stroke="#FFC107" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
-                // 🌟 再次更新 1：替換橘色為 #FAA05F
+                // 🌟 修正 1：橘色改回稍亮的 #FFA726 以免太深
                 if (cat === 1) { catIconHtml = `<div style="display: flex; align-items: center; justify-content: center; width: 14px; height: 14px;">${arrowSvg}</div>`; } 
-                else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FAA05F; color: #FFFFFF;"><span style="position: relative; top: -0.5px;">1</span></div>`; } 
-                else if (cat === 3) { catIconHtml = `<div style="${boxStyle} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -0.5px;">2</span></div>`; }
+                else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FFA726; color: #FFFFFF;">1</div>`; } 
+                else if (cat === 3) { catIconHtml = `<div style="${boxStyle} background-color: #EF4444; color: #FFFFFF;">2</div>`; }
             }
             
             let sysHtml = `<span style="font-weight: bold; color: #333333;">${sysStr}</span>`; let diaHtml = `<span style="font-weight: bold; color: #333333;">${diaStr}</span>`;
@@ -983,7 +1005,9 @@
             let displayNote = (item.notes || '')
                 .replace(/☕ 咖啡/g, iconWrap('☕', 0)).replace(/🍷 酒/g, iconWrap('🍷', 0)).replace(/🏃 運動/g, iconWrap('🏃', 0))
                 .replace(/💊 吃藥/g, iconWrap('💊', 0)).replace(/🤕 頭痛/g, iconWrap('🤕', 0)).replace(/🏥 院所/g, iconWrap('🏥', 0))
-                .replace(/\[報表\]/g, reportSvg);
+                .replace(/\[報表\]/g, reportSvg)
+                .replace(/\[A藥\]/g, `<span style="display: inline-flex; align-items: center; justify-content: center; background-color: #E2E8F0; border-radius: 4px; padding: 2px 4px; font-size: 11px; font-weight: bold; color: #495057;">💊 A藥</span>`)
+                .replace(/\[B藥\]/g, `<span style="display: inline-flex; align-items: center; justify-content: center; background-color: #E2E8F0; border-radius: 4px; padding: 2px 4px; font-size: 11px; font-weight: bold; color: #495057;">💊 B藥</span>`);
             
             displayNote = displayNote.replace(/, /g, '').replace(/,/g, '');
             let encodedNotes = encodeURIComponent(item.notes || '');
@@ -1121,14 +1145,12 @@
                     </div>`;
         };
 
-        // 🌟 更新 3：報表圖例放棄可能出錯的 margin-top 負值，直接使用小於字體的絕對行高硬頂 (line-height: 9.5px)
-        const boxStyleLegend = "display: inline-block; width: 11px; height: 11px; border-radius: 2px; font-size: 8px; font-weight: 900; font-family: Arial, sans-serif; line-height: 11.5px; text-align: center; margin-left: 2px; vertical-align: middle;";
+        // 🌟 更新 3：PDF 圖例強制相對位移 (top: -1px)，利用 HTML 渲染對抗截圖引擎的下沉
+        const boxStyleLegend = "display: inline-block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; text-align: center; margin-left: 2px; vertical-align: middle;";
         const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
         
-        const lblElevated = `Elevated<div style="display: inline-flex; align-items: center; justify-content: center; width: 11px; height: 11px; margin-left: 2px; vertical-align: middle;">${arrowSvgLegend}</div>`;
-        
-        // 🌟 再次更新 1：替換橘色為 #FAA05F
-        const lblStage1 = `Stage<div style="${boxStyleLegend} background-color: #FAA05F; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`;
+        const lblElevated = `Elevated<div style="display: inline-flex; align-items: center; justify-content: center; width: 10px; height: 10px; margin-left: 2px; vertical-align: middle;">${arrowSvgLegend}</div>`;
+        const lblStage1 = `Stage<div style="${boxStyleLegend} background-color: #FFA726; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`;
         const lblStage2 = `Stage<div style="${boxStyleLegend} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -1px;">2</span></div>`;
 
         tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 260px; box-sizing: border-box; padding-left: 10px; padding-right: 2px; z-index: 1;">`;
@@ -1164,13 +1186,12 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                // 🌟 更新 3：PDF 格子內，使用 Flexbox 絕對置中，並加上 span 相對推高 (-1px) 抵抗截圖引擎下墜
-                let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: flex; align-items: center; justify-content: center; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; box-sizing: border-box;";
-                let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                // 🌟 更新 3：PDF 格子內文字，同樣套用相對位移 (top: -1px)
+                let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 9.5px; text-align: center; box-sizing: border-box;";
+                let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
-                // 🌟 再次更新 1：替換橘色為 #FAA05F
                 if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 1px; top: 1px; display:flex; align-items:center; justify-content:center; width: 10px; height: 10px;">${arrowSvgReport}</div>`; } 
-                else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #FAA05F; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`; } 
+                else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #FFA726; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`; } 
                 else if (cat === 3) { catIconHtml = `<div style="${boxStyleReport} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -1px;">2</span></div>`; }
             }
             
@@ -1225,7 +1246,6 @@
                     setTimeout(() => { document.body.removeChild(link); window.URL.revokeObjectURL(url); showToast('Finished!'); closeImagePreview(); }, 100);
                 };
 
-                // 🌟 更新 1：強制偵測手機設備，如果是電腦 (Mac/Win) 就直接走 fallbackDownload 下載，不跳分享！
                 if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                     try {
                         const file = new File([pdfBlob], `${currentExportFilename}.pdf`, { type: 'application/pdf' });
@@ -1245,7 +1265,6 @@
                         setTimeout(() => { document.body.removeChild(link); window.URL.revokeObjectURL(url); showToast('Finished!'); closeImagePreview(); }, 100);
                     };
 
-                    // 🌟 同樣更新：電腦直下 JPEG，手機才跳分享
                     if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                         try {
                             const file = new File([blob], `${currentExportFilename}.jpg`, { type: 'image/jpeg' });
