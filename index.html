@@ -104,8 +104,8 @@
     .notes-save-row.is-editing .cancel-btn { display: block; }
     .notes-save-row.is-editing .primary-btn { width: 85px; } 
     
-    /* 🌟 修正：確保右側有 20px padding 避免被截斷 */
-    .quick-tags-container { display: flex; gap: 8px; margin-top: 0; margin-bottom: 2px; overflow-x: auto; padding-bottom: 4px; padding-right: 20px; align-items: center; -webkit-overflow-scrolling: touch; }
+    /* 🌟 移除 padding-right，改用隱形 spacer 處理滾動截斷 */
+    .quick-tags-container { display: flex; gap: 8px; margin-top: 0; margin-bottom: 2px; overflow-x: auto; padding-bottom: 4px; align-items: center; -webkit-overflow-scrolling: touch; }
     .quick-tags-container::-webkit-scrollbar { display: none; } 
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); flex-shrink: 0; }
     .quick-tag-btn:active { background-color: #CBD5E1; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
@@ -125,9 +125,9 @@
       box-sizing: border-box;
     }
     
-    /* 🌟 修正：確保篩選列右側有 padding 避免最後一顆按鈕被截斷 */
+    /* 🌟 移除 padding-right，改用隱形 spacer 處理滾動截斷 */
     .filter-left-zone {
-      display: flex; align-items: center; gap: 8px; flex: 1; overflow-x: auto; padding-right: 12px;
+      display: flex; align-items: center; gap: 8px; flex: 1; overflow-x: auto; 
       scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 2px;
     }
     .filter-left-zone::-webkit-scrollbar { display: none; }
@@ -368,7 +368,6 @@
 
   <div id="toastMsg" class="toast-msg"></div>
 
-  <!-- 🌟 設定視窗：改版輸入區、刪除鈕、預設切換 -->
   <div id="tagManagerModal" class="image-preview-modal" style="align-items: center; justify-content: center; z-index: 10002;">
     <div id="dropZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" style="background: #FFFFFF; width: 90%; max-width: 340px; border-radius: 16px; padding: 24px; box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: all 0.2s;">
       
@@ -377,22 +376,22 @@
         <button onclick="closeTagManager()" style="background: none; border: none; font-size: 20px; color: #888; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center;">✕</button>
       </div>
       
-      <div id="tagList" style="margin-bottom: 16px; max-height: 200px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px;"></div>
-      
+      <!-- 🌟 將預設提示文字移至列表上方，邏輯更順暢 -->
       <div style="font-size: 11px; color: #8FA3B8; margin-bottom: 6px; margin-left: 2px;">⭐ 設為預設自動加入</div>
+      
+      <div id="tagList" style="margin-bottom: 16px; max-height: 200px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px;"></div>
       
       <div style="display: flex; gap: 12px; margin-bottom: 24px; align-items: stretch;">
         <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
-          <!-- 🌟 順序對調，移除 (如:xxx) -->
-          <input type="text" id="newTagName" placeholder="全名或說明" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box;">
+          <!-- 🌟 重新對齊，對調順序 -->
+          <input type="text" id="newTagName" placeholder="全名或說明" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; text-align: left;">
           <input type="text" id="newTagCode" placeholder="顯示文字" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-weight: bold; text-align: center; box-sizing: border-box;">
         </div>
-        <!-- 🌟 右側新增按鈕 -->
-        <button type="button" onclick="addTag()" style="width: 70px; background: var(--primary-color); border: none; border-radius: 8px; font-weight: bold; color: #FFF; cursor: pointer; flex-shrink: 0; padding: 0;">新增<br>標籤</button>
+        <!-- 🌟 放大的新增按鈕 -->
+        <button type="button" onclick="addTag()" style="width: 70px; background: var(--primary-color); border: none; border-radius: 8px; font-weight: bold; color: #FFF; cursor: pointer; flex-shrink: 0; padding: 0; font-size: 15px;">新增<br>標籤</button>
       </div>
 
       <div style="display: flex; justify-content: space-between; border-top: 1px solid #E2E8F0; padding-top: 16px;">
-          <!-- 🌟 修改為點選或拖曳 -->
           <button type="button" onclick="triggerImport()" style="background: none; border: none; color: #7895B2; font-size: 13px; font-weight: bold; cursor: pointer; padding: 4px; display: flex; align-items: center; gap: 4px;" title="可直接將備份檔拖曳至視窗內">📥 點選或拖曳匯入</button>
           <button type="button" onclick="exportSettings()" style="background: none; border: none; color: #7895B2; font-size: 13px; font-weight: bold; cursor: pointer; padding: 4px; display: flex; align-items: center; gap: 4px;">📤 匯出備份</button>
       </div>
@@ -496,7 +495,6 @@
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃')">🏃</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕')">🤕</button>
           
-          <!-- 動態產生的按鈕加上 flex-shrink: 0 確保可滑動 -->
           <span id="dynamicQuickTags" style="display: contents;"></span>
         </div>
         
@@ -524,8 +522,10 @@
           <button class="filter-btn tag-btn" data-tag="☕" onclick="toggleTagFilter(this, '☕')">☕</button>
           
           <span id="dynamicFilterTags" style="display: contents;"></span>
-          
           <button class="clear-tags-btn" onclick="clearTags()" title="Clear Filters">✕</button>
+          
+          <!-- 🌟 隱形墊片，確保右側還有滑動空間，最後一個按鈕不被截斷 -->
+          <div style="flex-shrink: 0; width: 12px; height: 10px;"></div>
         </div>
       </div>
       
@@ -594,7 +594,6 @@
         "I": "Isoptin SR 120"
     };
     
-    // 🌟 新增：預設標籤記憶庫
     let DEFAULT_TAGS = JSON.parse(localStorage.getItem('bpDefaultTags')) || [];
 
     function initTagUI() {
@@ -610,20 +609,19 @@
             const isActive = currentTags.includes(`[${key}]`) ? 'active' : '';
             filterHtml += `<button class="filter-btn tag-btn ${isActive}" data-tag="[${key}]" style="width: auto; padding: 0 10px; flex-shrink: 0;" onclick="toggleTagFilter(this, '[${key}]')">${key}</button>`;
             
-            // 🌟 智慧文字顏色處理 (前綴深黑，後面淺灰)
+            // 🌟 智慧文字顏色處理：只抓取前面相符的字母變成深色，其餘淺色，不加冒號
             let legendText = '';
             if (fullName.toUpperCase().startsWith(key.toUpperCase())) {
                 let match = fullName.substring(0, key.length);
                 let rest = fullName.substring(key.length);
                 legendText = `<span style="color: #495057; font-weight: 900; font-size: 13px;">${match}</span><span style="color: #8FA3B8; font-weight: 600; font-size: 12px;">${rest}</span>`;
             } else {
-                legendText = `<span style="color: #495057; font-weight: 900; font-size: 13px;">${key}</span><span style="color: #8FA3B8; font-weight: 600; font-size: 12px; margin-left: 3px;">${fullName}</span>`;
+                legendText = `<span style="color: #495057; font-weight: 900; font-size: 13px;">${key}</span><span style="color: #8FA3B8; font-weight: 600; font-size: 12px; margin-left: 4px;">${fullName}</span>`;
             }
             legendHtml += `<div style="display: inline-flex; align-items: baseline; background: rgba(226, 232, 240, 0.4); padding: 3px 8px; border-radius: 6px; flex-shrink: 0;">${legendText}</div>`;
         }
         
-        // 🌟 改良設定鈕，加入推擠器取代 margin-auto，確保不會被截斷
-        quickHtml += spacer + `<button type="button" class="quick-tag-btn" onclick="openTagManager()" style="background-color: #F1F5F9; border: 1px dashed #94A3B8; color: #495057; flex-shrink: 0;">⚙️ 設定</button>`;
+        quickHtml += spacer + `<button type="button" class="quick-tag-btn" onclick="openTagManager()" style="background-color: #F1F5F9; border: 1px dashed #94A3B8; color: #495057; flex-shrink: 0; margin-left: auto;">⚙️ 設定</button><div style="flex-shrink: 0; width: 4px; height: 10px;"></div>`;
 
         document.getElementById('dynamicQuickTags').innerHTML = quickHtml;
         document.getElementById('dynamicFilterTags').innerHTML = filterHtml;
@@ -661,7 +659,6 @@
             html = `<div style="text-align:center; color:#999; font-size: 13px; padding: 10px 0;">目前沒有自訂標籤</div>`;
         } else {
             for (const [key, fullName] of Object.entries(CUSTOM_TAG_DICT)) {
-                // 🌟 新增：預設星號按鈕與 SVG 垃圾桶按鈕
                 const isDefault = DEFAULT_TAGS.includes(key);
                 const starIcon = isDefault ? '⭐' : '<span style="opacity: 0.3; filter: grayscale(1);">⭐</span>';
                 
@@ -716,7 +713,6 @@
         }
     }
 
-    // 🌟 匯出備份：將自訂字典與預設清單一併打包
     function exportSettings() {
         const backupData = { tags: CUSTOM_TAG_DICT, defaults: DEFAULT_TAGS };
         const dataStr = JSON.stringify(backupData, null, 2);
@@ -764,7 +760,6 @@
             try {
                 const importedDict = JSON.parse(e.target.result);
                 if (typeof importedDict === 'object' && importedDict !== null) {
-                    // 向下相容舊版直接備份格式
                     if (importedDict.tags !== undefined) {
                         CUSTOM_TAG_DICT = importedDict.tags;
                         DEFAULT_TAGS = importedDict.defaults || [];
@@ -938,7 +933,6 @@
       }, 100); 
     }
 
-    // 🌟 全新：還原表單至全新狀態，並自動填入「預設標籤」
     function resetFormToFresh() {
       currentEditTarget = null;
       document.getElementById('bpForm').reset();
@@ -964,7 +958,6 @@
       document.getElementById('formActionRow').classList.remove('is-editing');
     }
 
-    // 初次啟動套用時間與預設標籤
     resetFormToFresh();
 
     function checkMorningTag() {
@@ -985,6 +978,13 @@
           currentNotes = currentNotes.replace(/\[報表\]/g, '').replace(/,\s*,/g, ',').replace(/^,\s*/, '').replace(/,\s*$/, '').trim();
         }
       }
+      
+      // 🌟 保證 [報表] 永遠被排在最前面 (最左邊)
+      if (currentNotes.includes('[報表]')) {
+          currentNotes = currentNotes.replace(/\[報表\]/g, '').replace(/,\s*,/g, ',').replace(/^,\s*/, '').replace(/,\s*$/, '').trim();
+          currentNotes = currentNotes === '' ? '[報表]' : `[報表], ${currentNotes}`;
+      }
+      
       notesInput.value = currentNotes;
     }
     
@@ -1001,11 +1001,19 @@
 
     function addQuickTag(tagText) {
       const notesInput = document.getElementById('notes');
-      if (notesInput.value.trim() === '') { notesInput.value = tagText; } 
-      else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
+      
+      // 如果點擊的是報表，強制插在最前面
+      if (tagText === '[報表]') {
+          let currentNotes = notesInput.value;
+          if (!currentNotes.includes('[報表]')) {
+              notesInput.value = currentNotes === '' ? '[報表]' : `[報表], ${currentNotes}`;
+          }
+      } else {
+          if (notesInput.value.trim() === '') { notesInput.value = tagText; } 
+          else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
+      }
     }
     
-    // 🌟 編輯模式邏輯：強制補齊時間，清空雜訊
     function editRecord(rawDate, rawTime, sys, dia, hr, encodedNotes) {
         let formattedTime = rawTime;
         if (rawTime && rawTime.includes(':')) {
@@ -1476,7 +1484,7 @@
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
                 
-                let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 9.5px; text-align: center; box-sizing: border-box;";
+                let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 10px; text-align: center; box-sizing: border-box;";
                 let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
                 
                 if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 1px; top: 1px; display:flex; align-items:center; justify-content:center; width: 10px; height: 10px;">${arrowSvgReport}</div>`; } 
@@ -1666,7 +1674,6 @@
       renderList(); 
       scrollToBottom(); 
       
-      // 確保重置表單並恢復狀態
       resetFormToFresh();
       
       const originalColor = 'var(--primary-color)'; 
