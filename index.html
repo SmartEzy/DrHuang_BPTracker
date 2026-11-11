@@ -104,8 +104,11 @@
     .notes-save-row.is-editing .cancel-btn { display: block; }
     .notes-save-row.is-editing .primary-btn { width: 85px; } 
     
+    /* 🌟 完美防截斷：使用 ::after 加入物理佔位區塊 */
     .quick-tags-container { display: flex; gap: 8px; margin-top: 0; margin-bottom: 2px; overflow-x: auto; padding-bottom: 4px; align-items: center; -webkit-overflow-scrolling: touch; padding-left: 2px;}
     .quick-tags-container::-webkit-scrollbar { display: none; } 
+    .quick-tags-container::after { content: ''; display: block; flex: 0 0 12px; }
+    
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); flex-shrink: 0; }
     .quick-tag-btn:active { background-color: #CBD5E1; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
@@ -124,11 +127,13 @@
       box-sizing: border-box;
     }
     
+    /* 🌟 完美防截斷：篩選列同樣使用 ::after 佔位 */
     .filter-left-zone {
       display: flex; align-items: center; gap: 8px; flex: 1; overflow-x: auto; padding-left: 2px;
       scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 2px;
     }
     .filter-left-zone::-webkit-scrollbar { display: none; }
+    .filter-left-zone::after { content: ''; display: block; flex: 0 0 12px; }
 
     .capsule-group { 
       display: flex; align-items: center; gap: 4px;
@@ -246,19 +251,20 @@
     .delete-btn { background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; display: flex; justify-content: flex-end; align-items: center; transition: color 0.2s; }
     @media (hover: hover) { .delete-btn:hover { color: var(--danger-color); } }
     .delete-btn:active { color: var(--danger-color); }
+    .record-row.highlight-delete .delete-btn { color: var(--danger-color); }
     
-    /* 🌟 新增：內聯刪除確認選單的樣式 */
+    /* 🌟 優化：不會擋住左方數據的漸層確認圖層 */
     .delete-overlay {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      background: linear-gradient(90deg, transparent 0%, rgba(244, 246, 248, 0.9) 30%, rgba(244, 246, 248, 1) 45%);
       display: flex; align-items: center; justify-content: flex-end; padding-right: 20px; gap: 8px;
       opacity: 0; pointer-events: none; transition: opacity 0.2s; z-index: 10; border-radius: 6px;
     }
     .delete-overlay.show { opacity: 1; pointer-events: auto; }
-    .del-confirm-btn { background: var(--danger-color); color: white; border: none; padding: 6px 16px; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; }
+    .del-confirm-btn { background: var(--danger-color); color: white; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .del-confirm-btn:active { background: #B71C1C; }
-    .del-cancel-btn { background: #E2E8F0; color: var(--primary-dark); border: none; padding: 6px 16px; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; }
-    .del-cancel-btn:active { background: #CBD5E1; }
+    .del-cancel-btn { background: #FFFFFF; color: var(--primary-dark); border: 1px solid #CBD5E1; padding: 5px 14px; border-radius: 6px; font-weight: bold; font-size: 14px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+    .del-cancel-btn:active { background: #F1F5F9; }
 
     .cat-col { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
     .bp-col-align { display: flex; align-items: center; justify-content: center; width: 100%; position: relative; }
@@ -386,17 +392,21 @@
         <button onclick="closeTagManager()" style="background: none; border: none; font-size: 20px; color: #888; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center;">✕</button>
       </div>
       
-      <div style="font-size: 11px; color: #8FA3B8; margin-bottom: 6px; margin-left: 2px;">⭐ 設為預設自動加入</div>
+      <!-- 🌟 將提示文字與清單包在一起，語意更加明確 -->
+      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4px;">
+        <div style="font-size: 12px; font-weight: bold; color: #7895B2; margin-left: 4px;">現有標籤</div>
+        <div style="font-size: 11px; color: #8FA3B8; margin-right: 4px;">⭐ 設為預設</div>
+      </div>
       
       <div id="tagList" style="margin-bottom: 16px; max-height: 200px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px;"></div>
       
       <div style="display: flex; gap: 12px; margin-bottom: 24px; align-items: stretch;">
         <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
-          <!-- 🌟 修正 1：移除多餘說明，全名靠左，顯示文字置中 -->
-          <input type="text" id="newTagName" placeholder="全名" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; text-align: left;">
+          <!-- 🌟 優化：全名置中，排版更整齊 -->
+          <input type="text" id="newTagName" placeholder="全名" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box; text-align: center;">
           <input type="text" id="newTagCode" placeholder="顯示文字" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-weight: bold; text-align: center; box-sizing: border-box;">
         </div>
-        <!-- 🌟 修正 5：調整字體大小，移除無謂按鈕 -->
+        <!-- 🌟 優化：放大按鈕文字 -->
         <button type="button" onclick="addTag()" style="width: 70px; background: var(--primary-color); border: none; border-radius: 8px; font-weight: bold; color: #FFF; cursor: pointer; flex-shrink: 0; padding: 0; font-size: 15px;">新增<br>標籤</button>
       </div>
 
@@ -505,8 +515,6 @@
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕')">🤕</button>
           
           <span id="dynamicQuickTags" style="display: contents;"></span>
-          <!-- 🌟 修正 2：加入尾端物理防撞墊，保證按鈕絕不被截斷 -->
-          <div style="flex-shrink: 0; width: 24px; height: 1px;"></div>
         </div>
         
         <div id="tagLegend" style="display: flex; flex-wrap: nowrap; align-items: center; font-size: 11px; text-align: right; margin-top: -3px; margin-bottom: 8px; padding-right: 2px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; gap: 6px;"></div>
@@ -534,9 +542,6 @@
           
           <span id="dynamicFilterTags" style="display: contents;"></span>
           <button class="clear-tags-btn" onclick="clearTags()" title="Clear Filters">✕</button>
-          
-          <!-- 🌟 修正 2：物理防撞墊 -->
-          <div style="flex-shrink: 0; width: 24px; height: 1px;"></div>
         </div>
       </div>
       
@@ -629,7 +634,8 @@
             legendHtml += `<div style="display: inline-flex; align-items: baseline; background: rgba(226, 232, 240, 0.4); padding: 3px 8px; border-radius: 6px; flex-shrink: 0;">${legendText}</div>`;
         }
         
-        quickHtml += `<button type="button" class="quick-tag-btn" onclick="openTagManager()" style="background-color: #F1F5F9; border: 1px dashed #94A3B8; color: #495057; flex-shrink: 0; margin-left: auto;">⚙️ 設定</button>`;
+        // 🌟 確保設定鈕強制推到最右側，且不被切斷
+        quickHtml += `<div style="margin-left: auto; display: flex; align-items: center; flex-shrink: 0;"><button type="button" class="quick-tag-btn" onclick="openTagManager()" style="background-color: #F1F5F9; border: 1px dashed #94A3B8; color: #495057; margin: 0;">⚙️ 設定</button></div>`;
 
         document.getElementById('dynamicQuickTags').innerHTML = quickHtml;
         document.getElementById('dynamicFilterTags').innerHTML = filterHtml;
@@ -670,6 +676,7 @@
                 const isDefault = DEFAULT_TAGS.includes(key);
                 const starIcon = isDefault ? '⭐' : '<span style="opacity: 0.3; filter: grayscale(1);">⭐</span>';
                 
+                // 🌟 優化：使用高質感的 SVG 垃圾桶圖示代替文字叉叉
                 html += `
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #F1F5F9;">
                     <div style="font-size: 14px; color: var(--primary-dark); display: flex; align-items: center;">
@@ -679,7 +686,7 @@
                         <span style="font-weight: bold; display: inline-block; background: #E2E8F0; padding: 2px 6px; border-radius: 4px; margin-right: 8px;">${key}</span> 
                         ${fullName}
                     </div>
-                    <button type="button" onclick="deleteTag('${key}')" style="background: none; border: none; color: #94A3B8; cursor: pointer; padding: 4px; border-radius: 6px; transition: all 0.2s; display: flex; align-items: center; justify-content: center;" title="刪除標籤" onmouseover="this.style.backgroundColor='#FEE2E2'; this.style.color='var(--danger-color)'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#94A3B8'">
+                    <button type="button" onclick="deleteTag('${key}')" style="background: none; border: none; color: #94A3B8; cursor: pointer; padding: 6px; border-radius: 6px; transition: all 0.2s; display: flex; align-items: center; justify-content: center;" title="刪除標籤" onmouseover="this.style.backgroundColor='#FEE2E2'; this.style.color='var(--danger-color)'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#94A3B8'">
                         <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
                     </button>
                 </div>`;
@@ -976,21 +983,15 @@
       const notesInput = document.getElementById('notes');
       
       let currentNotes = notesInput.value;
-      if (h >= 4 && h < 10) {
-        if (!currentNotes.includes('[報表]')) {
-          if (currentNotes.trim() !== '' && !currentNotes.endsWith(', ')) currentNotes += ', ';
-          currentNotes += '[報表]';
-        }
-      } else {
-        if (currentNotes.includes('[報表]')) {
-          currentNotes = currentNotes.replace(/\[報表\]/g, '').replace(/,\s*,/g, ',').replace(/^,\s*/, '').replace(/,\s*$/, '').trim();
-        }
+      
+      // 先無條件把 [報表] 拔乾淨
+      if (currentNotes.includes('[報表]')) {
+        currentNotes = currentNotes.replace(/\[報表\]/g, '').replace(/,\s*,/g, ',').replace(/^,\s*/, '').replace(/,\s*$/, '').trim();
       }
       
-      // 🌟 修正 1：不管報表標籤是怎麼出現的，強制把它拉到字串的最前方
-      if (currentNotes.includes('[報表]')) {
-          currentNotes = currentNotes.replace(/\[報表\]/g, '').replace(/,\s*,/g, ',').replace(/^,\s*/, '').replace(/,\s*$/, '').trim();
-          currentNotes = currentNotes === '' ? '[報表]' : `[報表], ${currentNotes}`;
+      // 如果是早上，強迫加在最前面 (最左側)
+      if (h >= 4 && h < 10) {
+        currentNotes = currentNotes === '' ? '[報表]' : `[報表], ${currentNotes}`;
       }
       
       notesInput.value = currentNotes;
@@ -1010,6 +1011,7 @@
     function addQuickTag(tagText) {
       const notesInput = document.getElementById('notes');
       
+      // 🌟 修正 1：如果點擊的是 [報表]，絕對優先插入字串的最前方
       if (tagText === '[報表]') {
           let currentNotes = notesInput.value;
           if (!currentNotes.includes('[報表]')) {
@@ -1051,7 +1053,7 @@
         resetFormToFresh();
     }
 
-    // 🌟 新增：顯示與隱藏刪除確認圖層
+    // 🌟 控制刪除圖層的顯示與隱藏
     function showDeleteOverlay(btn, event) {
         event.stopPropagation();
         const overlay = btn.closest('.record-row').querySelector('.delete-overlay');
@@ -1086,7 +1088,7 @@
 
     window.addEventListener('online', () => { processSyncQueue(); });
 
-    // 🌟 修改：由圖層上的確認按鈕觸發
+    // 🌟 由新的圖層按鈕觸發刪除邏輯
     function executeDelete(btn, event, formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime, encodedNotes) {
       event.stopPropagation();
       let decodedNotes = decodeURIComponent(encodedNotes);
@@ -1283,7 +1285,7 @@
           let lastDate = null; let lastMonthStr = null; let isFirstSection = true;
           
           const iconWrap = (content, yOffset = 0) => `<span style="display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; transform: translateY(${yOffset}px);">${content}</span>`;
-          const svgContent = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color:#495057;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`;
+          const svgContent = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="color:#495057;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="16 6 12 2 8 6"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>`;
           const reportSvg = iconWrap(svgContent, 1.5); 
 
           displayData.forEach(item => {
@@ -1329,7 +1331,6 @@
             displayNote = displayNote.replace(/, /g, '').replace(/,/g, '');
             let encodedNotes = encodeURIComponent(item.notes || '');
 
-            // 🌟 加入隱形的刪除圖層
             html += `
               <div class="record-row ${isNewDay ? 'new-day' : ''}" style="position: relative; overflow: hidden;" onclick="editRecord('${rawDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${encodedNotes}')">
                 <div>${displayDateText}</div><div>${formattedTime}</div>
@@ -1341,11 +1342,10 @@
                     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                   </button>
                 </div>
-                <!-- 🌟 內聯確認圖層 -->
+                <!-- 🌟 優化：不擋住數據的漸層刪除圖層 -->
                 <div class="delete-overlay">
-                   <span style="color: var(--danger-color); font-weight: bold; font-size: 14px; margin-right: auto; padding-left: 16px;">刪除此筆紀錄？</span>
                    <button class="del-cancel-btn" onclick="cancelDelete(this, event)">取消</button>
-                   <button class="del-confirm-btn" onclick="executeDelete(this, event, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}', '${encodedNotes}')">確定</button>
+                   <button class="del-confirm-btn" onclick="executeDelete(this, event, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}', '${encodedNotes}')">確定刪除</button>
                 </div>
               </div>`;
           });
