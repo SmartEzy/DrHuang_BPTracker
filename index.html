@@ -99,13 +99,13 @@
     .notes-save-row button.primary-btn { width: 105px; margin-top: 0; padding: 12px 0; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: all 0.2s; }
     .notes-save-row button.primary-btn:active { box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
-    /* 🌟 新增：編輯模式的取消按鈕樣式 */
     .cancel-btn { width: 70px; margin-top: 0; padding: 12px 0; background-color: #E2E8F0; color: #495057; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; display: none; transition: all 0.2s; }
     .cancel-btn:active { background-color: #CBD5E1; }
     .notes-save-row.is-editing .cancel-btn { display: block; }
-    .notes-save-row.is-editing .primary-btn { width: 85px; } /* 編輯模式下，Save 按鈕縮小一點讓位 */
+    .notes-save-row.is-editing .primary-btn { width: 85px; } 
     
-    .quick-tags-container { display: flex; gap: 8px; margin-top: 0; margin-bottom: 2px; overflow-x: auto; padding-bottom: 4px; align-items: center; -webkit-overflow-scrolling: touch; }
+    /* 🌟 修正：確保右側有 20px padding 避免被截斷 */
+    .quick-tags-container { display: flex; gap: 8px; margin-top: 0; margin-bottom: 2px; overflow-x: auto; padding-bottom: 4px; padding-right: 20px; align-items: center; -webkit-overflow-scrolling: touch; }
     .quick-tags-container::-webkit-scrollbar { display: none; } 
     .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); flex-shrink: 0; }
     .quick-tag-btn:active { background-color: #CBD5E1; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
@@ -125,8 +125,9 @@
       box-sizing: border-box;
     }
     
+    /* 🌟 修正：確保篩選列右側有 padding 避免最後一顆按鈕被截斷 */
     .filter-left-zone {
-      display: flex; align-items: center; gap: 8px; flex: 1; overflow-x: auto; 
+      display: flex; align-items: center; gap: 8px; flex: 1; overflow-x: auto; padding-right: 12px;
       scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 2px;
     }
     .filter-left-zone::-webkit-scrollbar { display: none; }
@@ -353,7 +354,6 @@
     .toast-msg { position: fixed; top: max(env(safe-area-inset-top), 60px); left: 50%; transform: translateX(-50%) translateY(-20px); background-color: #4CAF50; color: white; padding: 12px 24px; border-radius: 24px; font-size: 15px; font-weight: bold; letter-spacing: 1px; opacity: 0; transition: all 0.3s ease; z-index: 10000; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
     .toast-msg.show { opacity: 1; transform: translateX(-50%) translateY(0); }
     
-    /* 🌟 新增：拖曳區域的特效樣式 */
     .drag-over { border: 2px dashed var(--primary-color) !important; background-color: #F1F5F9 !important; }
   </style>
 </head>
@@ -368,33 +368,32 @@
 
   <div id="toastMsg" class="toast-msg"></div>
 
+  <!-- 🌟 設定視窗：改版輸入區、刪除鈕、預設切換 -->
   <div id="tagManagerModal" class="image-preview-modal" style="align-items: center; justify-content: center; z-index: 10002;">
-    <!-- 🌟 設定視窗加入拖放事件支援 -->
     <div id="dropZone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)" style="background: #FFFFFF; width: 90%; max-width: 340px; border-radius: 16px; padding: 24px; box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: all 0.2s;">
       
-      <!-- 🌟 加入右上角的關閉按鈕 -->
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
         <h3 style="margin: 0; color: var(--primary-dark); font-size: 18px;">⚙️ 自訂標籤設定</h3>
-        <button onclick="closeTagManager()" style="background: none; border: none; font-size: 20px; color: #888; cursor: pointer; padding: 0;">✕</button>
+        <button onclick="closeTagManager()" style="background: none; border: none; font-size: 20px; color: #888; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center;">✕</button>
       </div>
       
       <div id="tagList" style="margin-bottom: 16px; max-height: 200px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px;"></div>
       
-      <div style="display: flex; gap: 8px; margin-bottom: 20px;">
-        <!-- 🌟 移除多餘的預設文字說明 -->
-        <input type="text" id="newTagCode" placeholder="顯示文字" style="width: 35%; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-weight: bold; text-align: center;">
-        <input type="text" id="newTagName" placeholder="全名或說明" style="flex: 1; padding: 10px; border: 1px solid var(--border-color); border-radius: 6px;">
-      </div>
+      <div style="font-size: 11px; color: #8FA3B8; margin-bottom: 6px; margin-left: 2px;">⭐ 設為預設自動加入</div>
       
-      <div style="display: flex; gap: 12px;">
-          <!-- 🌟 將完成改名為關閉，語意更精確 -->
-          <button type="button" onclick="closeTagManager()" style="flex: 1; padding: 12px; background: #F1F5F9; border: none; border-radius: 8px; font-weight: bold; color: var(--primary-dark); cursor: pointer;">關閉</button>
-          <button type="button" onclick="addTag()" style="flex: 1; padding: 12px; background: var(--primary-color); border: none; border-radius: 8px; font-weight: bold; color: #FFF; cursor: pointer;">新增標籤</button>
+      <div style="display: flex; gap: 12px; margin-bottom: 24px; align-items: stretch;">
+        <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+          <!-- 🌟 順序對調，移除 (如:xxx) -->
+          <input type="text" id="newTagName" placeholder="全名或說明" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; box-sizing: border-box;">
+          <input type="text" id="newTagCode" placeholder="顯示文字" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-weight: bold; text-align: center; box-sizing: border-box;">
+        </div>
+        <!-- 🌟 右側新增按鈕 -->
+        <button type="button" onclick="addTag()" style="width: 70px; background: var(--primary-color); border: none; border-radius: 8px; font-weight: bold; color: #FFF; cursor: pointer; flex-shrink: 0; padding: 0;">新增<br>標籤</button>
       </div>
 
-      <div style="display: flex; justify-content: space-between; margin-top: 20px; border-top: 1px solid #E2E8F0; padding-top: 16px;">
-          <!-- 🌟 修改匯入按鈕文字提示拖曳 -->
-          <button type="button" onclick="triggerImport()" style="background: none; border: none; color: #7895B2; font-size: 13px; font-weight: bold; cursor: pointer; padding: 4px; display: flex; align-items: center; gap: 4px;">📥 點選或拖曳匯入</button>
+      <div style="display: flex; justify-content: space-between; border-top: 1px solid #E2E8F0; padding-top: 16px;">
+          <!-- 🌟 修改為點選或拖曳 -->
+          <button type="button" onclick="triggerImport()" style="background: none; border: none; color: #7895B2; font-size: 13px; font-weight: bold; cursor: pointer; padding: 4px; display: flex; align-items: center; gap: 4px;" title="可直接將備份檔拖曳至視窗內">📥 點選或拖曳匯入</button>
           <button type="button" onclick="exportSettings()" style="background: none; border: none; color: #7895B2; font-size: 13px; font-weight: bold; cursor: pointer; padding: 4px; display: flex; align-items: center; gap: 4px;">📤 匯出備份</button>
       </div>
       <input type="file" id="importSettingsFile" accept=".json" style="display:none" onchange="handleImportSettings(event)">
@@ -477,7 +476,6 @@
           <input type="number" id="heartRate" placeholder="HR" inputmode="numeric" pattern="[0-9]*" required onfocus="this.select()">
           <span class="unit" style="margin-right:0;">bpm</span>
         </div>
-        <!-- 🌟 將 notes-save-row 設置為可動態加入 class 以切換按鈕顯示 -->
         <div class="form-group notes-save-row" id="formActionRow">
           <input type="text" id="notes" placeholder="Notes (e.g., dizzy...)">
           <button type="button" id="cancelEditBtn" class="cancel-btn" onclick="cancelEdit()">Cancel</button>
@@ -498,6 +496,7 @@
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃')">🏃</button>
           <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕')">🤕</button>
           
+          <!-- 動態產生的按鈕加上 flex-shrink: 0 確保可滑動 -->
           <span id="dynamicQuickTags" style="display: contents;"></span>
         </div>
         
@@ -594,11 +593,16 @@
         "C": "Concor 1.25",
         "I": "Isoptin SR 120"
     };
+    
+    // 🌟 新增：預設標籤記憶庫
+    let DEFAULT_TAGS = JSON.parse(localStorage.getItem('bpDefaultTags')) || [];
 
     function initTagUI() {
         let quickHtml = '';
         let filterHtml = '';
         let legendHtml = '';
+        
+        let spacer = `<div style="flex: 1; min-width: 12px; flex-shrink: 0;"></div>`;
 
         for (const [key, fullName] of Object.entries(CUSTOM_TAG_DICT)) {
             quickHtml += `<button type="button" class="quick-tag-btn" onclick="addQuickTag('[${key}]')" style="flex-shrink: 0;">${key}</button>`;
@@ -606,7 +610,7 @@
             const isActive = currentTags.includes(`[${key}]`) ? 'active' : '';
             filterHtml += `<button class="filter-btn tag-btn ${isActive}" data-tag="[${key}]" style="width: auto; padding: 0 10px; flex-shrink: 0;" onclick="toggleTagFilter(this, '[${key}]')">${key}</button>`;
             
-            // 🌟 智慧文字顏色處理 (前綴深黑，後面淺灰，移除冒號)
+            // 🌟 智慧文字顏色處理 (前綴深黑，後面淺灰)
             let legendText = '';
             if (fullName.toUpperCase().startsWith(key.toUpperCase())) {
                 let match = fullName.substring(0, key.length);
@@ -618,7 +622,8 @@
             legendHtml += `<div style="display: inline-flex; align-items: baseline; background: rgba(226, 232, 240, 0.4); padding: 3px 8px; border-radius: 6px; flex-shrink: 0;">${legendText}</div>`;
         }
         
-        quickHtml += `<button type="button" class="quick-tag-btn" onclick="openTagManager()" style="background-color: #F1F5F9; border: 1px dashed #94A3B8; color: #495057; flex-shrink: 0; margin-left: auto;">⚙️ 設定</button>`;
+        // 🌟 改良設定鈕，加入推擠器取代 margin-auto，確保不會被截斷
+        quickHtml += spacer + `<button type="button" class="quick-tag-btn" onclick="openTagManager()" style="background-color: #F1F5F9; border: 1px dashed #94A3B8; color: #495057; flex-shrink: 0;">⚙️ 設定</button>`;
 
         document.getElementById('dynamicQuickTags').innerHTML = quickHtml;
         document.getElementById('dynamicFilterTags').innerHTML = filterHtml;
@@ -640,16 +645,38 @@
         setTimeout(() => modal.style.display = 'none', 250);
     }
 
+    function toggleDefaultTag(key) {
+        if (DEFAULT_TAGS.includes(key)) {
+            DEFAULT_TAGS = DEFAULT_TAGS.filter(t => t !== key);
+        } else {
+            DEFAULT_TAGS.push(key);
+        }
+        localStorage.setItem('bpDefaultTags', JSON.stringify(DEFAULT_TAGS));
+        renderTagManagerList();
+    }
+
     function renderTagManagerList() {
         let html = '';
         if (Object.keys(CUSTOM_TAG_DICT).length === 0) {
             html = `<div style="text-align:center; color:#999; font-size: 13px; padding: 10px 0;">目前沒有自訂標籤</div>`;
         } else {
             for (const [key, fullName] of Object.entries(CUSTOM_TAG_DICT)) {
+                // 🌟 新增：預設星號按鈕與 SVG 垃圾桶按鈕
+                const isDefault = DEFAULT_TAGS.includes(key);
+                const starIcon = isDefault ? '⭐' : '<span style="opacity: 0.3; filter: grayscale(1);">⭐</span>';
+                
                 html += `
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #F1F5F9;">
-                    <div style="font-size: 14px; color: var(--primary-dark);"><span style="font-weight: bold; display: inline-block; background: #E2E8F0; padding: 2px 6px; border-radius: 4px; margin-right: 8px;">${key}</span> ${fullName}</div>
-                    <button type="button" onclick="deleteTag('${key}')" style="background: none; border: none; color: var(--danger-color); cursor: pointer; font-weight: bold; font-size: 16px;">✕</button>
+                    <div style="font-size: 14px; color: var(--primary-dark); display: flex; align-items: center;">
+                        <button type="button" onclick="toggleDefaultTag('${key}')" style="background: none; border: none; cursor: pointer; font-size: 16px; padding: 4px 6px 4px 0; display: flex; align-items: center;" title="切換預設自動加入">
+                            ${starIcon}
+                        </button>
+                        <span style="font-weight: bold; display: inline-block; background: #E2E8F0; padding: 2px 6px; border-radius: 4px; margin-right: 8px;">${key}</span> 
+                        ${fullName}
+                    </div>
+                    <button type="button" onclick="deleteTag('${key}')" style="background: none; border: none; color: #94A3B8; cursor: pointer; padding: 4px; border-radius: 6px; transition: all 0.2s; display: flex; align-items: center; justify-content: center;" title="刪除標籤" onmouseover="this.style.backgroundColor='#FEE2E2'; this.style.color='var(--danger-color)'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#94A3B8'">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                    </button>
                 </div>`;
             }
         }
@@ -679,14 +706,20 @@
         if(confirm(`確定要刪除標籤 [${key}] 嗎？\n(過去歷史資料的標籤仍會保留渲染，但無法快速篩選)`)) {
             delete CUSTOM_TAG_DICT[key];
             localStorage.setItem('bpDrugDict', JSON.stringify(CUSTOM_TAG_DICT));
+            
+            DEFAULT_TAGS = DEFAULT_TAGS.filter(t => t !== key);
+            localStorage.setItem('bpDefaultTags', JSON.stringify(DEFAULT_TAGS));
+            
             currentTags = currentTags.filter(t => t !== `[${key}]`);
             renderTagManagerList();
             initTagUI();
         }
     }
 
+    // 🌟 匯出備份：將自訂字典與預設清單一併打包
     function exportSettings() {
-        const dataStr = JSON.stringify(CUSTOM_TAG_DICT, null, 2);
+        const backupData = { tags: CUSTOM_TAG_DICT, defaults: DEFAULT_TAGS };
+        const dataStr = JSON.stringify(backupData, null, 2);
         const blob = new Blob([dataStr], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -705,20 +738,16 @@
         document.getElementById('importSettingsFile').click();
     }
     
-    // 🌟 拖放匯入功能實作
     function handleDragOver(e) {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         document.getElementById('dropZone').classList.add('drag-over');
     }
     function handleDragLeave(e) {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         document.getElementById('dropZone').classList.remove('drag-over');
     }
     function handleDrop(e) {
-        e.preventDefault();
-        e.stopPropagation();
+        e.preventDefault(); e.stopPropagation();
         document.getElementById('dropZone').classList.remove('drag-over');
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
             processImportFile(e.dataTransfer.files[0]);
@@ -735,11 +764,19 @@
             try {
                 const importedDict = JSON.parse(e.target.result);
                 if (typeof importedDict === 'object' && importedDict !== null) {
-                    CUSTOM_TAG_DICT = importedDict;
+                    // 向下相容舊版直接備份格式
+                    if (importedDict.tags !== undefined) {
+                        CUSTOM_TAG_DICT = importedDict.tags;
+                        DEFAULT_TAGS = importedDict.defaults || [];
+                    } else {
+                        CUSTOM_TAG_DICT = importedDict;
+                        DEFAULT_TAGS = [];
+                    }
                     localStorage.setItem('bpDrugDict', JSON.stringify(CUSTOM_TAG_DICT));
+                    localStorage.setItem('bpDefaultTags', JSON.stringify(DEFAULT_TAGS));
                     renderTagManagerList();
                     initTagUI();
-                    showToast('標籤設定已成功匯入！');
+                    showToast('設定已成功還原！');
                 } else {
                     alert("檔案格式不正確");
                 }
@@ -887,7 +924,7 @@
       const reportBtn = document.querySelector('.tag-btn[data-tag="[報表]"]');
       if(reportBtn) reportBtn.classList.add('active');
 
-      cancelEdit(); // 如果在編輯狀態，強制取消編輯並重置時間
+      resetFormToFresh();
       
       try {
         await loadData();
@@ -901,12 +938,37 @@
       }, 100); 
     }
 
-    const now = new Date();
-    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-    document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    // 🌟 全新：還原表單至全新狀態，並自動填入「預設標籤」
+    function resetFormToFresh() {
+      currentEditTarget = null;
+      document.getElementById('bpForm').reset();
+      
+      let curr = new Date(); 
+      document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`; 
+      document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
+      
+      let initialNotes = '';
+      DEFAULT_TAGS.forEach(k => {
+         if (CUSTOM_TAG_DICT[k]) {
+             if (initialNotes !== '') initialNotes += ', ';
+             initialNotes += `[${k}]`;
+         }
+      });
+      document.getElementById('notes').value = initialNotes;
+      
+      checkMorningTag(); 
+      
+      const btn = document.getElementById('submitBtn');
+      btn.innerText = 'Save';
+      btn.style.backgroundColor = 'var(--primary-color)';
+      document.getElementById('formActionRow').classList.remove('is-editing');
+    }
+
+    // 初次啟動套用時間與預設標籤
+    resetFormToFresh();
 
     function checkMorningTag() {
-      if (currentEditTarget) return; // 編輯模式下不自動干預備註
+      if (currentEditTarget) return; 
       const timeVal = document.getElementById('time').value;
       if (!timeVal) return;
       const h = parseInt(timeVal.split(':')[0], 10);
@@ -915,7 +977,7 @@
       let currentNotes = notesInput.value;
       if (h >= 4 && h < 10) {
         if (!currentNotes.includes('[報表]')) {
-          if (currentNotes.trim() !== '') currentNotes += ', ';
+          if (currentNotes.trim() !== '' && !currentNotes.endsWith(', ')) currentNotes += ', ';
           currentNotes += '[報表]';
         }
       } else {
@@ -927,7 +989,6 @@
     }
     
     document.getElementById('time').addEventListener('change', checkMorningTag);
-    checkMorningTag();
     
     document.addEventListener('visibilitychange', function() {
       if (!document.hidden && !currentEditTarget) {
@@ -944,16 +1005,14 @@
       else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
     }
     
-    // 🌟 編輯紀錄邏輯
+    // 🌟 編輯模式邏輯：強制補齊時間，清空雜訊
     function editRecord(rawDate, rawTime, sys, dia, hr, encodedNotes) {
-        // 強制補齊時間格式，確保能正確放入 input type="time" 中 (避免 8:5 這種錯誤)
         let formattedTime = rawTime;
         if (rawTime && rawTime.includes(':')) {
             let parts = rawTime.split(':');
             formattedTime = `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
         }
         
-        // 將資料填回輸入框
         document.getElementById('date').value = String(rawDate).replace(/\//g, '-');
         document.getElementById('time').value = formattedTime;
         document.getElementById('systolic').value = sys;
@@ -961,12 +1020,10 @@
         document.getElementById('heartRate').value = hr;
         document.getElementById('notes').value = decodeURIComponent(encodedNotes);
         
-        // 儲存原始資料作為刪除標的
         currentEditTarget = {
             date: rawDate, time: rawTime, systolic: sys, diastolic: dia, heartRate: hr, notes: decodeURIComponent(encodedNotes)
         };
         
-        // 改變按鈕狀態並顯示 Cancel 按鈕
         const btn = document.getElementById('submitBtn');
         btn.innerText = 'Update';
         btn.style.backgroundColor = '#F59E0B'; 
@@ -975,20 +1032,8 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     
-    // 🌟 離開編輯模式邏輯
     function cancelEdit() {
-        currentEditTarget = null;
-        document.getElementById('bpForm').reset();
-        
-        let curr = new Date(); 
-        document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`; 
-        document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
-        checkMorningTag();
-        
-        const btn = document.getElementById('submitBtn');
-        btn.innerText = 'Save';
-        btn.style.backgroundColor = 'var(--primary-color)';
-        document.getElementById('formActionRow').classList.remove('is-editing');
+        resetFormToFresh();
     }
 
     async function processSyncQueue() {
@@ -1612,8 +1657,6 @@
           
           allRecords.push(payload);
           syncToCloud(payload);
-          currentEditTarget = null;
-          document.getElementById('formActionRow').classList.remove('is-editing');
           
       } else {
           allRecords.push(payload); 
@@ -1623,9 +1666,8 @@
       renderList(); 
       scrollToBottom(); 
       
-      document.getElementById('bpForm').reset();
-      let curr = new Date(); document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`; document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
-      checkMorningTag();
+      // 確保重置表單並恢復狀態
+      resetFormToFresh();
       
       const originalColor = 'var(--primary-color)'; 
       btn.innerText = 'Saved!'; btn.style.backgroundColor = '#4CAF50';
