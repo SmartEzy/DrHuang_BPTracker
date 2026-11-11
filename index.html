@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=185">
+  <link rel="manifest" href="manifest.json?v=186">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -238,37 +238,36 @@
 
     .record-row { 
       padding: 6px 20px; font-size: 15px; line-height: 1.1; color: var(--text-main); 
-      font-variant-numeric: tabular-nums; transition: all 0.2s; border: 1.5px solid transparent; 
+      font-variant-numeric: tabular-nums; transition: background-color 0.2s; border: none; 
       box-sizing: border-box; width: 100%; cursor: pointer;
     }
-    .record-row.new-day { border-top: 1.5px solid transparent; }
+    .record-row.new-day { border-top: 1px solid transparent; }
     @media (hover: hover) { .record-row:hover { background-color: rgba(143, 163, 184, 0.1); border-radius: 6px; } }
     .record-row:active { background-color: rgba(143, 163, 184, 0.2); }
     
-    /* 🌟 點選編輯時的顯眼高亮效果 */
+    /* 🌟 修正 3：刪除邊框，改為純粹的淡橘色底色 */
     .record-row.editing-row {
-      background-color: #FEF3C7 !important;
-      border: 1.5px solid #F59E0B !important;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(245, 158, 11, 0.15);
+      background-color: #FFEDD5 !important;
+      border-radius: 6px;
     }
     
     .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:nth-child(6) { text-align: left; padding-left: 12px; }
-    .record-row div:last-child { display: flex; justify-content: flex-end; padding-right: 2px;}
+    /* 🌟 修正 1：指定第 7 欄（垃圾桶欄位）對齊右側，避免誤傷第 8 個元素的刪除區塊 */
+    .record-row div:nth-child(7) { display: flex; justify-content: flex-end; padding-right: 2px;}
     
     .delete-btn { background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; display: flex; justify-content: flex-end; align-items: center; transition: color 0.2s; }
     @media (hover: hover) { .delete-btn:hover { color: var(--danger-color); } }
     .delete-btn:active { color: var(--danger-color); }
     
-    /* 🌟 無底色遮擋的右側刪除確認按鈕區 */
+    /* 🌟 修正 1：加上 !important 確保預設絕對隱藏，點擊垃圾桶才顯示 */
     .delete-actions {
       position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
-      display: none; align-items: center; gap: 6px; z-index: 10;
+      display: none !important; align-items: center; gap: 6px; z-index: 10;
       background-color: var(--bg-color); padding: 2px 4px; border-radius: 6px;
     }
-    .record-row.editing-row .delete-actions { background-color: #FEF3C7; }
-    .delete-actions.show { display: flex; }
+    .record-row.editing-row .delete-actions { background-color: #FFEDD5; }
+    .delete-actions.show { display: flex !important; }
     .del-confirm-btn { background: var(--danger-color); color: white; border: none; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
     .del-confirm-btn:active { background: #B71C1C; }
     .del-cancel-btn { background: #FFFFFF; color: var(--primary-dark); border: 1px solid #CBD5E1; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
@@ -390,17 +389,16 @@
 
   <div id="toastMsg" class="toast-msg"></div>
 
-  <!-- 🌟 自訂標籤設定視窗：移除匯入匯出，統一輸入格顏色粗細 -->
+  <!-- 🌟 修正 2：刪除「現有標籤」四個字 -->
   <div id="tagManagerModal" class="image-preview-modal" style="align-items: center; justify-content: center; z-index: 10002;">
     <div style="background: #FFFFFF; width: 90%; max-width: 340px; border-radius: 16px; padding: 24px; box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
       
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
         <h3 style="margin: 0; color: var(--primary-dark); font-size: 18px;">⚙️ 自訂標籤設定</h3>
         <button onclick="closeTagManager()" style="background: none; border: none; font-size: 20px; color: #888; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center;">✕</button>
       </div>
       
-      <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 4px;">
-        <div style="font-size: 12px; font-weight: bold; color: #7895B2; margin-left: 4px;">現有標籤</div>
+      <div style="display: flex; justify-content: flex-end; align-items: flex-end; margin-bottom: 4px;">
         <div style="font-size: 11px; color: #8FA3B8; margin-right: 4px;">⭐ 設為預設</div>
       </div>
       
@@ -498,7 +496,6 @@
           <button type="submit" id="submitBtn" class="primary-btn">Save</button>
         </div>
         
-        <!-- 🌟 調整順序：咖啡/運動/頭痛移至自訂標籤之後 -->
         <div class="quick-tags-wrapper">
           <div class="quick-tags-scroll">
             <button type="button" class="quick-tag-btn" onclick="addQuickTag('[報表]')">
@@ -522,7 +519,6 @@
       </form>
     </div>
 
-    <!-- 🌟 篩選膠囊：刪除咖啡 -->
     <div class="records-header filter-wrapper">
       <div class="filter-left-zone">
         <div class="capsule-group period-group">
@@ -966,7 +962,6 @@
       }
     }
     
-    // 🌟 點選該列進入編輯模式，並加上顯眼高亮效果
     function editRecord(rowEl, rawDate, rawTime, sys, dia, hr, encodedNotes) {
         document.querySelectorAll('.record-row.editing-row').forEach(el => el.classList.remove('editing-row'));
         if (rowEl) rowEl.classList.add('editing-row');
@@ -1316,7 +1311,6 @@
             displayNote = displayNote.replace(/, /g, '').replace(/,/g, '');
             let encodedNotes = encodeURIComponent(item.notes || '');
 
-            // 檢查此列是否為目前正在編輯的列
             let isEditingThisRow = (currentEditTarget && currentEditTarget.date === rawDate && currentEditTarget.time === item.time && currentEditTarget.systolic == item.systolic && currentEditTarget.diastolic == item.diastolic && currentEditTarget.heartRate == item.heartRate && currentEditTarget.notes === (item.notes || ''));
 
             html += `
