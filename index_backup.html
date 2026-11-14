@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=183">
+  <link rel="manifest" href="manifest.json?v=186">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -29,7 +28,7 @@
       --border-color: #CED4DA; 
       --danger-color: #D32F2F;  
       --alert-color: #EA580C;   
-      --warning-color: #F59E0B; 
+      --warning-color: #FFC107; 
       --hover-gray: #495057; 
     }
     
@@ -46,13 +45,11 @@
       flex-direction: column;
     }
     
-    /* 🌟 新增：滿版深色橫幅外層 */
     .banner-wrapper { 
       width: 100%; 
       background-color: var(--primary-dark); 
     }
     
-    /* 🌟 修改：內部容器限制最大寬度並置中 */
     .banner-container { 
       display: flex; align-items: stretch; width: 100%; max-width: 500px; margin: 0 auto; height: 50px; box-sizing: border-box; 
     }
@@ -102,10 +99,19 @@
     .notes-save-row button.primary-btn { width: 105px; margin-top: 0; padding: 12px 0; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.15); transition: all 0.2s; }
     .notes-save-row button.primary-btn:active { box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
     
-    .quick-tags-container { display: flex; gap: 8px; margin-top: 0; margin-bottom: 10px; overflow-x: auto; padding-bottom: 2px; }
-    .quick-tags-container::-webkit-scrollbar { display: none; } 
-    .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .cancel-btn { width: 70px; margin-top: 0; padding: 12px 0; background-color: #E2E8F0; color: #495057; border: none; border-radius: 6px; font-size: 15px; font-weight: bold; cursor: pointer; display: none; transition: all 0.2s; }
+    .cancel-btn:active { background-color: #CBD5E1; }
+    .notes-save-row.is-editing .cancel-btn { display: block; }
+    .notes-save-row.is-editing .primary-btn { width: 85px; } 
+    
+    .quick-tags-wrapper { display: flex; align-items: center; gap: 8px; margin-top: 0; margin-bottom: 2px; width: 100%; }
+    .quick-tags-scroll { display: flex; gap: 8px; overflow-x: auto; flex: 1; min-width: 0; padding: 2px 2px 4px 2px; align-items: center; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    .quick-tags-scroll::-webkit-scrollbar { display: none; } 
+    
+    .quick-tag-btn { background-color: #E2E8F0; color: #495057; border: none; padding: 6px 12px; font-size: 13px; font-weight: 500; border-radius: 14px; cursor: pointer; white-space: nowrap; transition: background-color 0.2s; display: flex; align-items: center; gap: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); flex-shrink: 0; }
     .quick-tag-btn:active { background-color: #CBD5E1; box-shadow: inset 0 1px 3px rgba(0,0,0,0.15); }
+    
+    .settings-fixed-btn { background-color: #F1F5F9; border: 1px dashed #94A3B8; color: #495057; flex-shrink: 0; margin-bottom: 2px; }
     
     .filter-wrapper {
       background-color: #D8E2ED; 
@@ -118,15 +124,13 @@
       flex-wrap: nowrap; 
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       box-sizing: border-box;
     }
     
     .filter-left-zone {
-      display: flex; align-items: center; gap: 8px; flex: 1; overflow-x: auto; 
-      scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 2px;
+      display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; overflow: hidden;
     }
-    .filter-left-zone::-webkit-scrollbar { display: none; }
 
     .capsule-group { 
       display: flex; align-items: center; gap: 4px;
@@ -135,12 +139,17 @@
       padding: 4px; flex-shrink: 0;
     }
     
+    .tags-group {
+      flex: 1; min-width: 0; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+    }
+    .tags-group::-webkit-scrollbar { display: none; }
+    
     .period-btn { 
       background: transparent; color: #F8FAFC; border: none; padding: 0 10px; 
       height: 32px; min-width: 44px;
       font-size: 13px; font-weight: bold; cursor: pointer; 
       border-radius: 16px; 
-      transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; white-space: nowrap; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
     .period-btn.active { 
       background-color: #FFFFFF; color: #111111; 
@@ -148,12 +157,13 @@
     }
 
     .tag-btn { 
-      background: transparent; color: #F8FAFC; border: none; padding: 0; 
-      height: 32px; width: 32px; min-width: 32px; 
+      background: transparent; color: #F8FAFC; border: none; padding: 0 10px; 
+      height: 32px; min-width: 32px; 
       font-size: 14px; font-weight: bold; cursor: pointer; 
-      border-radius: 50%; 
+      border-radius: 16px; 
       transition: all 0.2s; display: flex; align-items: center; justify-content: center;
       text-shadow: 0px 0px 4px rgba(255, 255, 255, 0.7);
+      flex-shrink: 0;
     }
     .tag-btn.active { 
       background-color: #FFFFFF; color: #111111; 
@@ -167,10 +177,10 @@
         width: 32px; height: 32px; min-width: 32px; border-radius: 50%; padding: 0;
     }
     
-    .clear-tags-btn { background: rgba(255,255,255,0.2); color: #FFFFFF; border: none; width: 28px; height: 28px; border-radius: 50%; font-size: 12px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; margin-left: 2px;}
-    .clear-tags-btn:active { background: rgba(255,255,255,0.4); }
+    .clear-tags-btn { background: rgba(255,255,255,0.25); color: #FFFFFF; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 13px; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s; }
+    .clear-tags-btn:active { background: rgba(255,255,255,0.45); }
 
-    .chart-controls-right { display: flex; align-items: center; flex-shrink: 0; }
+    .chart-controls-right { display: flex; align-items: center; flex-shrink: 0; gap: 6px; }
     
     .chart-toggle-btn { 
       background-color: var(--primary-color); color: #FFFFFF; 
@@ -200,7 +210,7 @@
 
     .list-header, .record-row { 
       display: grid; 
-      grid-template-columns: 55px 48px 20px 70px 40px 1fr 30px; 
+      grid-template-columns: 55px 48px 24px 70px 40px 1fr 30px; 
       gap: 0px; 
       align-items: center; 
       text-align: center; 
@@ -210,9 +220,9 @@
       padding-bottom: 4px; border-bottom: 2px solid var(--primary-dark); 
       font-weight: bold; font-size: 14px; color: var(--primary-dark); 
       padding-left: 20px; padding-right: 20px; box-sizing: border-box;
-      margin-top: 10px;
+      margin-top: 8px; min-height: 28px;
     }
-    .list-header div:nth-child(5) { text-align: center; padding: 0; } 
+    .list-header div:nth-child(4) { text-align: center; padding: 0; } 
     .list-header div:nth-child(6) { text-align: left; padding-left: 12px; }
 
     .month-section { position: relative; }
@@ -228,22 +238,43 @@
 
     .record-row { 
       padding: 6px 20px; font-size: 15px; line-height: 1.1; color: var(--text-main); 
-      font-variant-numeric: tabular-nums; transition: background-color 0.2s; border-top: 1px solid transparent; 
-      box-sizing: border-box; width: 100%;
+      font-variant-numeric: tabular-nums; transition: background-color 0.2s; border: none; 
+      box-sizing: border-box; width: 100%; cursor: pointer;
     }
     .record-row.new-day { border-top: 1px solid transparent; }
-    .record-row.highlight-delete { background-color: rgba(211, 47, 47, 0.2); border-radius: 6px; }
+    @media (hover: hover) { .record-row:hover { background-color: rgba(143, 163, 184, 0.1); border-radius: 6px; } }
+    .record-row:active { background-color: rgba(143, 163, 184, 0.2); }
+    
+    /* 🌟 修正 3：刪除邊框，改為純粹的淡橘色底色 */
+    .record-row.editing-row {
+      background-color: #FFEDD5 !important;
+      border-radius: 6px;
+    }
+    
     .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:nth-child(6) { text-align: left; padding-left: 12px; }
-    .record-row div:last-child { display: flex; justify-content: flex-end; padding-right: 2px;}
+    /* 🌟 修正 1：指定第 7 欄（垃圾桶欄位）對齊右側，避免誤傷第 8 個元素的刪除區塊 */
+    .record-row div:nth-child(7) { display: flex; justify-content: flex-end; padding-right: 2px;}
     
     .delete-btn { background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; display: flex; justify-content: flex-end; align-items: center; transition: color 0.2s; }
     @media (hover: hover) { .delete-btn:hover { color: var(--danger-color); } }
     .delete-btn:active { color: var(--danger-color); }
-    .record-row.highlight-delete .delete-btn { color: var(--danger-color); }
     
+    /* 🌟 修正 1：加上 !important 確保預設絕對隱藏，點擊垃圾桶才顯示 */
+    .delete-actions {
+      position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
+      display: none !important; align-items: center; gap: 6px; z-index: 10;
+      background-color: var(--bg-color); padding: 2px 4px; border-radius: 6px;
+    }
+    .record-row.editing-row .delete-actions { background-color: #FFEDD5; }
+    .delete-actions.show { display: flex !important; }
+    .del-confirm-btn { background: var(--danger-color); color: white; border: none; padding: 5px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+    .del-confirm-btn:active { background: #B71C1C; }
+    .del-cancel-btn { background: #FFFFFF; color: var(--primary-dark); border: 1px solid #CBD5E1; padding: 4px 10px; border-radius: 6px; font-weight: bold; font-size: 12px; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+    .del-cancel-btn:active { background: #F1F5F9; }
+
     .cat-col { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
-    .bp-col-align { display: flex; align-items: center; justify-content: center; width: 100%; }
+    .bp-col-align { display: flex; align-items: center; justify-content: center; width: 100%; position: relative; }
     .bp-sys { width: 28px; text-align: right; font-weight: bold; color: var(--text-main); }
     .bp-slash { width: 6px; text-align: center; color: #888; font-weight: normal; margin: 0 1px; } 
     .bp-dia { width: 28px; text-align: left; font-weight: bold; color: var(--text-main); }
@@ -358,6 +389,31 @@
 
   <div id="toastMsg" class="toast-msg"></div>
 
+  <!-- 🌟 修正 2：刪除「現有標籤」四個字 -->
+  <div id="tagManagerModal" class="image-preview-modal" style="align-items: center; justify-content: center; z-index: 10002;">
+    <div style="background: #FFFFFF; width: 90%; max-width: 340px; border-radius: 16px; padding: 24px; box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3 style="margin: 0; color: var(--primary-dark); font-size: 18px;">⚙️ 自訂標籤設定</h3>
+        <button onclick="closeTagManager()" style="background: none; border: none; font-size: 20px; color: #888; cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center;">✕</button>
+      </div>
+      
+      <div style="display: flex; justify-content: flex-end; align-items: flex-end; margin-bottom: 4px;">
+        <div style="font-size: 11px; color: #8FA3B8; margin-right: 4px;">⭐ 設為預設</div>
+      </div>
+      
+      <div id="tagList" style="margin-bottom: 16px; max-height: 200px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px;"></div>
+      
+      <div style="display: flex; gap: 12px; align-items: stretch;">
+        <div style="display: flex; flex-direction: column; gap: 8px; flex: 1;">
+          <input type="text" id="newTagName" placeholder="全名" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-weight: bold; color: var(--text-main); text-align: center; box-sizing: border-box;">
+          <input type="text" id="newTagCode" placeholder="顯示文字" style="padding: 10px; border: 1px solid var(--border-color); border-radius: 6px; font-weight: bold; color: var(--text-main); text-align: center; box-sizing: border-box;">
+        </div>
+        <button type="button" onclick="addTag()" style="width: 70px; background: var(--primary-color); border: none; border-radius: 8px; font-weight: bold; color: #FFF; cursor: pointer; flex-shrink: 0; padding: 0; font-size: 15px;">新增<br>標籤</button>
+      </div>
+    </div>
+  </div>
+
   <div id="imagePreviewModal" class="image-preview-modal">
     <div class="preview-header">
       <button class="preview-close-btn" onclick="closeImagePreview()">✕</button>
@@ -377,7 +433,6 @@
   </div>
 
   <div class="sticky-top-panel">
-    <!-- 🌟 滿版橫幅外框 -->
     <div class="banner-wrapper">
       <div class="banner-container">
         <div class="banner-left-bar"></div> 
@@ -435,26 +490,32 @@
           <input type="number" id="heartRate" placeholder="HR" inputmode="numeric" pattern="[0-9]*" required onfocus="this.select()">
           <span class="unit" style="margin-right:0;">bpm</span>
         </div>
-        <div class="form-group notes-save-row">
+        <div class="form-group notes-save-row" id="formActionRow">
           <input type="text" id="notes" placeholder="Notes (e.g., dizzy...)">
+          <button type="button" id="cancelEditBtn" class="cancel-btn" onclick="cancelEdit()">Cancel</button>
           <button type="submit" id="submitBtn" class="primary-btn">Save</button>
         </div>
         
-        <div class="quick-tags-container">
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('[報表]')">
-            <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-              <polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line>
-              <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
-          </button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏥')">🏥</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('☕')">☕</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🍷')">🍷</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃')">🏃</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕')">🤕</button>
-          <button type="button" class="quick-tag-btn" onclick="addQuickTag('💊')">💊</button>
+        <div class="quick-tags-wrapper">
+          <div class="quick-tags-scroll">
+            <button type="button" class="quick-tag-btn" onclick="addQuickTag('[報表]')">
+              <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+            </button>
+            <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏥')">🏥</button>
+            <button type="button" class="quick-tag-btn" onclick="addQuickTag('🍷')">🍷</button>
+            <span id="dynamicQuickTags" style="display: contents;"></span>
+            <button type="button" class="quick-tag-btn" onclick="addQuickTag('☕')">☕</button>
+            <button type="button" class="quick-tag-btn" onclick="addQuickTag('🏃')">🏃</button>
+            <button type="button" class="quick-tag-btn" onclick="addQuickTag('🤕')">🤕</button>
+          </div>
+          <button type="button" class="quick-tag-btn settings-fixed-btn" onclick="openTagManager()">⚙️ 設定</button>
         </div>
+        
+        <div id="tagLegend" style="display: flex; flex-wrap: nowrap; align-items: center; font-size: 11px; text-align: right; margin-top: -2px; margin-bottom: 8px; padding-right: 2px; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; gap: 6px;"></div>
       </form>
     </div>
 
@@ -466,21 +527,21 @@
         </div>
         
         <div class="capsule-group tags-group">
-          <button class="filter-btn active tag-btn report-filter-btn" data-tag="[報表]" title="Report">
+          <button class="filter-btn active tag-btn report-filter-btn" data-tag="[報表]" onclick="toggleTagFilter(this, '[報表]')">
             <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
               <polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line>
               <line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline>
             </svg>
           </button>
-          <button class="filter-btn tag-btn" data-tag="🏥">🏥</button>
-          <button class="filter-btn tag-btn" data-tag="🍷">🍷</button>
-          <button class="filter-btn tag-btn" data-tag="☕">☕</button>
-          <button class="clear-tags-btn" onclick="clearTags()" title="Clear Filters">✕</button>
+          <button class="filter-btn tag-btn" data-tag="🏥" onclick="toggleTagFilter(this, '🏥')">🏥</button>
+          <button class="filter-btn tag-btn" data-tag="🍷" onclick="toggleTagFilter(this, '🍷')">🍷</button>
+          <span id="dynamicFilterTags" style="display: contents;"></span>
         </div>
       </div>
       
       <div class="chart-controls-right">
+        <button class="clear-tags-btn" onclick="clearTags()" title="Clear Filters" style="background-color: #94A3B8;">✕</button>
         <button id="toggleChartBtn" class="chart-toggle-btn" title="Open Trend Chart">
           <svg viewBox="0 0 24 24" width="20" height="20" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
@@ -491,7 +552,13 @@
     
     <div class="container" style="padding-top: 0; padding-bottom: 0px;">
       <div class="list-header">
-        <div></div> <div>Time</div> <div></div> <div>BP</div> <div>HR</div> <div>Notes</div> <div></div>
+        <div id="headerCount" style="font-size: 11px; color: #7895B2; font-weight: 800;"></div> 
+        <div>Time</div> 
+        <div></div> 
+        <div id="headerBP">BP</div> 
+        <div id="headerHR">HR</div> 
+        <div>Notes</div> 
+        <div></div>
       </div>
     </div>
   </div> 
@@ -501,7 +568,7 @@
       <div id="recordsList">
         <div style="text-align:center; padding: 40px 20px; color: #888;">
           <div class="spinner" style="margin: 0 auto 10px auto; border-top-color: var(--primary-dark);"></div>
-          <span id="initialLoadingText">首次載入或同步資料中...<br><span style="font-size:12px; color:#aaa;">請耐心等候幾秒鐘</span></span>
+          <span id="initialLoadingText">系統初始化中...<br><span style="font-size:12px; color:#aaa;">請稍候</span></span>
         </div>
       </div>
     </div>
@@ -537,10 +604,157 @@
   <script>
     const API_URL = 'https://script.google.com/macros/s/AKfycbxST5su2Cygqux4p5gBBApo8Gjq4QLt2-CpNFEjjQFZSEHZqMTJ06sxA7HjptHiQWNK/exec';
     let allRecords = [];
+    let isInitialLoad = true; 
+    let currentEditTarget = null; 
     
+    let CUSTOM_TAG_DICT = JSON.parse(localStorage.getItem('bpDrugDict')) || {
+        "C": "Concor 1.25",
+        "I": "Isoptin SR 120"
+    };
+    
+    let DEFAULT_TAGS = JSON.parse(localStorage.getItem('bpDefaultTags')) || [];
+
+    function saveSettingsToCloud() {
+        localStorage.setItem('bpDrugDict', JSON.stringify(CUSTOM_TAG_DICT));
+        localStorage.setItem('bpDefaultTags', JSON.stringify(DEFAULT_TAGS));
+        syncToCloud({
+            action: 'save_settings',
+            settings: {
+                tags: CUSTOM_TAG_DICT,
+                defaults: DEFAULT_TAGS
+            }
+        });
+    }
+
+    function initTagUI() {
+        let quickHtml = '';
+        let filterHtml = '';
+        let legendHtml = '';
+
+        for (const [key, fullName] of Object.entries(CUSTOM_TAG_DICT)) {
+            quickHtml += `<button type="button" class="quick-tag-btn" onclick="addQuickTag('[${key}]')" style="flex-shrink: 0;">${key}</button>`;
+            
+            const isActive = currentTags.includes(`[${key}]`) ? 'active' : '';
+            filterHtml += `<button class="filter-btn tag-btn ${isActive}" data-tag="[${key}]" style="width: auto; padding: 0 10px; flex-shrink: 0;" onclick="toggleTagFilter(this, '[${key}]')">${key}</button>`;
+            
+            let legendText = '';
+            if (fullName.toUpperCase().startsWith(key.toUpperCase())) {
+                let match = fullName.substring(0, key.length);
+                let rest = fullName.substring(key.length);
+                legendText = `<span style="color: #495057; font-weight: 900; font-size: 13px;">${match}</span><span style="color: #8FA3B8; font-weight: 600; font-size: 12px;">${rest}</span>`;
+            } else {
+                legendText = `<span style="color: #495057; font-weight: 900; font-size: 13px;">${key}</span><span style="color: #8FA3B8; font-weight: 600; font-size: 12px; margin-left: 4px;">${fullName}</span>`;
+            }
+            legendHtml += `<div style="display: inline-flex; align-items: baseline; background: rgba(226, 232, 240, 0.4); padding: 3px 8px; border-radius: 6px; flex-shrink: 0;">${legendText}</div>`;
+        }
+
+        document.getElementById('dynamicQuickTags').innerHTML = quickHtml;
+        document.getElementById('dynamicFilterTags').innerHTML = filterHtml;
+        document.getElementById('tagLegend').innerHTML = legendHtml;
+        
+        if (!isInitialLoad) { renderList(); } 
+    }
+
+    function openTagManager() {
+        renderTagManagerList();
+        const modal = document.getElementById('tagManagerModal');
+        modal.style.display = 'flex';
+        setTimeout(() => modal.classList.add('show'), 10);
+    }
+
+    function closeTagManager() {
+        const modal = document.getElementById('tagManagerModal');
+        modal.classList.remove('show');
+        setTimeout(() => modal.style.display = 'none', 250);
+    }
+
+    function toggleDefaultTag(key) {
+        if (DEFAULT_TAGS.includes(key)) {
+            DEFAULT_TAGS = DEFAULT_TAGS.filter(t => t !== key);
+        } else {
+            DEFAULT_TAGS.push(key);
+        }
+        saveSettingsToCloud();
+        renderTagManagerList();
+        if (!currentEditTarget) resetFormToFresh();
+    }
+
+    function renderTagManagerList() {
+        let html = '';
+        if (Object.keys(CUSTOM_TAG_DICT).length === 0) {
+            html = `<div style="text-align:center; color:#999; font-size: 13px; padding: 10px 0;">目前沒有自訂標籤</div>`;
+        } else {
+            for (const [key, fullName] of Object.entries(CUSTOM_TAG_DICT)) {
+                const isDefault = DEFAULT_TAGS.includes(key);
+                const starIcon = isDefault ? '⭐' : '<span style="opacity: 0.3; filter: grayscale(1);">⭐</span>';
+                
+                html += `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #F1F5F9;">
+                    <div style="font-size: 14px; color: var(--primary-dark); display: flex; align-items: center;">
+                        <button type="button" onclick="toggleDefaultTag('${key}')" style="background: none; border: none; cursor: pointer; font-size: 16px; padding: 4px 6px 4px 0; display: flex; align-items: center;" title="切換預設自動加入">
+                            ${starIcon}
+                        </button>
+                        <span style="font-weight: bold; display: inline-block; background: #E2E8F0; padding: 2px 6px; border-radius: 4px; margin-right: 8px;">${key}</span> 
+                        ${fullName}
+                    </div>
+                    <button type="button" onclick="deleteTag('${key}')" style="background: none; border: none; color: #94A3B8; cursor: pointer; padding: 6px; border-radius: 6px; transition: all 0.2s; display: flex; align-items: center; justify-content: center;" title="刪除標籤" onmouseover="this.style.backgroundColor='#FEE2E2'; this.style.color='var(--danger-color)'" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#94A3B8'">
+                        <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>
+                    </button>
+                </div>`;
+            }
+        }
+        document.getElementById('tagList').innerHTML = html;
+    }
+
+    function addTag() {
+        const codeInput = document.getElementById('newTagCode');
+        const nameInput = document.getElementById('newTagName');
+        const code = codeInput.value.trim(); 
+        const name = nameInput.value.trim();
+        
+        if (!code || !name) {
+            alert("請完整填寫「顯示文字」與「全名」喔！");
+            return;
+        }
+        
+        CUSTOM_TAG_DICT[code] = name;
+        saveSettingsToCloud();
+        codeInput.value = '';
+        nameInput.value = '';
+        renderTagManagerList();
+        initTagUI(); 
+    }
+
+    function deleteTag(key) {
+        if(confirm(`確定要刪除標籤 [${key}] 嗎？\n(過去歷史資料的標籤仍會保留渲染，但無法快速篩選)`)) {
+            delete CUSTOM_TAG_DICT[key];
+            DEFAULT_TAGS = DEFAULT_TAGS.filter(t => t !== key);
+            saveSettingsToCloud();
+            
+            currentTags = currentTags.filter(t => t !== `[${key}]`);
+            renderTagManagerList();
+            initTagUI();
+            if (!currentEditTarget) resetFormToFresh();
+        }
+    }
+
     let currentPeriod = '90days'; 
     let currentTags = ['[報表]']; 
     
+    initTagUI();
+
+    function toggleTagFilter(btn, tag) {
+        if (currentTags.includes(tag)) {
+            currentTags = currentTags.filter(t => t !== tag);
+            btn.classList.remove('active');
+        } else {
+            currentTags.push(tag);
+            btn.classList.add('active');
+        }
+        renderList(); 
+        scrollToBottom(); 
+    }
+
     let bpChartInstance = null; 
     let currentExportCanvas = null;
     let currentExportType = null;
@@ -657,15 +871,12 @@
         if (b.getAttribute('data-val') === '90days') b.classList.add('active');
         else b.classList.remove('active');
       });
-      document.querySelectorAll('.tag-btn').forEach(b => {
-        if (b.getAttribute('data-tag') === '[報表]') b.classList.add('active');
-        else b.classList.remove('active');
-      });
+      document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+      const reportBtn = document.querySelector('.tag-btn[data-tag="[報表]"]');
+      if(reportBtn) reportBtn.classList.add('active');
 
-      let curr = new Date();
-      document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
-      document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
-      checkMorningTag();
+      cancelEdit(); 
+      
       try {
         await loadData();
       } catch (err) { console.error("Refresh error", err); } finally { hideLoading(); }
@@ -678,30 +889,123 @@
       }, 100); 
     }
 
-    const now = new Date();
-    document.getElementById('date').value = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
-    document.getElementById('time').value = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    function resetFormToFresh() {
+      currentEditTarget = null;
+      document.querySelectorAll('.record-row.editing-row').forEach(el => el.classList.remove('editing-row'));
+      document.getElementById('bpForm').reset();
+      
+      let curr = new Date(); 
+      document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`; 
+      document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
+      
+      let initialNotes = '';
+      DEFAULT_TAGS.forEach(k => {
+         if (CUSTOM_TAG_DICT[k]) {
+             if (initialNotes !== '') initialNotes += ', ';
+             initialNotes += `[${k}]`;
+         }
+      });
+      document.getElementById('notes').value = initialNotes;
+      
+      checkMorningTag(); 
+      
+      const btn = document.getElementById('submitBtn');
+      btn.innerText = 'Save';
+      btn.style.backgroundColor = 'var(--primary-color)';
+      document.getElementById('formActionRow').classList.remove('is-editing');
+    }
+
+    resetFormToFresh();
 
     function checkMorningTag() {
+      if (currentEditTarget) return; 
       const timeVal = document.getElementById('time').value;
       if (!timeVal) return;
       const h = parseInt(timeVal.split(':')[0], 10);
       const notesInput = document.getElementById('notes');
-      if (h >= 4 && h < 10) {
-        if (!notesInput.value.includes('[報表]')) {
-          if (notesInput.value.trim() !== '') notesInput.value += ', ';
-          notesInput.value += '[報表]';
-        }
+      
+      let currentNotes = notesInput.value;
+      
+      if (currentNotes.includes('[報表]')) {
+        currentNotes = currentNotes.replace(/\[報表\]/g, '').replace(/,\s*,/g, ',').replace(/^,\s*/, '').replace(/,\s*$/, '').trim();
       }
+      
+      if (h >= 4 && h < 10) {
+        currentNotes = currentNotes === '' ? '[報表]' : `[報表], ${currentNotes}`;
+      }
+      
+      notesInput.value = currentNotes;
     }
     
     document.getElementById('time').addEventListener('change', checkMorningTag);
-    checkMorningTag();
+    
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden && !currentEditTarget) {
+        let curr = new Date();
+        document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`;
+        document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
+        checkMorningTag();
+      }
+    });
 
     function addQuickTag(tagText) {
       const notesInput = document.getElementById('notes');
-      if (notesInput.value.trim() === '') { notesInput.value = tagText; } 
-      else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
+      
+      if (tagText === '[報表]') {
+          let currentNotes = notesInput.value;
+          if (!currentNotes.includes('[報表]')) {
+              notesInput.value = currentNotes === '' ? '[報表]' : `[報表], ${currentNotes}`;
+          }
+      } else {
+          if (notesInput.value.trim() === '') { notesInput.value = tagText; } 
+          else if (!notesInput.value.includes(tagText)) { notesInput.value += `, ${tagText}`; }
+      }
+    }
+    
+    function editRecord(rowEl, rawDate, rawTime, sys, dia, hr, encodedNotes) {
+        document.querySelectorAll('.record-row.editing-row').forEach(el => el.classList.remove('editing-row'));
+        if (rowEl) rowEl.classList.add('editing-row');
+
+        let formattedTime = rawTime;
+        if (rawTime && rawTime.includes(':')) {
+            let parts = rawTime.split(':');
+            formattedTime = `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
+        }
+        
+        document.getElementById('date').value = String(rawDate).replace(/\//g, '-');
+        document.getElementById('time').value = formattedTime;
+        document.getElementById('systolic').value = sys;
+        document.getElementById('diastolic').value = dia;
+        document.getElementById('heartRate').value = hr;
+        document.getElementById('notes').value = decodeURIComponent(encodedNotes);
+        
+        currentEditTarget = {
+            date: rawDate, time: rawTime, systolic: sys, diastolic: dia, heartRate: hr, notes: decodeURIComponent(encodedNotes)
+        };
+        
+        const btn = document.getElementById('submitBtn');
+        btn.innerText = 'Update';
+        btn.style.backgroundColor = '#F59E0B'; 
+        document.getElementById('formActionRow').classList.add('is-editing');
+        
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    function cancelEdit() {
+        resetFormToFresh();
+    }
+
+    function showDeleteActions(btn, event) {
+        event.stopPropagation();
+        document.querySelectorAll('.delete-actions.show').forEach(el => el.classList.remove('show'));
+        const actions = btn.closest('.record-row').querySelector('.delete-actions');
+        if (actions) actions.classList.add('show');
+    }
+    
+    function cancelDelete(btn, event) {
+        event.stopPropagation();
+        const actions = btn.closest('.delete-actions');
+        if (actions) actions.classList.remove('show');
     }
 
     document.querySelectorAll('.period-btn').forEach(btn => {
@@ -709,21 +1013,6 @@
         document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
         e.target.classList.add('active'); 
         currentPeriod = e.target.getAttribute('data-val'); 
-        renderList(); scrollToBottom(); 
-      });
-    });
-
-    document.querySelectorAll('.tag-btn').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const targetBtn = e.target.closest('button');
-        const tag = targetBtn.getAttribute('data-tag');
-        if (currentTags.includes(tag)) {
-            currentTags = currentTags.filter(t => t !== tag);
-            targetBtn.classList.remove('active');
-        } else {
-            currentTags.push(tag);
-            targetBtn.classList.add('active');
-        }
         renderList(); scrollToBottom(); 
       });
     });
@@ -756,21 +1045,23 @@
 
     window.addEventListener('online', () => { processSyncQueue(); });
 
-    function confirmDelete(btn, formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime, encodedNotes) {
-      const row = btn.closest('.record-row'); row.classList.add('highlight-delete');
+    function executeDelete(btn, event, formattedDate, formattedTime, sys, dia, hr, rawDate, rawTime, encodedNotes) {
+      event.stopPropagation();
       let decodedNotes = decodeURIComponent(encodedNotes);
-      setTimeout(() => {
-        if (confirm(`${formattedDate} ${formattedTime}\n${sys}/${dia}\u00A0\u00A0${hr}\n\n確定刪除？`)) {
-          let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
-          if (idx !== -1) { allRecords.splice(idx, 1); } 
-          else {
-            let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);
-            if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);
-          }
-          renderList();
-          syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });
-        } else { row.classList.remove('highlight-delete'); }
-      }, 300);
+      
+      let idx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr && (r.notes || '') === decodedNotes);
+      if (idx !== -1) { allRecords.splice(idx, 1); } 
+      else {
+        let fallbackIdx = allRecords.findIndex(r => r.date === rawDate && r.time === rawTime && r.systolic == sys && r.diastolic == dia && r.heartRate == hr);
+        if (fallbackIdx !== -1) allRecords.splice(fallbackIdx, 1);
+      }
+      
+      if(currentEditTarget && currentEditTarget.date === rawDate && currentEditTarget.time === rawTime) {
+          cancelEdit();
+      }
+      
+      renderList();
+      syncToCloud({ action: 'delete', date: formattedDate, time: formattedTime, sys: sys, dia: dia, hr: hr, notes: decodedNotes });
     }
 
     function getLogicalDate(dateStr, timeStr) {
@@ -935,9 +1226,41 @@
           return (isNaN(dtA.getTime()) ? 0 : dtA.getTime()) - (isNaN(dtB.getTime()) ? 0 : dtB.getTime()); 
         });
 
+        const headerCount = document.getElementById('headerCount');
+        const headerBP = document.getElementById('headerBP');
+        const headerHR = document.getElementById('headerHR');
+
+        if (currentTags.length > 0 && displayData.length > 0) {
+            let sumS = 0, sumD = 0, sumH = 0, cBP = 0, cHR = 0;
+            displayData.forEach(r => {
+                let s = parseInt(r.systolic), d = parseInt(r.diastolic), h = parseInt(r.heartRate);
+                if (!isNaN(s) && !isNaN(d)) { sumS += s; sumD += d; cBP++; }
+                if (!isNaN(h)) { sumH += h; cHR++; }
+            });
+            let avgS = cBP ? Math.round(sumS / cBP) : '-';
+            let avgD = cBP ? Math.round(sumD / cBP) : '-';
+            let avgH = cHR ? Math.round(sumH / cHR) : '-';
+            
+            headerCount.innerHTML = `n=${cBP}`;
+            headerBP.innerHTML = `<div style="font-size: 9px; color: #7895B2; line-height: 1; margin-bottom: 1px;">AVG BP</div><div style="font-size: 13px; color: #111; font-weight: 900; line-height: 1;">${avgS}/${avgD}</div>`;
+            headerHR.innerHTML = `<div style="font-size: 9px; color: #7895B2; line-height: 1; margin-bottom: 1px;">AVG</div><div style="font-size: 13px; color: #111; font-weight: 900; line-height: 1;">${avgH}</div>`;
+        } else {
+            headerCount.innerHTML = '';
+            headerBP.innerHTML = 'BP';
+            headerHR.innerHTML = 'HR';
+        }
+
         let html = '';
 
-        if (displayData.length === 0) { html = `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
+        if (displayData.length === 0) { 
+            if (isInitialLoad) {
+                html = `<div style="text-align:center; padding: 40px 20px; color: #888;">
+                          <div class="spinner" style="margin: 0 auto 10px auto; border-top-color: var(--primary-dark);"></div>
+                          <span id="initialLoadingText">系統初始化中...<br><span style="font-size:12px; color:#aaa;">請稍候</span></span>
+                        </div>`;
+            } else {
+                html = `<div style="text-align:center; padding: 20px; color: #888;">No records found.</div>`;
+            }
         } else {
           let lastDate = null; let lastMonthStr = null; let isFirstSection = true;
           
@@ -959,10 +1282,13 @@
                 let sCat = (s < 120) ? 0 : ((s < 130) ? 1 : ((s < 140) ? 2 : 3));
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
-                let flexCenter = "display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; font-size: 13px; font-weight: 900; font-family: Arial, sans-serif;";
-                if (cat === 1) { catIconHtml = `<div style="${flexCenter} color: #F59E0B;"><svg viewBox="0 0 24 24" width="14" height="14" stroke="#F59E0B" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></div>`; } 
-                else if (cat === 2) { catIconHtml = `<div style="${flexCenter} color: #D32F2F;">1</div>`; } 
-                else if (cat === 3) { catIconHtml = `<div style="${flexCenter} color: #D32F2F;">2</div>`; }
+                
+                let boxStyle = "display: flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 3px; font-size: 11px; font-weight: 900; font-family: -apple-system, Arial, sans-serif; box-sizing: border-box; padding: 0;";
+                let arrowSvg = `<svg viewBox="0 0 24 24" width="10" height="10" stroke="#FFC107" stroke-width="3.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: block;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                
+                if (cat === 1) { catIconHtml = `<div style="display: flex; align-items: center; justify-content: center; width: 14px; height: 14px;">${arrowSvg}</div>`; } 
+                else if (cat === 2) { catIconHtml = `<div style="${boxStyle} background-color: #FAA05F; color: #FFFFFF;"><span style="position: relative; top: -0.5px;">1</span></div>`; } 
+                else if (cat === 3) { catIconHtml = `<div style="${boxStyle} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -0.5px;">2</span></div>`; }
             }
             
             let sysHtml = `<span style="font-weight: bold; color: #333333;">${sysStr}</span>`; let diaHtml = `<span style="font-weight: bold; color: #333333;">${diaStr}</span>`;
@@ -980,20 +1306,27 @@
                 .replace(/☕ 咖啡/g, iconWrap('☕', 0)).replace(/🍷 酒/g, iconWrap('🍷', 0)).replace(/🏃 運動/g, iconWrap('🏃', 0))
                 .replace(/💊 吃藥/g, iconWrap('💊', 0)).replace(/🤕 頭痛/g, iconWrap('🤕', 0)).replace(/🏥 院所/g, iconWrap('🏥', 0))
                 .replace(/\[報表\]/g, reportSvg);
-            
+                
+            displayNote = displayNote.replace(/\[([^\]]+)\]/g, `<span style="display: inline-flex; align-items: center; justify-content: center; background-color: #E2E8F0; border-radius: 4px; padding: 2px 6px; font-size: 11px; font-weight: bold; color: #495057; margin: 0 2px;">$1</span>`);
             displayNote = displayNote.replace(/, /g, '').replace(/,/g, '');
             let encodedNotes = encodeURIComponent(item.notes || '');
 
+            let isEditingThisRow = (currentEditTarget && currentEditTarget.date === rawDate && currentEditTarget.time === item.time && currentEditTarget.systolic == item.systolic && currentEditTarget.diastolic == item.diastolic && currentEditTarget.heartRate == item.heartRate && currentEditTarget.notes === (item.notes || ''));
+
             html += `
-              <div class="record-row ${isNewDay ? 'new-day' : ''}">
+              <div class="record-row ${isNewDay ? 'new-day' : ''} ${isEditingThisRow ? 'editing-row' : ''}" style="position: relative; overflow: hidden;" onclick="editRecord(this, '${rawDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${encodedNotes}')">
                 <div>${displayDateText}</div><div>${formattedTime}</div>
                 <div class="cat-col">${catIconHtml}</div>
                 <div class="bp-col-align"><span class="bp-sys">${sysHtml}</span><span class="bp-slash">/</span><span class="bp-dia">${diaHtml}</span></div>
                 <div style="font-weight: bold; color: #333333;">${item.heartRate || ''}</div><div class="note-col">${displayNote}</div>
                 <div>
-                  <button class="delete-btn" onclick="confirmDelete(this, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}', '${encodedNotes}')" title="Delete">
+                  <button class="delete-btn" onclick="showDeleteActions(this, event)" title="Delete">
                     <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
                   </button>
+                </div>
+                <div class="delete-actions">
+                   <button class="del-cancel-btn" onclick="cancelDelete(this, event)">取消</button>
+                   <button class="del-confirm-btn" onclick="executeDelete(this, event, '${formattedDate}', '${item.time}', '${item.systolic}', '${item.diastolic}', '${item.heartRate}', '${rawDate}', '${item.time}', '${encodedNotes}')">確定刪除</button>
                 </div>
               </div>`;
           });
@@ -1025,7 +1358,6 @@
           monthMap[yyyy_mm][day].push(r);
         });
 
-        // 計算單日平均值
         Object.keys(monthMap).forEach(ym => {
           Object.keys(monthMap[ym]).forEach(day => {
             let dayRecords = monthMap[ym][day];
@@ -1117,16 +1449,18 @@
                     </div>`;
         };
 
-        const svgElevatedLegend = `<svg viewBox="0 0 24 24" width="8" height="8" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
-        const lblElevated = `Elevated <span style="display: inline-flex; align-items: center; margin-left: 0px;">${svgElevatedLegend}</span>`;
-        const lblStage1 = `Stage <span style="color: #D32F2F;">1</span>`;
-        const lblStage2 = `Stage <span style="color: #D32F2F;">2</span>`;
+        const boxStyleLegend = "display: inline-block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; text-align: center; margin-left: 2px; vertical-align: middle;";
+        const arrowSvgLegend = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+        
+        const lblElevated = `Elevated<div style="display: inline-flex; align-items: center; justify-content: center; width: 10px; height: 10px; margin-left: 2px; vertical-align: middle;">${arrowSvgLegend}</div>`;
+        const lblStage1 = `Stage<div style="${boxStyleLegend} background-color: #FAA05F; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`;
+        const lblStage2 = `Stage<div style="${boxStyleLegend} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -1px;">2</span></div>`;
 
         tableHtml += `<div style="display: flex; flex-direction: row; flex-wrap: nowrap; width: 260px; box-sizing: border-box; padding-left: 10px; padding-right: 2px; z-index: 1;">`;
-        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '&lt; 120 / 80');
-        tableHtml += renderStatCenter(lblElevated, `${pctElevated}%`, '#111111', '120 - 129 / &lt; 80');
+        tableHtml += renderStatCenter('Normal', `${pctNormal}%`, '#111111', '< 120 / 80');
+        tableHtml += renderStatCenter(lblElevated, `${pctElevated}%`, '#111111', '120 - 129 / < 80');
         tableHtml += renderStatCenter(lblStage1, `${pctStage1}%`, '#111111', '130 - 139 / 80 - 89');
-        tableHtml += renderStatCenter(lblStage2, `${pctStage2}%`, '#111111', '&ge; 140 / &ge; 90');
+        tableHtml += renderStatCenter(lblStage2, `${pctStage2}%`, '#111111', '≥ 140 / ≥ 90');
         tableHtml += `</div>`;
         tableHtml += `</div></th></tr>`;
         
@@ -1154,14 +1488,17 @@
                 let sCat = (s < 120) ? 0 : ((s < 130) ? 1 : ((s < 140) ? 2 : 3));
                 let dCat = (d < 80) ? 0 : ((d < 90) ? 2 : 3);
                 let cat = Math.max(sCat, dCat);
-                let iconWrapperStyle = "position: absolute; left: 2px; top: 0px; font-size: 8px; font-weight: bold; line-height: 1; font-family: Arial, sans-serif; display: flex; align-items: center;";
-                if (cat === 1) { catIconHtml = `<span style="${iconWrapperStyle} color: #F59E0B;"><svg viewBox="0 0 24 24" width="7" height="7" stroke="#F59E0B" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg></span>`; } 
-                else if (cat === 2) { catIconHtml = `<span style="${iconWrapperStyle} color: #D32F2F;">1</span>`; } 
-                else if (cat === 3) { catIconHtml = `<span style="${iconWrapperStyle} color: #D32F2F;">2</span>`; }
+                
+                let boxStyleReport = "position: absolute; left: 1px; top: 1px; display: block; width: 10px; height: 10px; border-radius: 2px; font-size: 7.5px; font-weight: 900; font-family: Arial, sans-serif; line-height: 9.5px; text-align: center; box-sizing: border-box;";
+                let arrowSvgReport = `<svg viewBox="0 0 24 24" width="7" height="7" stroke="#FFC107" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: middle; margin-top: -1px;"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>`;
+                
+                if (cat === 1) { catIconHtml = `<div style="position: absolute; left: 1px; top: 1px; display:flex; align-items:center; justify-content:center; width: 10px; height: 10px;">${arrowSvgReport}</div>`; } 
+                else if (cat === 2) { catIconHtml = `<div style="${boxStyleReport} background-color: #FAA05F; color: #FFFFFF;"><span style="position: relative; top: -1px;">1</span></div>`; } 
+                else if (cat === 3) { catIconHtml = `<div style="${boxStyleReport} background-color: #EF4444; color: #FFFFFF;"><span style="position: relative; top: -1px;">2</span></div>`; }
             }
             
             let sysCell = record ? `<span style="color: #333333; font-weight: normal;">${sysStr}</span>` : ''; let diaCell = record ? `<span style="color: #333333; font-weight: normal;">${diaStr}</span>` : '';
-            tableHtml += `<td style="color:#999999; font-weight:normal; position: relative;">${day}</td><td style="position: relative; vertical-align: middle;">${catIconHtml}${sysCell}</td><td>${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: normal;">${record ? record.heartRate : ''}</td>`;
+            tableHtml += `<td style="color:#999999; font-weight:normal; position: relative; vertical-align: middle;">${day}</td><td style="position: relative; vertical-align: middle;">${catIconHtml}${sysCell}</td><td style="vertical-align: middle;">${diaCell}</td><td class="${rightCls}" style="color: #333333; font-weight: normal; vertical-align: middle;">${record ? record.heartRate : ''}</td>`;
           }
           tableHtml += `</tr>`;
         }
@@ -1211,7 +1548,7 @@
                     setTimeout(() => { document.body.removeChild(link); window.URL.revokeObjectURL(url); showToast('Finished!'); closeImagePreview(); }, 100);
                 };
 
-                if (navigator.share && /mobile|android|iphone|ipad|Macintosh/i.test(navigator.userAgent)) {
+                if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                     try {
                         const file = new File([pdfBlob], `${currentExportFilename}.pdf`, { type: 'application/pdf' });
                         await navigator.share({ files: [file] }); showToast('Finished!'); closeImagePreview();
@@ -1230,7 +1567,7 @@
                         setTimeout(() => { document.body.removeChild(link); window.URL.revokeObjectURL(url); showToast('Finished!'); closeImagePreview(); }, 100);
                     };
 
-                    if (navigator.share && /mobile|android|iphone|ipad|Macintosh/i.test(navigator.userAgent)) {
+                    if (navigator.share && /mobile|android|iphone|ipad/i.test(navigator.userAgent)) {
                         try {
                             const file = new File([blob], `${currentExportFilename}.jpg`, { type: 'image/jpeg' });
                             await navigator.share({ files: [file] }); showToast('Finished!'); closeImagePreview();
@@ -1249,12 +1586,17 @@
     async function loadData() {
       const cachedData = localStorage.getItem('bpCacheRecords');
       if (cachedData) { 
-        try { allRecords = JSON.parse(cachedData); renderList(); scrollToBottom(); } 
+        try { 
+            allRecords = JSON.parse(cachedData); 
+            isInitialLoad = false; 
+            renderList(); 
+            scrollToBottom(); 
+        } 
         catch(e) { console.error("Cache Render Error:", e); } 
       }
       
       processSyncQueue();
-      
+
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000); 
@@ -1265,12 +1607,31 @@
         }); 
         clearTimeout(timeoutId);
         
-        let rawText = await response.text(); allRecords = JSON.parse(rawText); 
-        if (!Array.isArray(allRecords)) allRecords = []; 
+        let rawText = await response.text(); 
+        let parsedData = JSON.parse(rawText);
+        
+        if (Array.isArray(parsedData)) {
+            allRecords = parsedData;
+        } else if (parsedData && typeof parsedData === 'object') {
+            allRecords = Array.isArray(parsedData.records) ? parsedData.records : [];
+            if (parsedData.settings && parsedData.settings.tags) {
+                CUSTOM_TAG_DICT = parsedData.settings.tags;
+                DEFAULT_TAGS = parsedData.settings.defaults || [];
+                localStorage.setItem('bpDrugDict', JSON.stringify(CUSTOM_TAG_DICT));
+                localStorage.setItem('bpDefaultTags', JSON.stringify(DEFAULT_TAGS));
+                initTagUI();
+                if (!currentEditTarget) resetFormToFresh();
+            } else {
+                saveSettingsToCloud();
+            }
+        }
+        
+        isInitialLoad = false; 
         renderList(); 
         scrollToBottom();
       } catch (err) {
         console.error("Fetch Error:", err);
+        isInitialLoad = false;
         if (allRecords.length > 0) {
             showToast("已載入最新快取資料 (離線狀態)");
         } else {
@@ -1299,14 +1660,11 @@
           heartRate: document.getElementById('heartRate').value, notes: finalNotes 
       };
       
-      let filterChanged = false;
-      
       if (currentTags.length > 0) {
           let hasMatchingTag = currentTags.some(tag => finalNotes.includes(tag));
           if (!hasMatchingTag) {
               currentTags = [];
               document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
-              filterChanged = true;
           }
       }
       
@@ -1319,21 +1677,31 @@
                   if (b.getAttribute('data-val') === 'all') b.classList.add('active');
                   else b.classList.remove('active');
               });
-              filterChanged = true;
           }
       }
       
-      allRecords.push(payload); 
+      if (currentEditTarget) {
+          let idx = allRecords.findIndex(r => r.date === currentEditTarget.date && r.time === currentEditTarget.time && r.systolic == currentEditTarget.systolic && r.diastolic == currentEditTarget.diastolic && r.heartRate == currentEditTarget.heartRate && (r.notes || '') === currentEditTarget.notes);
+          if (idx !== -1) { allRecords.splice(idx, 1); }
+          
+          syncToCloud({ action: 'delete', date: currentEditTarget.date, time: currentEditTarget.time, sys: currentEditTarget.systolic, dia: currentEditTarget.diastolic, hr: currentEditTarget.heartRate, notes: currentEditTarget.notes });
+          
+          allRecords.push(payload);
+          syncToCloud(payload);
+          
+      } else {
+          allRecords.push(payload); 
+          syncToCloud(payload);
+      }
+      
       renderList(); 
       scrollToBottom(); 
       
-      document.getElementById('bpForm').reset();
-      let curr = new Date(); document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`; document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
-      checkMorningTag();
+      resetFormToFresh();
       
-      const originalColor = btn.style.backgroundColor; btn.innerText = 'Saved!'; btn.style.backgroundColor = '#4CAF50';
+      const originalColor = 'var(--primary-color)'; 
+      btn.innerText = 'Saved!'; btn.style.backgroundColor = '#4CAF50';
       setTimeout(() => { btn.innerText = 'Save'; btn.style.backgroundColor = originalColor; btn.disabled = false; }, 2000);
-      syncToCloud(payload);
     });
 
     loadData();
