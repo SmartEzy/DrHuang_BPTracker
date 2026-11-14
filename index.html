@@ -11,7 +11,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">  
 
-  <link rel="manifest" href="manifest.json?v=186">
+  <link rel="manifest" href="manifest.json?v=188">
   <link rel="icon" type="image/png" href="./icon.png">
   <link rel="apple-touch-icon" href="./icon.png">
   
@@ -245,7 +245,6 @@
     @media (hover: hover) { .record-row:hover { background-color: rgba(143, 163, 184, 0.1); border-radius: 6px; } }
     .record-row:active { background-color: rgba(143, 163, 184, 0.2); }
     
-    /* 🌟 修正 3：刪除邊框，改為純粹的淡橘色底色 */
     .record-row.editing-row {
       background-color: #FFEDD5 !important;
       border-radius: 6px;
@@ -253,14 +252,12 @@
     
     .record-row div:nth-child(5) { text-align: center; padding: 0; font-weight: bold; } 
     .record-row div:nth-child(6) { text-align: left; padding-left: 12px; }
-    /* 🌟 修正 1：指定第 7 欄（垃圾桶欄位）對齊右側，避免誤傷第 8 個元素的刪除區塊 */
     .record-row div:nth-child(7) { display: flex; justify-content: flex-end; padding-right: 2px;}
     
     .delete-btn { background: none; border: none; padding: 0; margin: 0; color: #CBD5E1; cursor: pointer; display: flex; justify-content: flex-end; align-items: center; transition: color 0.2s; }
     @media (hover: hover) { .delete-btn:hover { color: var(--danger-color); } }
     .delete-btn:active { color: var(--danger-color); }
     
-    /* 🌟 修正 1：加上 !important 確保預設絕對隱藏，點擊垃圾桶才顯示 */
     .delete-actions {
       position: absolute; right: 16px; top: 50%; transform: translateY(-50%);
       display: none !important; align-items: center; gap: 6px; z-index: 10;
@@ -389,7 +386,6 @@
 
   <div id="toastMsg" class="toast-msg"></div>
 
-  <!-- 🌟 修正 2：刪除「現有標籤」四個字 -->
   <div id="tagManagerModal" class="image-preview-modal" style="align-items: center; justify-content: center; z-index: 10002;">
     <div style="background: #FFFFFF; width: 90%; max-width: 340px; border-radius: 16px; padding: 24px; box-sizing: border-box; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
       
@@ -399,7 +395,7 @@
       </div>
       
       <div style="display: flex; justify-content: flex-end; align-items: flex-end; margin-bottom: 4px;">
-        <div style="font-size: 11px; color: #8FA3B8; margin-right: 4px;">⭐ 設為預設</div>
+        <div style="font-size: 11px; color: #8FA3B8; margin-right: 4px;">⭐ 設為上午預設 (自動入報表)</div>
       </div>
       
       <div id="tagList" style="margin-bottom: 16px; max-height: 200px; overflow-y: auto; border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px;"></div>
@@ -614,6 +610,14 @@
     
     let DEFAULT_TAGS = JSON.parse(localStorage.getItem('bpDefaultTags')) || [];
 
+    // 🌟 判斷該筆紀錄是否屬於「報表紀錄」（包含 [報表] 或任一 ⭐ 預設藥物）
+    function isReportRecord(noteStr) {
+        if (!noteStr) return false;
+        let s = String(noteStr);
+        if (s.includes('[報表]')) return true;
+        return DEFAULT_TAGS.some(k => CUSTOM_TAG_DICT[k] && s.includes(`[${k}]`));
+    }
+
     function saveSettingsToCloud() {
         localStorage.setItem('bpDrugDict', JSON.stringify(CUSTOM_TAG_DICT));
         localStorage.setItem('bpDefaultTags', JSON.stringify(DEFAULT_TAGS));
@@ -676,7 +680,8 @@
         }
         saveSettingsToCloud();
         renderTagManagerList();
-        if (!currentEditTarget) resetFormToFresh();
+        if (!currentEditTarget) checkMorningTag();
+        if (!isInitialLoad) renderList();
     }
 
     function renderTagManagerList() {
@@ -691,7 +696,7 @@
                 html += `
                 <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #F1F5F9;">
                     <div style="font-size: 14px; color: var(--primary-dark); display: flex; align-items: center;">
-                        <button type="button" onclick="toggleDefaultTag('${key}')" style="background: none; border: none; cursor: pointer; font-size: 16px; padding: 4px 6px 4px 0; display: flex; align-items: center;" title="切換預設自動加入">
+                        <button type="button" onclick="toggleDefaultTag('${key}')" style="background: none; border: none; cursor: pointer; font-size: 16px; padding: 4px 6px 4px 0; display: flex; align-items: center;" title="切換上午預設自動加入">
                             ${starIcon}
                         </button>
                         <span style="font-weight: bold; display: inline-block; background: #E2E8F0; padding: 2px 6px; border-radius: 4px; margin-right: 8px;">${key}</span> 
@@ -897,15 +902,7 @@
       let curr = new Date(); 
       document.getElementById('date').value = `${curr.getFullYear()}-${String(curr.getMonth()+1).padStart(2,'0')}-${String(curr.getDate()).padStart(2,'0')}`; 
       document.getElementById('time').value = `${String(curr.getHours()).padStart(2,'0')}:${String(curr.getMinutes()).padStart(2,'0')}`;
-      
-      let initialNotes = '';
-      DEFAULT_TAGS.forEach(k => {
-         if (CUSTOM_TAG_DICT[k]) {
-             if (initialNotes !== '') initialNotes += ', ';
-             initialNotes += `[${k}]`;
-         }
-      });
-      document.getElementById('notes').value = initialNotes;
+      document.getElementById('notes').value = '';
       
       checkMorningTag(); 
       
@@ -915,8 +912,6 @@
       document.getElementById('formActionRow').classList.remove('is-editing');
     }
 
-    resetFormToFresh();
-
     function checkMorningTag() {
       if (currentEditTarget) return; 
       const timeVal = document.getElementById('time').value;
@@ -925,17 +920,29 @@
       const notesInput = document.getElementById('notes');
       
       let currentNotes = notesInput.value;
+      const activeDefaultTags = DEFAULT_TAGS.filter(k => CUSTOM_TAG_DICT[k]);
+      
+      activeDefaultTags.forEach(k => {
+        const escapedKey = k.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`\\[${escapedKey}\\]`, 'g');
+        currentNotes = currentNotes.replace(regex, '');
+      });
+      currentNotes = currentNotes.replace(/,\s*,/g, ',').replace(/^,\s*/, '').replace(/,\s*$/, '').trim();
+      
+      if (h >= 4 && h < 10 && activeDefaultTags.length > 0) {
+        const defaultStr = activeDefaultTags.map(k => `[${k}]`).join(', ');
+        currentNotes = currentNotes === '' ? defaultStr : `${defaultStr}, ${currentNotes}`;
+      }
       
       if (currentNotes.includes('[報表]')) {
         currentNotes = currentNotes.replace(/\[報表\]/g, '').replace(/,\s*,/g, ',').replace(/^,\s*/, '').replace(/,\s*$/, '').trim();
-      }
-      
-      if (h >= 4 && h < 10) {
         currentNotes = currentNotes === '' ? '[報表]' : `[報表], ${currentNotes}`;
       }
       
       notesInput.value = currentNotes;
     }
+
+    resetFormToFresh();
     
     document.getElementById('time').addEventListener('change', checkMorningTag);
     
@@ -962,6 +969,7 @@
       }
     }
     
+    // 🌟 點選編輯時，若該筆紀錄已有其他自訂標籤，自動濾除隱藏的 [報表] 字眼，保持輸入框乾淨
     function editRecord(rowEl, rawDate, rawTime, sys, dia, hr, encodedNotes) {
         document.querySelectorAll('.record-row.editing-row').forEach(el => el.classList.remove('editing-row'));
         if (rowEl) rowEl.classList.add('editing-row');
@@ -972,15 +980,21 @@
             formattedTime = `${parts[0].padStart(2, '0')}:${parts[1].padStart(2, '0')}`;
         }
         
+        let rawNotesStr = decodeURIComponent(encodedNotes);
+        let displayEditNotes = rawNotesStr;
+        if (/\[(?!報表\])[^\]]+\]/.test(displayEditNotes)) {
+            displayEditNotes = displayEditNotes.replace(/\[報表\]/g, '').replace(/,\s*,/g, ',').replace(/^,\s*/, '').replace(/,\s*$/, '').trim();
+        }
+
         document.getElementById('date').value = String(rawDate).replace(/\//g, '-');
         document.getElementById('time').value = formattedTime;
         document.getElementById('systolic').value = sys;
         document.getElementById('diastolic').value = dia;
         document.getElementById('heartRate').value = hr;
-        document.getElementById('notes').value = decodeURIComponent(encodedNotes);
+        document.getElementById('notes').value = displayEditNotes;
         
         currentEditTarget = {
-            date: rawDate, time: rawTime, systolic: sys, diastolic: dia, heartRate: hr, notes: decodeURIComponent(encodedNotes)
+            date: rawDate, time: rawTime, systolic: sys, diastolic: dia, heartRate: hr, notes: rawNotesStr
         };
         
         const btn = document.getElementById('submitBtn');
@@ -1216,7 +1230,10 @@
         if (currentTags.length > 0) {
             displayData = displayData.filter(r => {
                 let noteStr = String(r.notes || '');
-                return currentTags.some(tag => noteStr.includes(tag));
+                return currentTags.some(tag => {
+                    if (tag === '[報表]') return isReportRecord(noteStr);
+                    return noteStr.includes(tag);
+                });
             });
         }
 
@@ -1302,10 +1319,14 @@
             }
             lastDate = formattedDate;
 
-            let displayNote = (item.notes || '')
+            let rawNote = item.notes || '';
+            // 🌟 做法 2 智慧隱藏：如果這筆紀錄已經有其他 [藥物] 標籤，就自動隱藏 [報表] 圖示，新舊資料視覺完全統一
+            let hasOtherBracketTag = /\[(?!報表\])[^\]]+\]/.test(rawNote);
+
+            let displayNote = rawNote
                 .replace(/☕ 咖啡/g, iconWrap('☕', 0)).replace(/🍷 酒/g, iconWrap('🍷', 0)).replace(/🏃 運動/g, iconWrap('🏃', 0))
                 .replace(/💊 吃藥/g, iconWrap('💊', 0)).replace(/🤕 頭痛/g, iconWrap('🤕', 0)).replace(/🏥 院所/g, iconWrap('🏥', 0))
-                .replace(/\[報表\]/g, reportSvg);
+                .replace(/\[報表\]/g, hasOtherBracketTag ? '' : reportSvg);
                 
             displayNote = displayNote.replace(/\[([^\]]+)\]/g, `<span style="display: inline-flex; align-items: center; justify-content: center; background-color: #E2E8F0; border-radius: 4px; padding: 2px 6px; font-size: 11px; font-weight: bold; color: #495057; margin: 0 2px;">$1</span>`);
             displayNote = displayNote.replace(/, /g, '').replace(/,/g, '');
@@ -1341,8 +1362,8 @@
     }
 
     async function generateReport(monthCount, type = 'pdf') {
-      let reportData = [...allRecords].filter(r => r && r.date && String(r.notes || '').includes('[報表]')).sort((a, b) => new Date(String(a.date).replace(/-/g, '/')).getTime() - new Date(String(b.date).replace(/-/g, '/')).getTime());
-      if (reportData.length === 0) { alert("目前沒有包含「報表」標籤的紀錄喔！"); return; }
+      let reportData = [...allRecords].filter(r => r && r.date && isReportRecord(r.notes)).sort((a, b) => new Date(String(a.date).replace(/-/g, '/')).getTime() - new Date(String(b.date).replace(/-/g, '/')).getTime());
+      if (reportData.length === 0) { alert("目前沒有包含「預設藥物」或「報表」標籤的紀錄喔！"); return; }
       
       showLoading(type === 'pdf' ? `PDF 產生中...` : `JPG 產生中...`);
       await new Promise(resolve => setTimeout(resolve, 50));
@@ -1654,6 +1675,13 @@
           .replace(/💊(?!\s*吃藥)/g, '💊 吃藥')
           .replace(/🤕(?!\s*頭痛)/g, '🤕 頭痛');
 
+      // 🌟 做法 2 底層保護：若包含 ⭐ 預設藥物，或原本是報表紀錄，存檔時自動在最前面補上 [報表]，確保未來換藥時歷史報表永不消失
+      const hasDefaultDrug = DEFAULT_TAGS.some(k => CUSTOM_TAG_DICT[k] && finalNotes.includes(`[${k}]`));
+      const wasReportInEdit = currentEditTarget && String(currentEditTarget.notes || '').includes('[報表]') && /\[(?!報表\])[^\]]+\]/.test(finalNotes);
+      if ((hasDefaultDrug || wasReportInEdit) && !finalNotes.includes('[報表]')) {
+          finalNotes = finalNotes.trim() === '' ? '[報表]' : `[報表], ${finalNotes}`;
+      }
+
       const payload = { 
           action: 'add', date: document.getElementById('date').value, time: document.getElementById('time').value, 
           systolic: document.getElementById('systolic').value, diastolic: document.getElementById('diastolic').value, 
@@ -1661,7 +1689,10 @@
       };
       
       if (currentTags.length > 0) {
-          let hasMatchingTag = currentTags.some(tag => finalNotes.includes(tag));
+          let hasMatchingTag = currentTags.some(tag => {
+              if (tag === '[報表]') return isReportRecord(finalNotes);
+              return finalNotes.includes(tag);
+          });
           if (!hasMatchingTag) {
               currentTags = [];
               document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
